@@ -1,4 +1,5 @@
 import ccxt from "ccxt";
+import { calculateSpread } from "./core";
 
 const fetchBinance = async () => {
   const binance = new ccxt.binance();
@@ -31,8 +32,5 @@ const fetchPrices = async () => {
   console.log("Spread (Binance Ask - Bybit Bid):", spread);
 };
 
-const calculateSpread = (buyAsk: number, sellBid: number) => {
-  return buyAsk - sellBid;
-};
 
 fetchPrices();

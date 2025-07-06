@@ -1,5 +1,5 @@
 import { describe, vi, it, expect } from "vitest";
-import { fetchPrices } from "./fetchPrice";
+import { fetchPrices } from "./fetch-price";
 
 import * as clientModule from "../../clients";
 import * as coreModule from "../../core";

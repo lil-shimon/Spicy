@@ -1,15 +1,5 @@
-import ccxt from "ccxt";
 import { calculateSpread } from "./core";
-import { fetchBinance } from "./clients";
-
-const fetchBybit = async () => {
-  const bybit = new ccxt.bybit();
-  const ticker = await bybit.fetchTicker("ADA/USDT");
-  return {
-    bid: ticker.bid ?? 0,
-    ask: ticker.ask ?? 0,
-  };
-};
+import { fetchBinance, fetchBybit } from "./clients";
 
 const fetchPrices = async () => {
   const binancePrice = await fetchBinance();
@@ -21,6 +11,5 @@ const fetchPrices = async () => {
   console.log("Bybit Price:", bybitPrice);
   console.log("Spread (Binance Ask - Bybit Bid):", spread);
 };
-
 
 fetchPrices();

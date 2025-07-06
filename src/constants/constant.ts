@@ -12,3 +12,9 @@ export const TAKER_FEES = {
   // https://www.bybit.com/en/help-center/article/Trading-Fee-Structure
   [EXCHANGES.BYBIT]: 0.1,
 } as const;
+
+export const PAIRS = {
+  ADA_USDT: "ADA/USDT",
+  XO_USDT: "XO/USDT",
+  DOT_USDT: "DOT/USDT",
+};

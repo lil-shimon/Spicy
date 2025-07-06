@@ -1,2 +1,2 @@
 export { fetchBybit } from "./bybit/fetchBybit";
-export { fetchBinance } from "./fetchBinance/fetchBinance";
+export { fetchBinance } from "./binance/fetchBinance";

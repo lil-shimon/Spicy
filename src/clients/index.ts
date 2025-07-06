@@ -1,1 +1,1 @@
-export { fetchBinance } from "./fetchBinance";
+export { fetchBinance } from "./fetchBinance/fetchBinance";

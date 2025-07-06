@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fetchBinance } from "./fetchBinance";
+import { fetchBinance } from "./fetch-binance";
 
 vi.mock("ccxt", async () => {
   const actual = await vi.importActual<typeof import("ccxt")>("ccxt");

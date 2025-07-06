@@ -1,6 +1,7 @@
 export const EXCHANGES = {
   BINANCE: "binance",
   BYBIT: "bybit",
+  MEXC: "mexc",
 } as const;
 
 export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];
@@ -11,6 +12,8 @@ export const TAKER_FEES = {
   [EXCHANGES.BINANCE]: 0.1,
   // https://www.bybit.com/en/help-center/article/Trading-Fee-Structure
   [EXCHANGES.BYBIT]: 0.1,
+  // https://www.mexc.com/ja-JP/fee
+  [EXCHANGES.MEXC]: 0.05,
 } as const;
 
 export const PAIRS = {

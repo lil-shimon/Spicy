@@ -1,3 +1,3 @@
 export const calculateSpread = (buyAsk: number, sellBid: number) => {
-  return buyAsk - sellBid;
+  return sellBid - buyAsk;
 };

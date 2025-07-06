@@ -1,9 +1,7 @@
-import { fetchPrices } from "./logic";
-import { postMessage } from "./clients";
+import { startBot } from "./bot";
 
 const main = async () => {
-  const profit = await fetchPrices();
-  await postMessage(profit.toString());
+  await startBot();
 };
 
 main();

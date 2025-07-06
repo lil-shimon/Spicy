@@ -1,16 +1,6 @@
 import ccxt from "ccxt";
 import { calculateSpread } from "./core";
-
-const fetchBinance = async () => {
-  const binance = new ccxt.binance();
-  const ticker = await binance.fetchTicker("ADA/USDT");
-  return {
-    // NOTE: レスポンスがNum形になっているので、nullチェックを行う
-    // もしnullの場合は0を返す
-    bid: ticker.bid ?? 0,
-    ask: ticker.ask ?? 0,
-  };
-};
+import { fetchBinance } from "./clients";
 
 const fetchBybit = async () => {
   const bybit = new ccxt.bybit();

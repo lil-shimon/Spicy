@@ -1,0 +1,1 @@
+export { fetchBinance } from "./fetchBinance";

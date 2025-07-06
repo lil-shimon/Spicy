@@ -10,13 +10,14 @@ export const fetchPrices = async () => {
   const prices = await fetchPriceByPair(pair);
 
   if (!prices) {
-    return;
+    return 0;
   }
 
   const { binance, bybit, mexc } = prices;
 
   const binanceTakerFeeRate = atRate(TAKER_FEES[EXCHANGES.BINANCE]);
   const bybitTakerFeeRate = atRate(TAKER_FEES[EXCHANGES.BYBIT]);
+  const mexcTakerFeeRate = atRate(TAKER_FEES[EXCHANGES.MEXC]);
 
   const spread = calculateSpread(
     binance.ask,

@@ -1,4 +1,11 @@
 import ccxt from "ccxt";
 
 console.log(ccxt.exchanges);
-console.log("Hello, world!");
+
+const fetchBinance = async () => {
+  const binance = new ccxt.binance();
+  const ticker = await binance.fetchTicker("BTC/USDT");
+  console.log(ticker);
+};
+
+fetchBinance();

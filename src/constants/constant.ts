@@ -17,4 +17,4 @@ export const PAIRS = {
   ADA_USDT: "ADA/USDT",
   XO_USDT: "XO/USDT",
   DOT_USDT: "DOT/USDT",
-};
+} as const;

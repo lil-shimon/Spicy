@@ -18,3 +18,5 @@ export const PAIRS = {
   XO_USDT: "XO/USDT",
   DOT_USDT: "DOT/USDT",
 } as const;
+
+export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

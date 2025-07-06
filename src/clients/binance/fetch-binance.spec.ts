@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fetchBinance } from "./fetch-binance";
+import { PAIRS } from "../../constants";
 
 vi.mock("ccxt", async () => {
   const actual = await vi.importActual<typeof import("ccxt")>("ccxt");
@@ -17,7 +18,7 @@ vi.mock("ccxt", async () => {
 
 describe("fetchBinance", () => {
   it("should fetch Binance ticker for ADA/USDT", async () => {
-    const result = await fetchBinance();
+    const result = await fetchBinance(PAIRS.ADA_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),
       ask: expect.any(Number),

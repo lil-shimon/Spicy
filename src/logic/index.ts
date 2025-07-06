@@ -1,1 +1,1 @@
-export { fetchPrices } from "./fetchPrice/fetchPrice";
+export { fetchPrices } from "./fetch-price/fetchPrice";

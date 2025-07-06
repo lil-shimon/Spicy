@@ -12,5 +12,5 @@ export const fetchPrices = async () => {
   const profitRate = calculateProfitRate(spread, binancePrice.ask);
   console.log("利益率 (スプレッド / Binance Ask):", profitRate);
 
-  return spread;
+  return profitRate;
 };

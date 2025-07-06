@@ -1,5 +1,5 @@
 import { beforeEach, describe, it, vi, expect } from "vitest";
-import { postMessage } from "./postMessage";
+import { postMessage } from "./post-message";
 
 describe("Post Message", () => {
   const OLD_ENV = process.env;

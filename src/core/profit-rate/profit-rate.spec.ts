@@ -16,4 +16,9 @@ describe("profit-rate", () => {
     const result = calculateProfitRate(-10, 100);
     expect(result).toBe(-10);
   });
+
+  it("should return 0 when buyAsk is 0", () => {
+    const result = calculateProfitRate(10, 0);
+    expect(result).toBe(0);
+  });
 });

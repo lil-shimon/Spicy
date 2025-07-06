@@ -26,7 +26,7 @@ jobs:
           run_install: false  # 依存は明示的に install するので false
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🧪 Run tests
         run: pnpm run test

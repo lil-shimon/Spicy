@@ -14,8 +14,9 @@ describe("fetchPrices", () => {
     ask: 2.5,
   });
   vi.spyOn(coreModule, "calculateSpread").mockReturnValue(0.5);
+  vi.spyOn(coreModule, "calculateProfitRate").mockReturnValue(0.5);
 
-  it("should return spreads", async () => {
+  it("should return profit rate", async () => {
     const result = await fetchPrices();
     expect(result).toBe(0.5);
   });

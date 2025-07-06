@@ -23,7 +23,8 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "ccxt": "^4.4.92"
+    "ccxt": "^4.4.92",
+    "dotenv": "^17.0.1"
   },
   "engines": {
     "npm": "npmではなく、pnpmを使用してください",

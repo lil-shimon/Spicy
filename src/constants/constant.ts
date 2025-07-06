@@ -3,6 +3,8 @@ export const EXCHANGES = {
   BYBIT: "bybit",
 } as const;
 
+export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];
+
 export const TAKER_FEES = {
   // https://www.binance.com/en/fee/schedule
   // BNB(Binance Coin)を使用している場合は、0.075%の手数料が適用される

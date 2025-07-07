@@ -4,7 +4,7 @@ import { PAIRS } from "../constants";
 
 describe("pairToSymbol", () => {
   it("should convert pair to symbol", () => {
-    const result = pairToSymbol(PAIRS.ADA_USDT);
-    expect(result).toBe("ADAUSDT");
+    const result = pairToSymbol(PAIRS.ADA_USDC);
+    expect(result).toBe("ADAUSDC");
   });
 });

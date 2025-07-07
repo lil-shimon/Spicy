@@ -5,7 +5,7 @@ import { fetchPriceByPair } from "../fetch-price-by-pair/fetch-price-by-pair";
 const atRate = (percentage: number) => percentage / 100;
 
 export const fetchPrices = async () => {
-  const pair = PAIRS.ADA_USDT;
+  const pair = PAIRS.ADA_USDC;
 
   const prices = await fetchPriceByPair(pair);
 

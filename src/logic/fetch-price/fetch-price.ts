@@ -8,7 +8,7 @@ import {
 import { calculateSpread, calculateProfitRate } from "../../core";
 import { fetchPriceByPair } from "../fetch-price-by-pair/fetch-price-by-pair";
 
-type Result = {
+export type FetchPriceResult = {
   pair: Pair;
   from: Exchange;
   to: Exchange;
@@ -27,7 +27,7 @@ export const fetchPrices = async () => {
   );
   console.log("Prices Result:", pricesResult);
 
-  const result: Result[] = [];
+  const result: FetchPriceResult[] = [];
 
   for (const { pair, prices } of pricesResult) {
     if (!prices) {

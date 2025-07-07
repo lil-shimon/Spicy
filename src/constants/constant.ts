@@ -2,6 +2,7 @@ export const EXCHANGES = {
   BINANCE: "binance",
   BYBIT: "bybit",
   MEXC: "mexc",
+  kucoin: "kucoin",
 } as const;
 
 export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];

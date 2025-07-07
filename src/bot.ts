@@ -6,7 +6,7 @@ export const startBot = async () => {
   console.log("Bot起動");
 
   await execute();
-  const interval = 1000 * 60; // 1分ごとに実行
+  const interval = 1000 * 30; // 30秒ごとに実行
 
   setInterval(execute, interval);
 };

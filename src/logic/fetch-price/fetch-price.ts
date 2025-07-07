@@ -43,6 +43,11 @@ export const fetchPrices = async () => {
           continue;
         }
 
+        if (prices[from].ask === 0 || prices[to].bid === 0) {
+          // どちらかの取引所の価格が取得できない場合はスキップ
+          continue;
+        }
+
         const spread = calculateSpread(
           prices[from].ask,
           prices[to].bid,

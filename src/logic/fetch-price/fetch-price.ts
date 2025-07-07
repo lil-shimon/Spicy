@@ -34,6 +34,8 @@ export const fetchPrices = async () => {
       continue;
     }
 
+    console.log(`===== ${pair} の価格比較 =====`);
+
     for (const from of exchangeList) {
       for (const to of exchangeList) {
         if (from === to) {

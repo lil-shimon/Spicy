@@ -14,12 +14,16 @@ export const startBot = async () => {
 const execute = async () => {
   console.log("実行開始");
   const profit = await fetchPrices();
-  const discordMessage = formatMessageForDiscord(profit);
-  console.log("Discordメッセージ:", discordMessage);
-  if (discordMessage.length === 0) {
+
+  const hasProfit = profit.some((p) => p.profit > 0);
+
+  if (!hasProfit) {
     console.log("利益がないため、メッセージを送信しません。");
     return;
   }
+  const discordMessage = formatMessageForDiscord(profit);
+  console.log("Discordメッセージ:", discordMessage);
+
   await postMessage(discordMessage);
 };
 

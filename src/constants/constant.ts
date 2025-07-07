@@ -29,6 +29,8 @@ export const PAIRS = {
   // NOTE: USDCで見たいけど、取引ペアがないので、USDTで代用
   // DOT_USDC: "DOT/USDC",
   // XO_USDC: "XO/USDC",
+  HNT_USDT: "HNT/USDT",
+  WLD_USDT: "WLD/USDT",
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

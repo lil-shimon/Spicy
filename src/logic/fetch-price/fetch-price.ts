@@ -1,6 +1,19 @@
-import { exchangeList, PAIRS, TAKER_FEES } from "../../constants";
+import {
+  exchangeList,
+  Pair,
+  PAIRS,
+  TAKER_FEES,
+  Exchange,
+} from "../../constants";
 import { calculateSpread, calculateProfitRate } from "../../core";
 import { fetchPriceByPair } from "../fetch-price-by-pair/fetch-price-by-pair";
+
+type Result = {
+  pair: Pair;
+  from: Exchange;
+  to: Exchange;
+  profit: number;
+};
 
 const atRate = (percentage: number) => percentage / 100;
 
@@ -9,12 +22,14 @@ export const fetchPrices = async () => {
     Object.entries(PAIRS).map(async ([key, pair]) => {
       const prices = await fetchPriceByPair(pair);
       console.log(`Prices for ${key}:`, prices);
-      return { key, prices };
+      return { pair, prices };
     })
   );
   console.log("Prices Result:", pricesResult);
 
-  for (const { key, prices } of pricesResult) {
+  const result: Result[] = [];
+
+  for (const { pair, prices } of pricesResult) {
     if (!prices) {
       continue;
     }
@@ -36,11 +51,15 @@ export const fetchPrices = async () => {
         const profitRate = calculateProfitRate(spread, prices[from].ask);
 
         console.log(
-          `${key} スプレッド (${from} Ask ${prices[from].ask} - ${to} Bid ${prices[to].bid}): ${spread}, 利益率: ${profitRate}`
+          `${pair} スプレッド (${from} Ask ${prices[from].ask} - ${to} Bid ${prices[to].bid}): ${spread}, 利益率: ${profitRate}`
         );
+
+        if (profitRate > 0) {
+          result.push({ pair, from, to, profit: profitRate });
+        }
       }
     }
   }
 
-  return 0;
+  return result;
 };

@@ -25,6 +25,9 @@ export const PAIRS = {
   ADA_USDT: "ADA/USDT",
   XO_USDT: "XO/USDT",
   DOT_USDT: "DOT/USDT",
+  ADA_USDC: "ADA/USDC",
+  DOT_USDC: "DOT/USDC",
+  XO_USDC: "XO/USDC",
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

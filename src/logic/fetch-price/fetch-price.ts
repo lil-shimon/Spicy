@@ -25,7 +25,7 @@ export const fetchPrices = async () => {
       return { pair, prices };
     })
   );
-  console.log("Prices Result:", pricesResult);
+  console.log("価格取得結果:", JSON.stringify(pricesResult));
 
   const result: FetchPriceResult[] = [];
 

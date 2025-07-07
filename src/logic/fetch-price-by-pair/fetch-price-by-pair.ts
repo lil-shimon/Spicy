@@ -8,19 +8,28 @@ import { Pair } from "../../constants";
 
 export const fetchPriceByPair = async (pair: Pair) => {
   try {
-    const binancePrice = await fetchBinance(pair);
-    const bybitPrice = await fetchBybit(pair);
-    const mexcPrice = await fetchMexc(pair);
-    const kucoinPrice = await fetchKucoin(pair);
-
-    return {
-      binance: binancePrice,
-      bybit: bybitPrice,
-      mexc: mexcPrice,
-      kucoin: kucoinPrice,
-    };
+    return await fetchPriceByPairPromise(pair);
   } catch (err) {
     console.log("データ取得に失敗しました:", err);
     return null;
   }
+};
+
+const fetchPriceByPairPromise = async (pair: Pair) => {
+  const promises = [
+    fetchBinance(pair),
+    fetchBybit(pair),
+    fetchMexc(pair),
+    fetchKucoin(pair),
+  ];
+  const [binance, bybit, mexc, kucoin] = await Promise.all(promises);
+  console.log(
+    `価格取得結果: Binance: ${binance}, Bybit: ${bybit}, MEXC: ${mexc}, Kucoin: ${kucoin}`
+  );
+  return {
+    binance,
+    bybit,
+    mexc,
+    kucoin,
+  };
 };

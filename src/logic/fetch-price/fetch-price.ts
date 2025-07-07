@@ -1,57 +1,46 @@
-import { exchangeList, EXCHANGES, PAIRS, TAKER_FEES } from "../../constants";
+import { exchangeList, PAIRS, TAKER_FEES } from "../../constants";
 import { calculateSpread, calculateProfitRate } from "../../core";
 import { fetchPriceByPair } from "../fetch-price-by-pair/fetch-price-by-pair";
 
 const atRate = (percentage: number) => percentage / 100;
 
 export const fetchPrices = async () => {
-  const pair = PAIRS.ADA_USDC;
+  const pricesResult = await Promise.all(
+    Object.entries(PAIRS).map(async ([key, pair]) => {
+      const prices = await fetchPriceByPair(pair);
+      console.log(`Prices for ${key}:`, prices);
+      return { key, prices };
+    })
+  );
+  console.log("Prices Result:", pricesResult);
 
-  const prices = await fetchPriceByPair(pair);
+  for (const { key, prices } of pricesResult) {
+    if (!prices) {
+      continue;
+    }
 
-  if (!prices) {
-    return 0;
-  }
+    for (const from of exchangeList) {
+      for (const to of exchangeList) {
+        if (from === to) {
+          // 同じ取引所間の比較はスキップ
+          continue;
+        }
 
-  const { binance, bybit } = prices;
-  console.log("exchange list", exchangeList);
+        const spread = calculateSpread(
+          prices[from].ask,
+          prices[to].bid,
+          atRate(TAKER_FEES[from]),
+          atRate(TAKER_FEES[to])
+        );
 
-  for (const from of exchangeList) {
-    for (const to of exchangeList) {
-      if (from === to) {
-        // 同じ取引所間の比較はスキップ
-        continue;
+        const profitRate = calculateProfitRate(spread, prices[from].ask);
+
+        console.log(
+          `${key} スプレッド (${from} Ask ${prices[from].ask} - ${to} Bid ${prices[to].bid}): ${spread}, 利益率: ${profitRate}`
+        );
       }
-
-      const spread = calculateSpread(
-        prices[from].ask,
-        prices[to].bid,
-        atRate(TAKER_FEES[from]),
-        atRate(TAKER_FEES[to])
-      );
-
-      const profitRate = calculateProfitRate(spread, prices[from].ask);
-
-      console.log(
-        `スプレッド (${from} Ask - ${to} Bid): ${spread}, 利益率: ${profitRate}`
-      );
     }
   }
 
-  const binanceTakerFeeRate = atRate(TAKER_FEES[EXCHANGES.BINANCE]);
-  const bybitTakerFeeRate = atRate(TAKER_FEES[EXCHANGES.BYBIT]);
-
-  const spread = calculateSpread(
-    binance.ask,
-    bybit.bid,
-    binanceTakerFeeRate,
-    bybitTakerFeeRate
-  );
-
-  console.log("スプレッド (Binance Ask - Bybit Bid):", spread);
-
-  const profitRate = calculateProfitRate(spread, binance.ask);
-  console.log("利益率 (スプレッド / Binance Ask):", profitRate);
-
-  return profitRate;
+  return 0;
 };

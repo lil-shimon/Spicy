@@ -1,7 +1,14 @@
 import { kucoin } from "ccxt";
-import { Pair } from "../../constants";
+import { Pair, PAIRS } from "../../constants";
 
 export const fetchKucoin = async (pair: Pair) => {
+  if (pair === PAIRS.XO_USDT) {
+    return {
+      bid: 0,
+      ask: 0,
+    };
+  }
+
   const client = new kucoin();
   try {
     const ticker = await client.fetchTicker(pair);

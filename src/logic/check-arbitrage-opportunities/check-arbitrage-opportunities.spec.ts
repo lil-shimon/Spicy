@@ -28,4 +28,17 @@ describe("checkArbitrageOpportunities", () => {
     const result = checkArbitrageOpportunities(profit);
     expect(result).toBe(false);
   });
+
+  it("should not find arbitrage opportunities when profit is zero", () => {
+    const profit = [
+      {
+        pair: PAIRS.HNT_USDT,
+        from: EXCHANGES.BYBIT,
+        to: EXCHANGES.MEXC,
+        profit: 0,
+      },
+    ];
+    const result = checkArbitrageOpportunities(profit);
+    expect(result).toBe(false);
+  });
 });

@@ -1,9 +1,4 @@
-import {
-  fetchBinance,
-  fetchBybit,
-  fetchMexc,
-  fetchKucoin,
-} from "../../clients";
+import { fetchBybit, fetchMexc, fetchKucoin } from "../../clients";
 import { Pair } from "../../constants";
 
 export const fetchPriceByPair = async (pair: Pair) => {
@@ -16,18 +11,12 @@ export const fetchPriceByPair = async (pair: Pair) => {
 };
 
 const fetchPriceByPairPromise = async (pair: Pair) => {
-  const promises = [
-    fetchBinance(pair),
-    fetchBybit(pair),
-    fetchMexc(pair),
-    fetchKucoin(pair),
-  ];
-  const [binance, bybit, mexc, kucoin] = await Promise.all(promises);
+  const promises = [fetchBybit(pair), fetchMexc(pair), fetchKucoin(pair)];
+  const [bybit, mexc, kucoin] = await Promise.all(promises);
   console.log(
-    `価格取得結果: Binance: ${binance}, Bybit: ${bybit}, MEXC: ${mexc}, Kucoin: ${kucoin}`
+    `価格取得結果: Bybit: ${bybit}, MEXC: ${mexc}, Kucoin: ${kucoin}`
   );
   return {
-    binance,
     bybit,
     mexc,
     kucoin,

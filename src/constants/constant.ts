@@ -29,7 +29,7 @@ export const PAIRS = {
   // DOT_USDC: "DOT/USDC",
   // XO_USDC: "XO/USDC",
   HNT_USDT: "HNT/USDT",
-  WLD_USDT: "WLD/USDT",
+  // WLD_USDT: "WLD/USDT",
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

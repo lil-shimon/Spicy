@@ -33,3 +33,5 @@ export const PAIRS = {
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];
+
+export const ARBITRAGE_PROFIT_THRESHOLD = 0.005; // 0.5%

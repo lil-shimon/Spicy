@@ -27,4 +27,12 @@ describe("fetchKucoin", () => {
     expect(result.bid).toBe(1.2345);
     expect(result.ask).toBe(1.2346);
   });
+
+  it("should return 0 for XO/USDT pair", async () => {
+    const result = await fetchKucoin(PAIRS.XO_USDT);
+    expect(result).toEqual({
+      bid: 0,
+      ask: 0,
+    });
+  });
 });

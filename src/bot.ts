@@ -1,8 +1,8 @@
 import { fetchPrices } from "./logic";
 import { postMessage } from "./clients";
 import { FetchPriceResult } from "./logic/fetch-price/fetch-price";
-import { ARBITRAGE_PROFIT_THRESHOLD } from "./constants";
 import { writeCountToCsv } from "./utils";
+import { checkArbitrageOpportunities } from "./logic/check-arbitrage-opportunities/check-arbitrage-opportunities";
 
 export const startBot = async () => {
   console.log("Bot起動");
@@ -21,18 +21,8 @@ const execute = async () => {
   console.log("実行開始");
   const profit = await fetchPrices();
 
-  const hasProfit = profit.some((p) => p.profit > 0);
-
-  if (!hasProfit) {
-    console.log("利益がないため、メッセージを送信しません。");
-    return;
-  }
-
-  const arbitrageOpportunities = profit.filter(
-    (p) => p.profit > ARBITRAGE_PROFIT_THRESHOLD * 100
-  );
-  if (arbitrageOpportunities.length === 0) {
-    console.log("利益率が0.5%を超えるアービトラージの機会はありません。");
+  const hasArbitrageOpportunities = checkArbitrageOpportunities(profit);
+  if (!hasArbitrageOpportunities) {
     return;
   }
 

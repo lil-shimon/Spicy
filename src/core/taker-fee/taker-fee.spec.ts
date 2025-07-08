@@ -4,8 +4,8 @@ import { EXCHANGES } from "../../constants";
 
 describe("Taker Fee", () => {
   it("should return the correct taker fee for Binance", () => {
-    const fee = getTakerFee(EXCHANGES.BINANCE);
-    expect(fee).toBe(0.1);
+    const fee = getTakerFee(EXCHANGES.MEXC);
+    expect(fee).toBe(0.05);
   });
 
   it("should return the correct taker fee for Bybit", () => {

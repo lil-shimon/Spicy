@@ -23,9 +23,8 @@ describe("fetchPrices", () => {
   });
 
   it("should return prices", async () => {
-    const result = await fetchPriceByPair(PAIRS.ADA_USDC);
+    const result = await fetchPriceByPair(PAIRS.HNT_USDT);
     expect(result).toEqual({
-      binance: { bid: 1, ask: 2 },
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
       kucoin: { bid: 1.5, ask: 2.5 },
@@ -33,9 +32,8 @@ describe("fetchPrices", () => {
   });
 
   it("should return prices with correct types", async () => {
-    const result = await fetchPriceByPair(PAIRS.ADA_USDC);
+    const result = await fetchPriceByPair(PAIRS.HNT_USDT);
     expect(result).toEqual({
-      binance: { bid: expect.any(Number), ask: expect.any(Number) },
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },
       mexc: { bid: expect.any(Number), ask: expect.any(Number) },
       kucoin: { bid: expect.any(Number), ask: expect.any(Number) },

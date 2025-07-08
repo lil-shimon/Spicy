@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest",
     "dev": "tsx src/index.ts",
-    "lint": "eslint"
+    "lint": "eslint",
+    "demo": "tsx src/demo.ts"
   },
   "keywords": [],
   "author": "",

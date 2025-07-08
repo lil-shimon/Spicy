@@ -1,7 +1,6 @@
 import { fetchPrices } from "./logic";
 import { postMessage } from "./clients";
 import { FetchPriceResult } from "./logic/fetch-price/fetch-price";
-import { writeCountToCsv } from "./utils";
 import { checkArbitrageOpportunities } from "./logic/check-arbitrage-opportunities/check-arbitrage-opportunities";
 
 export const startBot = async () => {
@@ -13,10 +12,6 @@ export const startBot = async () => {
   setInterval(execute, interval);
 };
 
-let HntUsdtCount = 0;
-let XoUsdtCount = 0;
-let WldUsdtCount = 0;
-
 const execute = async () => {
   console.log("実行開始");
   const profit = await fetchPrices();
@@ -27,9 +22,6 @@ const execute = async () => {
   }
 
   getPairCount(profit);
-  console.log("HNT/USDTの出現回数:", HntUsdtCount);
-  console.log("XO/USDTの出現回数:", XoUsdtCount);
-  console.log("WLD/USDTの出現回数:", WldUsdtCount);
 
   const discordMessage = formatMessageForDiscord(profit);
   console.log("Discordメッセージ:", discordMessage);
@@ -56,17 +48,4 @@ const getPairCount = (profit: FetchPriceResult[]) => {
     return acc;
   }, {} as Record<string, number>);
   console.log("ペアの出現回数:", pairsCount);
-
-  // 特定のペアのカウントを更新
-  if (pairsCount["HNT_USDT"]) {
-    HntUsdtCount += pairsCount["HNT_USDT"];
-  }
-  if (pairsCount["XO_USDT"]) {
-    XoUsdtCount += pairsCount["XO_USDT"];
-  }
-  if (pairsCount["WLD_USDT"]) {
-    WldUsdtCount += pairsCount["WLD_USDT"];
-  }
-
-  writeCountToCsv();
 };

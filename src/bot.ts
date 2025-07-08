@@ -11,6 +11,10 @@ export const startBot = async () => {
   setInterval(execute, interval);
 };
 
+let HntUsdtCount = 0;
+let XoUsdtCount = 0;
+let WldUsdtCount = 0;
+
 const execute = async () => {
   console.log("実行開始");
   const profit = await fetchPrices();
@@ -21,6 +25,18 @@ const execute = async () => {
     console.log("利益がないため、メッセージを送信しません。");
     return;
   }
+
+  const arbitrageOpportunities = profit.filter((p) => p.profit > 0.5);
+  if (arbitrageOpportunities.length === 0) {
+    console.log("利益率が0.5%を超えるアービトラージの機会はありません。");
+    return;
+  }
+
+  getPairCount(profit);
+  console.log("HNT/USDTの出現回数:", HntUsdtCount);
+  console.log("XO/USDTの出現回数:", XoUsdtCount);
+  console.log("WLD/USDTの出現回数:", WldUsdtCount);
+
   const discordMessage = formatMessageForDiscord(profit);
   console.log("Discordメッセージ:", discordMessage);
 
@@ -36,4 +52,25 @@ const formatMessageForDiscord = (profit: FetchPriceResult[]): string => {
         }, 利益率: ${p.profit.toFixed(2)}%`
     )
     .join("\n");
+};
+
+const getPairCount = (profit: FetchPriceResult[]) => {
+  const pairs = profit.map((p) => p.pair);
+  console.log("取得したペア:", pairs);
+  const pairsCount = pairs.reduce((acc, pair) => {
+    acc[pair] = (acc[pair] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  console.log("ペアの出現回数:", pairsCount);
+
+  // 特定のペアのカウントを更新
+  if (pairsCount["HNT_USDT"]) {
+    HntUsdtCount += pairsCount["HNT_USDT"];
+  }
+  if (pairsCount["XO_USDT"]) {
+    XoUsdtCount += pairsCount["XO_USDT"];
+  }
+  if (pairsCount["WLD_USDT"]) {
+    WldUsdtCount += pairsCount["WLD_USDT"];
+  }
 };

@@ -2,6 +2,7 @@ import { fetchPrices } from "./logic";
 import { postMessage } from "./clients";
 import { FetchPriceResult } from "./logic/fetch-price/fetch-price";
 import { ARBITRAGE_PROFIT_THRESHOLD } from "./constants";
+import { writeCountToCsv } from "./utils";
 
 export const startBot = async () => {
   console.log("Bot起動");
@@ -76,4 +77,6 @@ const getPairCount = (profit: FetchPriceResult[]) => {
   if (pairsCount["WLD_USDT"]) {
     WldUsdtCount += pairsCount["WLD_USDT"];
   }
+
+  writeCountToCsv();
 };

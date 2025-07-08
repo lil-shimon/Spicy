@@ -9,7 +9,6 @@ import { PAIRS } from "../../constants";
 describe("fetchPrices", () => {
   it("should return profit rate", async () => {
     vi.spyOn(fetchPriceModule, "fetchPriceByPair").mockResolvedValue({
-      binance: { bid: 1, ask: 2 },
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
       kucoin: { bid: 1.5, ask: 2.5 },
@@ -33,7 +32,6 @@ describe("fetchPrices", () => {
 
   it("should return empty array when no profit", async () => {
     vi.spyOn(fetchPriceModule, "fetchPriceByPair").mockResolvedValue({
-      binance: { bid: 1, ask: 2 },
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
       kucoin: { bid: 1.5, ask: 2.5 },

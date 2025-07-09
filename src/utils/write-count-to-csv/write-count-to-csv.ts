@@ -1,10 +1,9 @@
 import path from "path";
 import fs from "fs";
 
-export const writeCountToCsv = async (
-  pairCount: Record<string, number>,
-  timestamp = new Date().toISOString()
-) => {
+export const writeCountToCsv = async (pairCount: Record<string, number>) => {
+  const date = new Date();
+  const timestamp = date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
   const filePath = path.resolve(__dirname, "pair-counts.csv");
   const fileExists = fs.existsSync(filePath);
 

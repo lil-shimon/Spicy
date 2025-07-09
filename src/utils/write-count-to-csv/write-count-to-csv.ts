@@ -4,7 +4,7 @@ import fs from "fs";
 export const writeCountToCsv = async (pairCount: Record<string, number>) => {
   const date = new Date();
   const timestamp = date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
-  const filePath = path.resolve(__dirname, "pair-counts.csv");
+  const filePath = path.resolve(process.cwd(), "pair-counts.csv");
   const fileExists = fs.existsSync(filePath);
 
   const header = "timestamp,pair,count\n";

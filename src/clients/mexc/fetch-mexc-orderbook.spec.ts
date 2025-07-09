@@ -27,4 +27,8 @@ describe("fetchMexcOrderbook", () => {
     expect(orderbook.bids).toEqual([1.2345]);
     expect(orderbook.asks).toEqual([1.2346]);
   });
+
+  it.todo("should handle errors");
+
+  it.todo("should return empty arrays for bids and asks");
 });

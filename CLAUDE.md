@@ -48,6 +48,7 @@ pnpm test path/to/test.spec.ts
 - ボットは買い側と売り側の両方のテイカー手数料を考慮します
 - 最小利益閾値は0.1%（定数で設定可能）
 - 利益計算は`src/core/calculateProfitRate.ts`にあります
+- スリッページ計算は`src/logic/slippage/`にあります
 
 ### 理解すべき重要なファイル
 - **src/constants/tradingPairs.ts** - 監視する取引ペアを定義

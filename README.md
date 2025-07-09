@@ -93,7 +93,8 @@ src/
 │   └── calculateTakerFees.ts
 ├── logic/                # ビジネスロジック
 │   ├── checkArbitrage.ts
-│   └── fetchPrice.ts
+│   ├── fetchPrice.ts
+│   └── slippage/          # スリッページ計算
 └── utils/                # ユーティリティ関数
 ```
 

@@ -2,6 +2,7 @@ import { fetchPrices } from "./logic";
 import { postMessage } from "./clients";
 import { FetchPriceResult } from "./logic/fetch-price/fetch-price";
 import { checkArbitrageOpportunities } from "./logic/check-arbitrage-opportunities/check-arbitrage-opportunities";
+import { writeCountToCsv } from "./utils";
 
 export const startBot = async () => {
   console.log("Bot起動");
@@ -48,4 +49,6 @@ const getPairCount = (profit: FetchPriceResult[]) => {
     return acc;
   }, {} as Record<string, number>);
   console.log("ペアの出現回数:", pairsCount);
+
+  writeCountToCsv(pairsCount);
 };

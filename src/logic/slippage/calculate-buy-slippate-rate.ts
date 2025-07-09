@@ -33,6 +33,6 @@ export const calculateBuySlippageRate = (
   // asksの一番目の価格を取得
   const bestAskPrice = asks[0][0];
 
-  const slippageRate = ((bestAskPrice - averagePrice) / bestAskPrice) * 100;
+  const slippageRate = ((averagePrice - bestAskPrice) / averagePrice) * 100;
   return slippageRate;
 };

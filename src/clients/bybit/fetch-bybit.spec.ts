@@ -17,8 +17,8 @@ vi.mock("ccxt", async () => {
 });
 
 describe("fetchBybit", () => {
-  it("should fetch Bybit ticker for ADA/USDT", async () => {
-    const result = await fetchBybit(PAIRS.ADA_USDT);
+  it("should fetch Bybit ticker for HNT/USDT", async () => {
+    const result = await fetchBybit(PAIRS.HNT_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),
       ask: expect.any(Number),

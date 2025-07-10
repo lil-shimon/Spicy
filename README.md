@@ -114,3 +114,19 @@ src/
 ## ライセンス
 
 MIT License
+
+## dev
+ssh 
+```
+ssh -i ~/.ssh/spicy.pem bitnami@13.114.216.83
+```
+
+server
+```
+pm2 start dist/index.js --name spicy
+```
+
+log
+```
+pm2 logs spicy
+```

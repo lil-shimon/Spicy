@@ -31,7 +31,7 @@ describe("calculateBuySlippageRate", () => {
       ];
       const tradeAmount = 5;
       const result = calculateBuySlippageRate(asks, tradeAmount);
-      expect(result).toBeCloseTo(37.888, 3);
+      expect(result).toBeCloseTo(0.398, 3);
     });
 
     it("大きなオーダーブックでの計算", () => {
@@ -43,7 +43,7 @@ describe("calculateBuySlippageRate", () => {
       ];
       const tradeAmount = 30;
       const result = calculateBuySlippageRate(asks, tradeAmount);
-      expect(result).toBeCloseTo(34.138, 3);
+      expect(result).toBeCloseTo(0.8264, 3);
     });
   });
 

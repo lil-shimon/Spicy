@@ -15,7 +15,8 @@ export const calculateBuySlippageRate = (
   let totalCost = 0;
 
   for (const [price, amount] of asks) {
-    const tradableAmount = Math.min(tradeAmount, amount);
+    const remainingAmount = tradeAmount - accumulatedAmount;
+    const tradableAmount = Math.min(remainingAmount, amount);
     totalCost += tradableAmount * price;
     accumulatedAmount += tradableAmount;
 

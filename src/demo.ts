@@ -1,5 +1,4 @@
-import { fetchBybitBalance } from "./clients/bybit/fetch-bybit-balance";
-import { fetchMexcBalance } from "./clients/mexc/fetch-mexc-balance";
+import { fetchBybitBalance, fetchMexcBalance } from "./clients";
 import { fetchMexcOrderbook } from "./clients/mexc/fetch-mexc-orderbook";
 import { PAIRS } from "./constants";
 import { OrderBookEntry } from "./logic/slippage/calculate-buy-slippage-rate.types";

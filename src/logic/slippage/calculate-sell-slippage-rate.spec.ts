@@ -21,7 +21,7 @@ describe("calculateSellSlippageRate", () => {
       ];
       const targetAmount = 10;
       const result = calculateSellSlippageRate(bids, targetAmount);
-      expect(result).toBeCloseTo(-0.503, 3);
+      expect(result).toBeCloseTo(0.5, 3);
     });
 
     it("最後のオーダーが部分的に消費される場合", () => {
@@ -31,7 +31,7 @@ describe("calculateSellSlippageRate", () => {
       ];
       const targetAmount = 5;
       const result = calculateSellSlippageRate(bids, targetAmount);
-      expect(result).toBeCloseTo(37.107, 3);
+      expect(result).toBeCloseTo(0.4, 3);
     });
 
     it("大きなオーダーブックでの計算", () => {
@@ -43,7 +43,7 @@ describe("calculateSellSlippageRate", () => {
       ];
       const targetAmount = 30;
       const result = calculateSellSlippageRate(bids, targetAmount);
-      expect(result).toBeCloseTo(32.533, 3);
+      expect(result).toBeCloseTo(0.809, 3);
     });
   });
 
@@ -105,7 +105,7 @@ describe("calculateSellSlippageRate", () => {
       ];
       const targetAmount = 10;
       const result = calculateSellSlippageRate(bids, targetAmount);
-      expect(result).toBeCloseTo(-0.503, 3);
+      expect(result).toBeCloseTo(0.5, 3);
     });
 
     it("非常に小さなスリッページのケース", () => {
@@ -115,7 +115,7 @@ describe("calculateSellSlippageRate", () => {
       ];
       const targetAmount = 100;
       const result = calculateSellSlippageRate(bids, targetAmount);
-      expect(result).toBeCloseTo(-0.0001, 4);
+      expect(result).toBeCloseTo(0.0001, 4);
     });
 
     it("小数点を含む価格と数量のテスト", () => {
@@ -128,7 +128,7 @@ describe("calculateSellSlippageRate", () => {
       const result = calculateSellSlippageRate(bids, targetAmount);
       expect(result).toBeDefined();
       expect(typeof result).toBe("number");
-      expect(result).toBeLessThanOrEqual(0);
+      expect(result).toBeGreaterThanOrEqual(0);
     });
   });
 });

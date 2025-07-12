@@ -8,7 +8,8 @@ export const calculateSellSlippageRate = (
   let totalCost = 0;
 
   for (const [price, amount] of bids) {
-    const tradableAmount = Math.min(targetAmount, amount);
+    const remainingAmount = targetAmount - accumulatedAmount;
+    const tradableAmount = Math.min(remainingAmount, amount);
     totalCost += tradableAmount * price;
     accumulatedAmount += tradableAmount;
 
@@ -24,6 +25,6 @@ export const calculateSellSlippageRate = (
   const averagePrice = totalCost / targetAmount;
   const bestBidPrice = bids[0][0];
 
-  const slippageRate = ((averagePrice - bestBidPrice) / averagePrice) * 100;
+  const slippageRate = ((bestBidPrice - averagePrice) / bestBidPrice) * 100;
   return slippageRate;
 };

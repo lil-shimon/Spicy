@@ -1,3 +1,4 @@
+import { fetchMexcBalance } from "./clients/mexc/fetch-mexc-balance";
 import { fetchMexcOrderbook } from "./clients/mexc/fetch-mexc-orderbook";
 import { PAIRS } from "./constants";
 import { OrderBookEntry } from "./logic/slippage/calculate-buy-slippage-rate.types";
@@ -5,6 +6,7 @@ import { calculateBuySlippageRate } from "./logic/slippage/calculate-buy-slippat
 import { calculateSellSlippageRate } from "./logic/slippage/calculate-sell-slippage-rate";
 
 const demo = async () => {
+  await fetchMexcBalance();
   const response = await fetchMexcOrderbook(PAIRS.HNT_USDT);
   const slippage = calculateBuySlippageRate(
     response.asks as OrderBookEntry[],

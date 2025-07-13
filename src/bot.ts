@@ -19,14 +19,14 @@ const execute = async () => {
   console.log('実行開始');
   const profit = await fetchPrices();
 
-  const hasArbitrageOpportunities = checkArbitrageOpportunities(profit);
-  if (!hasArbitrageOpportunities) {
+  const arbitrageOpportunities = checkArbitrageOpportunities(profit);
+  if (arbitrageOpportunities.length === 0) {
     return;
   }
 
-  getPairCount(profit);
+  getPairCount(arbitrageOpportunities);
 
-  const discordMessage = formatMessageForDiscord(profit);
+  const discordMessage = formatMessageForDiscord(arbitrageOpportunities);
   console.log('Discordメッセージ:', discordMessage);
 
   await postMessage(discordMessage);

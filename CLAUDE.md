@@ -3,7 +3,7 @@
 このファイルは、このリポジトリでコードを扱う際のClaude Code (claude.ai/code) への指針を提供します。
 
 ## プロジェクト概要
-これはTypeScriptで構築された仮想通貨アービトラージボットで、取引所間（Bybit、MEXC）の価格差を監視し、収益性の高い取引機会を特定します。ボットは継続的に実行され、機会が見つかるとDiscord通知を送信します。
+これはTypeScriptで構築された高度な仮想通貨アービトラージボットで、取引所間（Bybit、MEXC）の価格差を監視し、収益性の高い取引機会を特定します。ボットは継続的に実行され、機会が見つかるとDiscord通知を送信し、さらにMEXC取引所での自動注文作成機能も持っています。また、取引ペアの活動状況をCSVファイルにログ記録します。
 
 ## 開発コマンド
 
@@ -24,6 +24,21 @@ pnpm lint
 
 # デモスクリプトの実行
 pnpm demo
+
+# TypeScriptのビルド
+pnpm build
+
+# ビルド済みファイルの実行
+pnpm start
+
+# pm2でサーバーとして実行
+pnpm start:server
+
+# pm2ログの確認
+pnpm log:server
+
+# pm2サーバーの再起動
+pnpm restart
 ```
 
 単一のテストファイルを実行するには：
@@ -46,15 +61,18 @@ pnpm test path/to/test.spec.ts
 
 ### 利益計算
 - ボットは買い側と売り側の両方のテイカー手数料を考慮します
-- 最小利益閾値は0.1%（定数で設定可能）
-- 利益計算は`src/core/calculateProfitRate.ts`にあります
-- スリッページ計算は`src/logic/slippage/`にあります
+- 最小利益閾値は0.5%（定数で設定可能）
+- 利益計算は`src/core/profit-rate/`にあります
+- スリッページ計算は`src/logic/slippage/`にあります（買い側・売り側で分離）
 
 ### 理解すべき重要なファイル
-- **src/constants/tradingPairs.ts** - 監視する取引ペアを定義
-- **src/constants/exchanges.ts** - アクティブな取引所をリスト
-- **src/bot.ts:runArbitrageCheck()** - メインオーケストレーションロジック
-- **src/clients/discord.ts** - 通知システム（.envにwebhook URLが必要）
+- **src/constants/constant.ts** - 取引ペア、取引所、手数料、利益閾値の定義
+- **src/bot.ts** - メインオーケストレーションロジック
+- **src/clients/discord/post-message.ts** - Discord通知システム（.envにwebhook URLが必要）
+- **src/clients/mexc/create-mexc-order.ts** - MEXC自動注文作成機能
+- **src/clients/bybit/fetch-bybit-balance.ts** - Bybit残高取得
+- **src/clients/mexc/fetch-mexc-balance.ts** - MEXC残高取得
+- **src/utils/write-count-to-csv/** - 取引ペア活動状況のCSVログ記録
 
 ## 環境設定
 `.env`ファイルを作成し、以下を記述：
@@ -72,4 +90,20 @@ DISCORD_WEBHOOK_URL=your_webhook_url_here
 - すべての非同期操作はasync/awaitを使用
 - 取引所APIコールはtry-catchブロックでラップされている
 - 価格は取得後、数値（文字列ではない）として処理される
-- ボットはシンプルなインターバルベースのポーリングアプローチを使用
+- ボットはシンプルなインターバルベースのポーリングアプローチを使用（30秒間隔）
+- 取引実行機能はMEXCでのみ実装済み
+- Binance、KuCoinは実装済みだが現在無効化されている
+
+## 本番環境での実行
+本番サーバーでの実行には以下のコマンドを使用：
+
+```bash
+# サーバーへのSSH接続
+ssh -i ~/.ssh/spicy.pem bitnami@13.114.216.83
+
+# pm2でサーバーとして起動
+pm2 start dist/index.js --name spicy
+
+# ログの確認
+pm2 logs spicy
+```

@@ -2,3 +2,4 @@ node_modules
 settings.local.json
 .env
 dist
+src/demo.ts

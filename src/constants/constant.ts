@@ -1,6 +1,6 @@
 export const EXCHANGES = {
-  BYBIT: "bybit",
-  MEXC: "mexc",
+  BYBIT: 'bybit',
+  MEXC: 'mexc',
   // kucoin: "kucoin",
 } as const;
 
@@ -22,15 +22,15 @@ export const TAKER_FEES = {
 
 export const PAIRS = {
   // ADA_USDT: "ADA/USDT",
-  XO_USDT: "XO/USDT",
+  XO_USDT: 'XO/USDT',
   // DOT_USDT: "DOT/USDT",
   // ADA_USDC: "ADA/USDC",
   // NOTE: USDCで見たいけど、取引ペアがないので、USDTで代用
   // DOT_USDC: "DOT/USDC",
   // XO_USDC: "XO/USDC",
-  HNT_USDT: "HNT/USDT",
+  HNT_USDT: 'HNT/USDT',
   // WLD_USDT: "WLD/USDT",
-  SOL_USDT: "SOL/USDT",
+  SOL_USDT: 'SOL/USDT',
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

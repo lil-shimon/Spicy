@@ -4,9 +4,9 @@ import {
   PAIRS,
   TAKER_FEES,
   Exchange,
-} from "../../constants";
-import { calculateSpread, calculateProfitRate } from "../../core";
-import { fetchPriceByPair } from "../fetch-price-by-pair/fetch-price-by-pair";
+} from '../../constants';
+import { calculateSpread, calculateProfitRate } from '../../core';
+import { fetchPriceByPair } from '../fetch-price-by-pair/fetch-price-by-pair';
 
 export type FetchPriceResult = {
   pair: Pair;
@@ -25,7 +25,7 @@ export const fetchPrices = async () => {
       return { pair, prices };
     })
   );
-  console.log("価格取得結果:", JSON.stringify(pricesResult));
+  console.log('価格取得結果:', JSON.stringify(pricesResult));
 
   const result: FetchPriceResult[] = [];
 

@@ -1,5 +1,5 @@
-import { kucoin } from "ccxt";
-import { Pair, PAIRS } from "../../constants";
+import { kucoin } from 'ccxt';
+import { Pair, PAIRS } from '../../constants';
 
 export const fetchKucoin = async (pair: Pair) => {
   if (pair === PAIRS.XO_USDT) {

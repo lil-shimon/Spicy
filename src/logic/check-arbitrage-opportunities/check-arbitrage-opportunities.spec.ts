@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { checkArbitrageOpportunities } from "./check-arbitrage-opportunities";
-import { EXCHANGES, PAIRS } from "../../constants";
+import { describe, it, expect } from 'vitest';
+import { checkArbitrageOpportunities } from './check-arbitrage-opportunities';
+import { EXCHANGES, PAIRS } from '../../constants';
 
-describe("checkArbitrageOpportunities", () => {
+describe('checkArbitrageOpportunities', () => {
   const mockProfit = [
     {
       pair: PAIRS.HNT_USDT,
@@ -12,12 +12,12 @@ describe("checkArbitrageOpportunities", () => {
     },
   ];
 
-  it("should check for arbitrage opportunities", () => {
+  it('should check for arbitrage opportunities', () => {
     const result = checkArbitrageOpportunities(mockProfit);
     expect(result).toBe(true);
   });
 
-  it("should not find arbitrage opportunities when profit is below threshold", () => {
+  it('should not find arbitrage opportunities when profit is below threshold', () => {
     const profit = [
       {
         ...mockProfit[0],
@@ -28,7 +28,7 @@ describe("checkArbitrageOpportunities", () => {
     expect(result).toBe(false);
   });
 
-  it("should not find arbitrage opportunities when profit is zero", () => {
+  it('should not find arbitrage opportunities when profit is zero', () => {
     const profit = [
       {
         ...mockProfit[0],
@@ -39,7 +39,7 @@ describe("checkArbitrageOpportunities", () => {
     expect(result).toBe(false);
   });
 
-  it("should not find arbitrage opportunities when profit is 0.5", () => {
+  it('should not find arbitrage opportunities when profit is 0.5', () => {
     const profit = [
       {
         ...mockProfit[0],

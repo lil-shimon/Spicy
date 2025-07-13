@@ -1,28 +1,28 @@
-import eslintPluginTs from "@typescript-eslint/eslint-plugin";
-import eslintParserTs from "@typescript-eslint/parser";
-import eslintPluginVitest from "eslint-plugin-vitest";
-import eslintPluginUnused from "eslint-plugin-unused-imports";
+import eslintPluginTs from '@typescript-eslint/eslint-plugin';
+import eslintParserTs from '@typescript-eslint/parser';
+import eslintPluginVitest from 'eslint-plugin-vitest';
+import eslintPluginUnused from 'eslint-plugin-unused-imports';
 
 export default [
   {
-    files: ["**/*.ts"],
+    files: ['**/*.ts'],
     languageOptions: {
       parser: eslintParserTs,
       parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
+        ecmaVersion: 'latest',
+        sourceType: 'module',
         project: true,
       },
     },
     plugins: {
-      "@typescript-eslint": eslintPluginTs,
+      '@typescript-eslint': eslintPluginTs,
       vitest: eslintPluginVitest,
-      "unused-imports": eslintPluginUnused,
+      'unused-imports': eslintPluginUnused,
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
-      "unused-imports/no-unused-imports": "error",
-      "vitest/no-focused-tests": "error",
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'unused-imports/no-unused-imports': 'error',
+      'vitest/no-focused-tests': 'error',
     },
   },
 ];

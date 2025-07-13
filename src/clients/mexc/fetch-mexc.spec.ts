@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
-import { fetchMexc } from "./fetch-mexc";
-import { PAIRS } from "../../constants";
+import { describe, expect, it, vi } from 'vitest';
+import { fetchMexc } from './fetch-mexc';
+import { PAIRS } from '../../constants';
 
-vi.mock("ccxt", async () => {
-  const actual = await vi.importActual<typeof import("ccxt")>("ccxt");
+vi.mock('ccxt', async () => {
+  const actual = await vi.importActual<typeof import('ccxt')>('ccxt');
 
   return {
     ...actual,
@@ -16,8 +16,8 @@ vi.mock("ccxt", async () => {
   };
 });
 
-describe("fetchMexc", () => {
-  it("should fetch mexc ticker for HNT/USDT", async () => {
+describe('fetchMexc', () => {
+  it('should fetch mexc ticker for HNT/USDT', async () => {
     const result = await fetchMexc(PAIRS.HNT_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),

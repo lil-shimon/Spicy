@@ -1,4 +1,4 @@
-import { OrderBookEntry } from "./calculate-buy-slippage-rate.types";
+import { OrderBookEntry } from './calculate-buy-slippage-rate.types';
 
 export const calculateBuySlippageRate = (
   asks: OrderBookEntry[],
@@ -27,7 +27,7 @@ export const calculateBuySlippageRate = (
 
   if (accumulatedAmount < tradeAmount) {
     // Errorを投げるかどうかは要検討
-    throw new Error("注文量に対して板が薄すぎます");
+    throw new Error('注文量に対して板が薄すぎます');
   }
 
   const averagePrice = totalCost / tradeAmount;

@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
-import { fetchBinance } from "./fetch-binance";
-import { PAIRS } from "../../constants";
+import { describe, expect, it, vi } from 'vitest';
+import { fetchBinance } from './fetch-binance';
+import { PAIRS } from '../../constants';
 
-vi.mock("ccxt", async () => {
-  const actual = await vi.importActual<typeof import("ccxt")>("ccxt");
+vi.mock('ccxt', async () => {
+  const actual = await vi.importActual<typeof import('ccxt')>('ccxt');
 
   return {
     ...actual,
@@ -16,8 +16,8 @@ vi.mock("ccxt", async () => {
   };
 });
 
-describe("fetchBinance", () => {
-  it("should fetch Binance ticker for HNT/USDT", async () => {
+describe('fetchBinance', () => {
+  it('should fetch Binance ticker for HNT/USDT', async () => {
     const result = await fetchBinance(PAIRS.HNT_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),

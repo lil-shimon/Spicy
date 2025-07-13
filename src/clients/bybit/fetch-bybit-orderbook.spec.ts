@@ -1,10 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
-import { fetchBybitOrderbook } from "./fetch-bybit-orderbook";
-import { PAIRS } from "../../constants";
+import { describe, it, expect, vi } from 'vitest';
+import { fetchBybitOrderbook } from './fetch-bybit-orderbook';
+import { PAIRS } from '../../constants';
 
-describe("fetchBybitOrderbook", () => {
-  vi.mock("ccxt", async () => {
-    const actual = await vi.importActual<typeof import("ccxt")>("ccxt");
+describe('fetchBybitOrderbook', () => {
+  vi.mock('ccxt', async () => {
+    const actual = await vi.importActual<typeof import('ccxt')>('ccxt');
 
     return {
       ...actual,
@@ -17,7 +17,7 @@ describe("fetchBybitOrderbook", () => {
     };
   });
 
-  it("should fetch Bybit orderbook for a given pair", async () => {
+  it('should fetch Bybit orderbook for a given pair', async () => {
     const pair = PAIRS.HNT_USDT;
     const orderbook = await fetchBybitOrderbook(pair);
 
@@ -28,7 +28,7 @@ describe("fetchBybitOrderbook", () => {
     expect(orderbook.asks).toEqual([[1.2346, 100]]);
   });
 
-  it.todo("should handle errors");
+  it.todo('should handle errors');
 
-  it.todo("should return empty arrays for bids and asks");
+  it.todo('should return empty arrays for bids and asks');
 });

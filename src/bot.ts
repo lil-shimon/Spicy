@@ -2,7 +2,7 @@ import { fetchPrices } from './logic';
 import { postMessage } from './clients';
 import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
-import { writeCountToCsv } from './utils';
+import { updateCount, writeCountToCsv } from './utils';
 import { mexcClient } from './clients/mexc/mexc-client';
 
 export const startBot = async () => {
@@ -30,6 +30,10 @@ const execute = async () => {
   console.log('Discordメッセージ:', discordMessage);
 
   await postMessage(discordMessage);
+
+  arbitrageOpportunities.forEach((p) => {
+    updateCount(p.pair);
+  });
 };
 
 const formatMessageForDiscord = (profit: FetchPriceResult[]): string => {

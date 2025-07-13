@@ -4,14 +4,16 @@ import { FetchPriceResult } from '../fetch-price/fetch-price';
 /**
  * アービトラージの機会をチェックします。
  * @param profit - 利益率の配列
- * @returns {boolean} - アービトラージの機会がある場合はtrue、ない場合はfalse
+ * @returns {FetchPriceResult[]} - アービトラージの機会がある配列（空の場合は機会なし）
  */
-export const checkArbitrageOpportunities = (profit: FetchPriceResult[]) => {
+export const checkArbitrageOpportunities = (
+  profit: FetchPriceResult[]
+): FetchPriceResult[] => {
   const hasProfit = profit.some((p) => p.profit > 0);
 
   if (!hasProfit) {
     console.log('利益がないため、メッセージを送信しません。');
-    return false;
+    return [];
   }
 
   const arbitrageOpportunities = profit.filter(
@@ -20,8 +22,8 @@ export const checkArbitrageOpportunities = (profit: FetchPriceResult[]) => {
 
   if (arbitrageOpportunities.length === 0) {
     console.log('利益率が0.5%を超えるアービトラージの機会はありません。');
-    return false;
+    return [];
   }
 
-  return true;
+  return arbitrageOpportunities;
 };

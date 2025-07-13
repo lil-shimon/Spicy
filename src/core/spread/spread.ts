@@ -8,6 +8,6 @@ export const calculateSpread = (
   const effectiveSellBid = sellBid * (1 - sellTakerFreeRate);
 
   const spread = effectiveSellBid - effectiveBuyAsk;
-  console.log("計算されたスプレッド:", spread);
+  console.log('計算されたスプレッド:', spread);
   return spread < 0 ? 0 : spread;
 };

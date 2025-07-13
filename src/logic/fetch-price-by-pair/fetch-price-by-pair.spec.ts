@@ -1,28 +1,28 @@
-import { fetchPriceByPair } from "./fetch-price-by-pair";
-import { describe, vi, it, expect } from "vitest";
+import { fetchPriceByPair } from './fetch-price-by-pair';
+import { describe, vi, it, expect } from 'vitest';
 
-import * as clientModule from "../../clients";
-import { PAIRS } from "../../constants";
+import * as clientModule from '../../clients';
+import { PAIRS } from '../../constants';
 
-describe("fetchPrices", () => {
-  vi.spyOn(clientModule, "fetchBinance").mockResolvedValue({
+describe('fetchPrices', () => {
+  vi.spyOn(clientModule, 'fetchBinance').mockResolvedValue({
     bid: 1,
     ask: 2,
   });
-  vi.spyOn(clientModule, "fetchBybit").mockResolvedValue({
+  vi.spyOn(clientModule, 'fetchBybit').mockResolvedValue({
     bid: 1.5,
     ask: 2.5,
   });
-  vi.spyOn(clientModule, "fetchMexc").mockResolvedValue({
+  vi.spyOn(clientModule, 'fetchMexc').mockResolvedValue({
     bid: 1.5,
     ask: 2.5,
   });
-  vi.spyOn(clientModule, "fetchKucoin").mockResolvedValue({
+  vi.spyOn(clientModule, 'fetchKucoin').mockResolvedValue({
     bid: 1.5,
     ask: 2.5,
   });
 
-  it("should return prices", async () => {
+  it('should return prices', async () => {
     const result = await fetchPriceByPair(PAIRS.HNT_USDT);
     expect(result).toEqual({
       bybit: { bid: 1.5, ask: 2.5 },
@@ -31,7 +31,7 @@ describe("fetchPrices", () => {
     });
   });
 
-  it("should return prices with correct types", async () => {
+  it('should return prices with correct types', async () => {
     const result = await fetchPriceByPair(PAIRS.HNT_USDT);
     expect(result).toEqual({
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },

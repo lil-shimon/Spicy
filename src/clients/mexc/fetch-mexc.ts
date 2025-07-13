@@ -1,9 +1,9 @@
-import { Pair } from "../../constants";
-import { mexcClient } from "./mexc-client";
+import { Pair } from '../../constants';
+import { mexcClient } from './mexc-client';
 
 export const fetchMexc = async (pair: Pair) => {
   const ticker = await mexcClient.fetchTicker(pair);
-  console.log("MEXC Ticker:", ticker);
+  console.log('MEXC Ticker:', ticker);
 
   return {
     // NOTE: レスポンスがNum形になっているので、nullチェックを行う

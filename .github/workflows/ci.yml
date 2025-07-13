@@ -18,12 +18,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-    
+
       - name: 🧶 Set up pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false  # 依存は明示的に install するので false
+          run_install: false # 依存は明示的に install するので false
 
       - name: 📦 Install dependencies
         run: pnpm install

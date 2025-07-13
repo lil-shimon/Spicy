@@ -1,5 +1,5 @@
-import { binance } from "ccxt";
-import { Pair } from "../../constants";
+import { binance } from 'ccxt';
+import { Pair } from '../../constants';
 
 export const fetchBinance = async (pair: Pair) => {
   const client = new binance();

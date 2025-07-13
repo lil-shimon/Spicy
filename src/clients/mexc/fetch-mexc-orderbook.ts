@@ -1,5 +1,5 @@
-import { mexc } from "ccxt";
-import { Pair } from "../../constants";
+import { mexc } from 'ccxt';
+import { Pair } from '../../constants';
 
 export const fetchMexcOrderbook = async (pair: Pair) => {
   const client = new mexc();

@@ -1,4 +1,4 @@
-import { Exchange, TAKER_FEES } from "../../constants";
+import { Exchange, TAKER_FEES } from '../../constants';
 
 export const getTakerFee = (exchange: Exchange) => {
   const takerFee = TAKER_FEES[exchange];

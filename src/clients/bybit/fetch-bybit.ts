@@ -1,5 +1,5 @@
-import { bybit } from "ccxt";
-import { Pair } from "../../constants";
+import { bybit } from 'ccxt';
+import { Pair } from '../../constants';
 
 export const fetchBybit = async (pair: Pair) => {
   const client = new bybit();

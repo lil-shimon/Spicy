@@ -11,6 +11,7 @@ export const fetchMexcBalance = async () => {
     console.error("MEXC APIキーまたはシークレットが設定されていません。");
     return;
   }
+
   const client = new mexc({
     apiKey: apiKey || "",
     secret: secret || "",

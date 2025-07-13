@@ -38,9 +38,9 @@ const formatMessageForDiscord = (profit: FetchPriceResult[]): string => {
   return profit
     .map(
       (p) =>
-        `ペア: ${p.pair}, 取引所: ${p.from} -> ${
+        `ペア: ${p.pair}, 取引所: ${p.from}(買い) -> ${
           p.to
-        }, 利益率: ${p.profit.toFixed(2)}%`
+        }(売り)), 利益率: ${p.profit.toFixed(2)}%`
     )
     .join('\n');
 };

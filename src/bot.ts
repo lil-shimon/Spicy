@@ -2,7 +2,7 @@ import { fetchPrices } from './logic';
 import { postMessage } from './clients';
 import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
-import { updateCount, writeCountToCsv } from './utils';
+import { updateCount } from './utils';
 import { mexcClient } from './clients/mexc/mexc-client';
 
 export const startBot = async () => {
@@ -24,8 +24,6 @@ const execute = async () => {
     return;
   }
 
-  getPairCount(arbitrageOpportunities);
-
   const discordMessage = formatMessageForDiscord(arbitrageOpportunities);
   console.log('Discordメッセージ:', discordMessage);
 
@@ -45,21 +43,6 @@ const formatMessageForDiscord = (profit: FetchPriceResult[]): string => {
         }, 利益率: ${p.profit.toFixed(2)}%`
     )
     .join('\n');
-};
-
-const getPairCount = (profit: FetchPriceResult[]) => {
-  const pairs = profit.map((p) => p.pair);
-  console.log('取得したペア:', pairs);
-  const pairsCount = pairs.reduce(
-    (acc, pair) => {
-      acc[pair] = (acc[pair] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-  console.log('ペアの出現回数:', pairsCount);
-
-  writeCountToCsv(pairsCount);
 };
 
 const initExchanges = async () => {

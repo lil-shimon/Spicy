@@ -1,8 +1,5 @@
-import { bybit } from "ccxt";
 import { Pair } from "../../constants";
-
-// Bybitクライアントのインスタンスを作成
-const bybitClient = new bybit();
+import { bybitClient } from "./bybit-client";
 
 export const createBybitOrder = async (
   pair: Pair,

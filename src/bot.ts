@@ -3,10 +3,12 @@ import { postMessage } from "./clients";
 import { FetchPriceResult } from "./logic/fetch-price/fetch-price";
 import { checkArbitrageOpportunities } from "./logic/check-arbitrage-opportunities/check-arbitrage-opportunities";
 import { writeCountToCsv } from "./utils";
+import { mexcClient } from "./clients/mexc/mexc-client";
 
 export const startBot = async () => {
   console.log("Bot起動");
 
+  await initExchanges();
   await execute();
   const interval = 1000 * 30; // 30秒ごとに実行
 
@@ -51,4 +53,11 @@ const getPairCount = (profit: FetchPriceResult[]) => {
   console.log("ペアの出現回数:", pairsCount);
 
   writeCountToCsv(pairsCount);
+};
+
+const initExchanges = async () => {
+  console.log("取引所Clientの初期化中...");
+  // TODO: 他の取引所も初期化する
+  await Promise.all([mexcClient.loadMarkets()]);
+  console.log("取引所Clientの初期化完了");
 };

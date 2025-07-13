@@ -1,9 +1,8 @@
-import { bybit } from 'ccxt';
 import { Pair } from '../../constants';
+import { bybitClient } from './bybit-client';
 
 export const fetchBybitOrderbook = async (pair: Pair) => {
-  const client = new bybit();
-  const orderbook = await client.fetchOrderBook(pair);
+  const orderbook = await bybitClient.fetchOrderBook(pair);
   console.log(`Bybit Orderbook for ${pair}:`, orderbook);
 
   return {

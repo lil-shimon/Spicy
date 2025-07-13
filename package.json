@@ -12,7 +12,8 @@
     "start:server": "pnpm run build && pm2 start dist/index.js --name spicy",
     "log:server": "pm2 logs spicy",
     "restart": "pm2 restart spicy",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -39,5 +40,10 @@
   "engines": {
     "npm": "npmではなく、pnpmを使用してください",
     "yarn": "yarnではなく、pnpmを使用してください"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,json,md}": [
+      "prettier --write"
+    ]
   }
 }

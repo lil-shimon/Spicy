@@ -1,14 +1,13 @@
-import { mexc } from "ccxt";
 import { Pair } from "../../constants";
+import { mexcClient } from "./mexc-client";
 
 export const createMexcOrder = async (
   pair: Pair,
   side: "buy" | "sell",
-  amount: number,
-  client: mexc
+  amount: number
 ) => {
   try {
-    const order = await client.createOrder(pair, "market", side, amount);
+    const order = await mexcClient.createOrder(pair, "market", side, amount);
     console.log("MEXCでの注文が成功しました:", order);
     return order;
   } catch (error) {

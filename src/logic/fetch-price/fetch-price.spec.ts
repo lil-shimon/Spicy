@@ -21,7 +21,7 @@ describe('fetchPrices', () => {
     expect(result).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          pair: PAIRS.HNT_USDT,
+          pair: PAIRS.SOL_USDT,
           from: 'mexc',
           to: 'bybit',
           profit: 0.5,

@@ -17,8 +17,8 @@ vi.mock('ccxt', async () => {
 });
 
 describe('fetchMexc', () => {
-  it('should fetch mexc ticker for HNT/USDT', async () => {
-    const result = await fetchMexc(PAIRS.HNT_USDT);
+  it('should fetch mexc ticker for SOL/USDT', async () => {
+    const result = await fetchMexc(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),
       ask: expect.any(Number),

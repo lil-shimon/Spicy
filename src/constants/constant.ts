@@ -28,7 +28,7 @@ export const PAIRS = {
   // NOTE: USDCで見たいけど、取引ペアがないので、USDTで代用
   // DOT_USDC: "DOT/USDC",
   // XO_USDC: "XO/USDC",
-  HNT_USDT: 'HNT/USDT',
+  // HNT_USDT: 'HNT/USDT', // MEXCのAPIが対応していないため除外
   // WLD_USDT: "WLD/USDT",
   SOL_USDT: 'SOL/USDT',
 } as const;

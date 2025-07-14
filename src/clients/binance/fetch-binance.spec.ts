@@ -17,8 +17,8 @@ vi.mock('ccxt', async () => {
 });
 
 describe('fetchBinance', () => {
-  it('should fetch Binance ticker for HNT/USDT', async () => {
-    const result = await fetchBinance(PAIRS.HNT_USDT);
+  it('should fetch Binance ticker for SOL/USDT', async () => {
+    const result = await fetchBinance(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),
       ask: expect.any(Number),

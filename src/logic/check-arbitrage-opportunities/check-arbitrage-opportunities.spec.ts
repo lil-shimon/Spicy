@@ -5,7 +5,7 @@ import { EXCHANGES, PAIRS } from '../../constants';
 describe('checkArbitrageOpportunities', () => {
   const mockProfit = [
     {
-      pair: PAIRS.HNT_USDT,
+      pair: PAIRS.SOL_USDT,
       from: EXCHANGES.BYBIT,
       to: EXCHANGES.MEXC,
       profit: 0.51,
@@ -54,7 +54,7 @@ describe('checkArbitrageOpportunities', () => {
   it('should filter and return only opportunities above threshold', () => {
     const profit = [
       {
-        pair: PAIRS.HNT_USDT,
+        pair: PAIRS.SOL_USDT,
         from: EXCHANGES.BYBIT,
         to: EXCHANGES.MEXC,
         profit: 0.51,

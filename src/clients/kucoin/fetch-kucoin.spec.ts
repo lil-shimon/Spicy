@@ -17,8 +17,8 @@ vi.mock('ccxt', async () => {
 });
 
 describe('fetchKucoin', () => {
-  it('should fetch kucoin ticker for ADA/USDT', async () => {
-    const result = await fetchKucoin(PAIRS.HNT_USDT);
+  it('should fetch kucoin ticker for SOL/USDT', async () => {
+    const result = await fetchKucoin(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bid: expect.any(Number),
       ask: expect.any(Number),

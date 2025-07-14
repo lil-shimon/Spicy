@@ -23,7 +23,7 @@ describe('fetchPrices', () => {
   });
 
   it('should return prices', async () => {
-    const result = await fetchPriceByPair(PAIRS.HNT_USDT);
+    const result = await fetchPriceByPair(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
@@ -32,7 +32,7 @@ describe('fetchPrices', () => {
   });
 
   it('should return prices with correct types', async () => {
-    const result = await fetchPriceByPair(PAIRS.HNT_USDT);
+    const result = await fetchPriceByPair(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },
       mexc: { bid: expect.any(Number), ask: expect.any(Number) },

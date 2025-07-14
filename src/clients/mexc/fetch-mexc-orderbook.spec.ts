@@ -18,7 +18,7 @@ describe('fetchMexcOrderbook', () => {
   });
 
   it('should fetch MEXC orderbook for a given pair', async () => {
-    const pair = PAIRS.HNT_USDT;
+    const pair = PAIRS.SOL_USDT;
     const orderbook = await fetchMexcOrderbook(pair);
 
     expect(orderbook).toBeDefined();

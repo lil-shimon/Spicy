@@ -1,9 +1,8 @@
-import { mexc } from 'ccxt';
 import { Pair } from '../../constants';
+import { mexcClient } from './mexc-client';
 
 export const fetchMexcOrderbook = async (pair: Pair) => {
-  const client = new mexc();
-  const orderbook = await client.fetchOrderBook(pair);
+  const orderbook = await mexcClient.fetchOrderBook(pair);
   console.log(`MEXC Orderbook for ${pair}:`, orderbook);
 
   return {

@@ -32,6 +32,10 @@ export const PAIRS = {
   // WLD_USDT: "WLD/USDT",
   SOL_USDT: 'SOL/USDT',
   PUMP_USDT: 'PUMP/USDT',
+  ZRO_USDT: 'ZRO/USDT',
+  TNSR_USDT: 'TNSR/USDT',
+  FET_USDT: 'FET/USDT',
+  PYTH_USDT: 'PYTH/USDT',
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

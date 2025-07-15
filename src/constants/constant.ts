@@ -31,6 +31,7 @@ export const PAIRS = {
   // HNT_USDT: 'HNT/USDT', // MEXCのAPIが対応していないため除外
   // WLD_USDT: "WLD/USDT",
   SOL_USDT: 'SOL/USDT',
+  PUMP_USDT: 'PUMP/USDT',
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

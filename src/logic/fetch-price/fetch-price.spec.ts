@@ -11,7 +11,6 @@ describe('fetchPrices', () => {
     vi.spyOn(fetchPriceModule, 'fetchPriceByPair').mockResolvedValue({
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
-      kucoin: { bid: 1.5, ask: 2.5 },
     });
 
     vi.spyOn(coreModule, 'calculateSpread').mockReturnValue(0.5);
@@ -34,7 +33,6 @@ describe('fetchPrices', () => {
     vi.spyOn(fetchPriceModule, 'fetchPriceByPair').mockResolvedValue({
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
-      kucoin: { bid: 1.5, ask: 2.5 },
     });
 
     vi.spyOn(coreModule, 'calculateSpread').mockReturnValue(0);

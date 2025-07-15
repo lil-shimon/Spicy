@@ -5,19 +5,11 @@ import * as clientModule from '../../clients';
 import { PAIRS } from '../../constants';
 
 describe('fetchPrices', () => {
-  vi.spyOn(clientModule, 'fetchBinance').mockResolvedValue({
-    bid: 1,
-    ask: 2,
-  });
   vi.spyOn(clientModule, 'fetchBybit').mockResolvedValue({
     bid: 1.5,
     ask: 2.5,
   });
   vi.spyOn(clientModule, 'fetchMexc').mockResolvedValue({
-    bid: 1.5,
-    ask: 2.5,
-  });
-  vi.spyOn(clientModule, 'fetchKucoin').mockResolvedValue({
     bid: 1.5,
     ask: 2.5,
   });
@@ -27,7 +19,6 @@ describe('fetchPrices', () => {
     expect(result).toEqual({
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
-      kucoin: { bid: 1.5, ask: 2.5 },
     });
   });
 
@@ -36,7 +27,6 @@ describe('fetchPrices', () => {
     expect(result).toEqual({
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },
       mexc: { bid: expect.any(Number), ask: expect.any(Number) },
-      kucoin: { bid: expect.any(Number), ask: expect.any(Number) },
     });
   });
 });

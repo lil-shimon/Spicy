@@ -4,3 +4,4 @@ settings.local.json
 dist
 src/demo.ts
 pair-counts.json
+data

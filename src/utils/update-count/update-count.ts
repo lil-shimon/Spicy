@@ -56,7 +56,7 @@ export const updateCountV2 = (data: FetchPriceResult) => {
     pair: data.pair,
     buy: data.from,
     sell: data.to,
-    profit: data.profit,
+    profitRate: data.profit,
     timestamp: jstIso,
   };
 

@@ -11,8 +11,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "start:server": "pnpm run build && pm2 start dist/src/index.js --name spicy",
+    "start:api": "pnpm run build && pm2 start dist/src/server.js --name spicy-api",
     "log:server": "pm2 logs spicy",
+    "log:api": "pm2 logs spicy-api",
     "restart": "pm2 delete spicy && pnpm run start:server",
+    "restart:api": "pm2 delete spicy-api && pnpm run start:api",
     "format": "prettier --write .",
     "prepare": "husky"
   },

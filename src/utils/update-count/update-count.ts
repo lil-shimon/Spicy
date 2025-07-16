@@ -39,9 +39,10 @@ const filePathV2 = path.join(dirName, 'arb-logs.jsonl');
  * @param {FetchPriceResult} data
  */
 export const updateCountV2 = (data: FetchPriceResult) => {
-  if (!fs.existsSync(filePathV2)) {
+  if (!fs.existsSync(dirName)) {
     fs.mkdirSync(dirName, { recursive: true });
   }
+
   const now = new Date();
   // 日本標準時のオフセットを追加
   const JST_OFFSET_MS = 9 * 60 * 60 * 1000;

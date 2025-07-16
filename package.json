@@ -5,6 +5,7 @@
   "scripts": {
     "test": "vitest",
     "dev": "tsx src/index.ts",
+    "api": "tsx src/server.ts",
     "lint": "eslint",
     "demo": "tsx src/demo.ts",
     "build": "tsc",

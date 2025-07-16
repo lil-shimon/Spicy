@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Pair } from '../../constants';
+import { FetchPriceResult } from '../../logic/fetch-price/fetch-price';
 
 const filePath = path.resolve(process.cwd(), 'pair-counts.json');
 
@@ -28,4 +29,31 @@ export const updateCount = (pair: Pair) => {
   counts[pair] = (counts[pair] || 0) + 1;
   saveCounts(counts);
   console.log(`ペア ${pair} のカウントを更新しました: ${counts[pair]}`);
+};
+
+const dirName = path.resolve(process.cwd(), 'data');
+const filePathV2 = path.join(dirName, 'arb-logs.jsonl');
+
+/**
+ * アビトラ機会をJSONに保存
+ * @param {FetchPriceResult} data
+ */
+export const updateCountV2 = (data: FetchPriceResult) => {
+  if (!fs.existsSync(filePathV2)) {
+    fs.mkdirSync(dirName, { recursive: true });
+  }
+  const now = new Date();
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const jstIso = jst.toISOString().replace('Z', '+09:00');
+
+  const entry = {
+    pair: data.pair,
+    buy: data.from,
+    sell: data.to,
+    profit: data.profit,
+    timestamp: jstIso,
+  };
+
+  fs.appendFileSync(filePathV2, JSON.stringify(entry) + '\n', 'utf8');
+  console.log(`ペア ${data.pair}のログを追記しました`);
 };

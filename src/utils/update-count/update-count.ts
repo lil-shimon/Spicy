@@ -43,7 +43,12 @@ export const updateCountV2 = (data: FetchPriceResult) => {
     fs.mkdirSync(dirName, { recursive: true });
   }
   const now = new Date();
-  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  // 日本標準時のオフセットを追加
+  const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+  const jst = new Date(now.getTime() + JST_OFFSET_MS);
+  // ISO 8601 形式に変換
+  // new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
+  // ↑は人間が読みやすい形式だけど、機械的に処理する場合は ISO 8601 形式が便利
   const jstIso = jst.toISOString().replace('Z', '+09:00');
 
   const entry = {

@@ -13,7 +13,14 @@ const server = http.createServer((req, res) => {
         res.end('Failed to read logs');
       } else {
         const lines = data.trim().split('\n');
-        const logs = lines.map((line) => JSON.parse(line));
+        const logs = [];
+        for (const line of lines) {
+          try {
+            logs.push(JSON.parse(line));
+          } catch (err) {
+            console.log(`Failed to parse log: ${line}`, err);
+          }
+        }
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(logs));
       }

@@ -9,7 +9,7 @@ const server = http.createServer((req, res) => {
   if (req.url === '/api/logs' && req.method === 'GET') {
     fs.readFile(LOG_PATH, 'utf-8', (err, data) => {
       if (err) {
-        res.writeHead(400);
+        res.writeHead(500);
         res.end('Failed to read logs');
       } else {
         const lines = data.trim().split('\n');

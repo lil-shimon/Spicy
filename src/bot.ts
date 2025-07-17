@@ -21,6 +21,7 @@ export const startBot = async () => {
 
 const execute = async () => {
   console.log('実行開始');
+  console.log('enableOrder:', enableOrder);
   const profit = await fetchPrices();
 
   const arbitrageOpportunities = checkArbitrageOpportunities(profit);

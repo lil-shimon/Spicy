@@ -29,7 +29,12 @@ const execute = async () => {
   }
 
   if (enableOrder) {
-    await createOrders(arbitrageOpportunities);
+    const response = await createOrders(arbitrageOpportunities);
+    await postMessage(
+      `注文結果: 成功: ${response.successCount}, 失敗: ${response.failCount}, 結果: ${JSON.stringify(
+        response.results
+      )}`
+    );
   }
 
   const discordMessage = formatMessageForDiscord(arbitrageOpportunities);

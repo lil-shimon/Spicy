@@ -3,7 +3,7 @@ import { EXCHANGES, PAIRS } from '../../constants';
 import { FetchPriceResult } from '../fetch-price/fetch-price';
 import { postMessage } from '../../clients/discord/post-message';
 
-export const createOrder = async (data: FetchPriceResult[]) => {
+export const createOrders = async (data: FetchPriceResult[]) => {
   const promises = [];
 
   for (const item of data) {
@@ -33,4 +33,8 @@ export const createOrder = async (data: FetchPriceResult[]) => {
       }
     }
   }
+
+  const results = await Promise.all(promises);
+  console.log('注文結果:', results);
+  return results;
 };

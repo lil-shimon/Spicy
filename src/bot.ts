@@ -4,6 +4,10 @@ import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
 import { updateCountV2 } from './utils';
 import { mexcClient } from './clients/mexc/mexc-client';
+import { createOrders } from './logic/order/order';
+import 'dotenv/config';
+
+const enableOrder = process.env.FEATURE_FLAG_ENABLE_ORDER === 'true';
 
 export const startBot = async () => {
   console.log('Bot起動');
@@ -22,6 +26,10 @@ const execute = async () => {
   const arbitrageOpportunities = checkArbitrageOpportunities(profit);
   if (arbitrageOpportunities.length === 0) {
     return;
+  }
+
+  if (enableOrder) {
+    await createOrders(arbitrageOpportunities);
   }
 
   const discordMessage = formatMessageForDiscord(arbitrageOpportunities);

@@ -31,7 +31,17 @@ export const createOrders = async (data: FetchPriceResult[]) => {
     }
   }
 
-  const results = await Promise.all(promises);
-  console.log('注文結果:', results);
-  return results;
+  const results = await Promise.allSettled(promises);
+  const successCount = results.filter((r) => r.status === 'fulfilled').length;
+  const failCount = results.length - successCount;
+
+  results.forEach((res, idx) => {
+    if (res.status === 'fulfilled') {
+      console.log(`注文成功[${idx}]:`, res.value);
+    } else {
+      console.error(`注文失敗[${idx}]:`, res.reason);
+    }
+  });
+
+  return { successCount, failCount, results };
 };

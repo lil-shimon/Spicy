@@ -208,12 +208,6 @@ MIT License
 
 ## 本番環境での実行
 
-### SSHアクセス
-
-```bash
-ssh -i ~/.ssh/spicy.pem bitnami@13.114.216.83
-```
-
 ### PM2でのボット管理
 
 ```bash

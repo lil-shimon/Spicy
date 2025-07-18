@@ -34,7 +34,7 @@ const execute = async () => {
     await postMessage(
       `注文結果: 成功: ${response.successCount}, 失敗: ${response.failCount}, 結果: ${JSON.stringify(
         response.results
-      )}`
+      )} 機会検知時の期待値: ${JSON.stringify(arbitrageOpportunities)}`
     );
   }
 

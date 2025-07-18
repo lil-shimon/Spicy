@@ -7,19 +7,36 @@ export const createBybitOrder = async (
   side: 'buy' | 'sell',
   amount: number
 ) => {
+  let order;
   try {
-    const order = await bybitClient.createOrder(pair, 'market', side, amount);
-    console.log('Bybitでの注文が成功しました:', order);
-    await postMessage(`Bybitでの注文が成功しました: ${JSON.stringify(order)}`);
+    order = await bybitClient.createOrder(pair, 'market', side, amount);
+    console.log('Bybitでの注文作成(createOrder)に成功しました:', order);
+    await postMessage(
+      `Bybitでの注文作成(createOrder)に成功しました: ${JSON.stringify(order)}`
+    );
+  } catch (error) {
+    console.error(
+      'Bybitでの注文作成(createOrder)にエラーが発生しました:',
+      error
+    );
+    await postMessage(
+      `Bybitでの注文作成(createOrder)にエラーが発生しました: ${JSON.stringify(error)}`
+    );
+    throw error;
+  }
 
+  try {
     // fetchOrderだとエラーになるのでfetchClosedOrderを使用
     const response = await bybitClient.fetchClosedOrder(order.id, pair);
     console.log('注文詳細:', response);
     return response;
   } catch (error) {
-    console.error('Bybitでの注文作成中にエラーが発生しました:', error);
+    console.error(
+      'Bybitでの注文詳細取得(fetchClosedOrder)にエラーが発生しました:',
+      error
+    );
     await postMessage(
-      `Bybitでの注文作成中にエラーが発生しました: ${JSON.stringify(error)}`
+      `Bybitでの注文詳細取得(fetchClosedOrder)にエラーが発生しました: ${JSON.stringify(error)}`
     );
     throw error;
   }

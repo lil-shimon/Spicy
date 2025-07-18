@@ -12,7 +12,8 @@ export const createBybitOrder = async (
     console.log('Bybitでの注文が成功しました:', order);
     await postMessage(`Bybitでの注文が成功しました: ${JSON.stringify(order)}`);
 
-    const response = await bybitClient.fetchOrder(order.id, pair);
+    // fetchOrderだとエラーになるのでfetchClosedOrderを使用
+    const response = await bybitClient.fetchClosedOrder(order.id, pair);
     console.log('注文詳細:', response);
     return response;
   } catch (error) {

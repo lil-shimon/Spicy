@@ -13,6 +13,9 @@ export type FetchPriceResult = {
   from: Exchange;
   to: Exchange;
   profit: number;
+  // TODO: requiredにする
+  expectedBuyPrice?: number;
+  expectedSellPrice?: number;
 };
 
 const atRate = (percentage: number) => percentage / 100;
@@ -62,7 +65,14 @@ export const fetchPrices = async () => {
         );
 
         if (profitRate > 0) {
-          result.push({ pair, from, to, profit: profitRate });
+          result.push({
+            pair,
+            from,
+            to,
+            profit: profitRate,
+            expectedBuyPrice: prices[from].ask,
+            expectedSellPrice: prices[to].bid,
+          });
         }
       }
     }

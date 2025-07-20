@@ -1,13 +1,10 @@
 import 'dotenv/config';
 
-export const postMessage = async (message: string): Promise<boolean> => {
+const sendToDiscord = async (
+  webhookUrl: string,
+  message: string
+): Promise<boolean> => {
   try {
-    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-    if (!webhookUrl) {
-      console.error('Discord webhook URLが環境変数に設定されていません。');
-      return false;
-    }
-
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -30,4 +27,24 @@ export const postMessage = async (message: string): Promise<boolean> => {
     console.error('Discordのメッセージ送信に失敗しました:', error);
     return false;
   }
+};
+
+export const postMessage = async (message: string): Promise<boolean> => {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.error('Discord webhook URLが環境変数に設定されていません。');
+    return false;
+  }
+  return sendToDiscord(webhookUrl, message);
+};
+
+export const postOrderMessage = async (message: string): Promise<boolean> => {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL_ORDER;
+  if (!webhookUrl) {
+    console.error(
+      'Discord注文通知用webhook URLが環境変数に設定されていません。'
+    );
+    return false;
+  }
+  return sendToDiscord(webhookUrl, message);
 };

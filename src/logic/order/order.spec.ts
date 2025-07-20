@@ -21,8 +21,8 @@ describe('createOrders', () => {
       const mockBybitResult = { orderId: 'bybit123', status: 'filled' };
       const mockMexcResult = { orderId: 'mexc456', status: 'filled' };
 
-      (createBybitOrder as any).mockResolvedValue(mockBybitResult);
-      (createMexcOrder as any).mockResolvedValue(mockMexcResult);
+      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult);
+      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult);
 
       const data: FetchPriceResult[] = [
         {
@@ -56,8 +56,8 @@ describe('createOrders', () => {
       const mockMexcResult = { orderId: 'mexc123', status: 'filled' };
       const mockBybitResult = { orderId: 'bybit456', status: 'filled' };
 
-      (createMexcOrder as any).mockResolvedValue(mockMexcResult);
-      (createBybitOrder as any).mockResolvedValue(mockBybitResult);
+      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult);
+      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult);
 
       const data: FetchPriceResult[] = [
         {
@@ -83,8 +83,8 @@ describe('createOrders', () => {
     });
 
     it('複数のFetchPriceResultで正しく注文が作成される', async () => {
-      (createBybitOrder as any).mockResolvedValue({ orderId: 'bybit123' });
-      (createMexcOrder as any).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
+      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
 
       const data: FetchPriceResult[] = [
         {
@@ -117,8 +117,8 @@ describe('createOrders', () => {
   describe('異常系', () => {
     it('createBybitOrderが失敗した場合のエラーハンドリング', async () => {
       const error = new Error('Bybit API error');
-      (createBybitOrder as any).mockRejectedValue(error);
-      (createMexcOrder as any).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockRejectedValue(error);
+      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
 
       const data: FetchPriceResult[] = [
         {
@@ -144,8 +144,8 @@ describe('createOrders', () => {
 
     it('createMexcOrderが失敗した場合のエラーハンドリング', async () => {
       const error = new Error('MEXC API error');
-      (createBybitOrder as any).mockResolvedValue({ orderId: 'bybit123' });
-      (createMexcOrder as any).mockRejectedValue(error);
+      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
+      vi.mocked(createMexcOrder).mockRejectedValue(error);
 
       const data: FetchPriceResult[] = [
         {
@@ -165,9 +165,13 @@ describe('createOrders', () => {
     });
 
     it('一部の注文が成功・一部が失敗した場合の結果カウント', async () => {
-      (createBybitOrder as any).mockResolvedValueOnce({ orderId: 'bybit123' });
-      (createBybitOrder as any).mockRejectedValueOnce(new Error('Bybit error'));
-      (createMexcOrder as any).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockResolvedValueOnce({
+        orderId: 'bybit123',
+      });
+      vi.mocked(createBybitOrder).mockRejectedValueOnce(
+        new Error('Bybit error')
+      );
+      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
 
       const data: FetchPriceResult[] = [
         {
@@ -239,8 +243,8 @@ describe('createOrders', () => {
     });
 
     it('コンソールログが正しく出力される', async () => {
-      (createBybitOrder as any).mockResolvedValue({ orderId: 'bybit123' });
-      (createMexcOrder as any).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
+      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
 
       const data: FetchPriceResult[] = [
         {

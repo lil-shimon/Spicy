@@ -3,6 +3,7 @@ import { createOrders } from './order';
 import { createBybitOrder, createMexcOrder } from '../../clients';
 import { EXCHANGES, PAIRS } from '../../constants';
 import { FetchPriceResult } from '../fetch-price/fetch-price';
+import { Order } from 'ccxt';
 
 vi.mock('../../clients', () => ({
   createBybitOrder: vi.fn(),
@@ -18,11 +19,41 @@ describe('createOrders', () => {
 
   describe('正常系', () => {
     it('PUMP_USDTペアでBybit→MEXC注文が正常に作成される', async () => {
-      const mockBybitResult = { orderId: 'bybit123', status: 'filled' };
-      const mockMexcResult = { orderId: 'mexc456', status: 'filled' };
+      const mockBybitResult = {
+        id: 'bybit123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'buy',
+        price: 100,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      };
+      const mockMexcResult = {
+        id: 'mexc456',
+        clientOrderId: 'client456',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'sell',
+        price: 101,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      };
 
-      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult);
-      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult);
+      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult as Order);
+      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult as Order);
 
       const data: FetchPriceResult[] = [
         {
@@ -53,11 +84,25 @@ describe('createOrders', () => {
     });
 
     it('PUMP_USDTペアでMEXC→Bybit注文が正常に作成される', async () => {
-      const mockMexcResult = { orderId: 'mexc123', status: 'filled' };
-      const mockBybitResult = { orderId: 'bybit456', status: 'filled' };
+      const mockMexcResult = {
+        id: 'mexc123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+      };
+      const mockBybitResult = {
+        id: 'bybit456',
+        clientOrderId: 'client456',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+      };
 
-      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult);
-      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult);
+      vi.mocked(createMexcOrder).mockResolvedValue(mockMexcResult as Order);
+      vi.mocked(createBybitOrder).mockResolvedValue(mockBybitResult as Order);
 
       const data: FetchPriceResult[] = [
         {
@@ -83,8 +128,38 @@ describe('createOrders', () => {
     });
 
     it('複数のFetchPriceResultで正しく注文が作成される', async () => {
-      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
-      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockResolvedValue({
+        id: 'bybit123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'buy',
+        price: 100,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
+      vi.mocked(createMexcOrder).mockResolvedValue({
+        id: 'mexc123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'sell',
+        price: 101,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
 
       const data: FetchPriceResult[] = [
         {
@@ -118,7 +193,22 @@ describe('createOrders', () => {
     it('createBybitOrderが失敗した場合のエラーハンドリング', async () => {
       const error = new Error('Bybit API error');
       vi.mocked(createBybitOrder).mockRejectedValue(error);
-      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createMexcOrder).mockResolvedValue({
+        id: 'mexc123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'sell',
+        price: 101,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
 
       const data: FetchPriceResult[] = [
         {
@@ -144,7 +234,22 @@ describe('createOrders', () => {
 
     it('createMexcOrderが失敗した場合のエラーハンドリング', async () => {
       const error = new Error('MEXC API error');
-      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
+      vi.mocked(createBybitOrder).mockResolvedValue({
+        id: 'bybit123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'buy',
+        price: 100,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
       vi.mocked(createMexcOrder).mockRejectedValue(error);
 
       const data: FetchPriceResult[] = [
@@ -166,12 +271,40 @@ describe('createOrders', () => {
 
     it('一部の注文が成功・一部が失敗した場合の結果カウント', async () => {
       vi.mocked(createBybitOrder).mockResolvedValueOnce({
-        orderId: 'bybit123',
-      });
+        id: 'bybit123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'buy',
+        price: 100,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
       vi.mocked(createBybitOrder).mockRejectedValueOnce(
         new Error('Bybit error')
       );
-      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createMexcOrder).mockResolvedValue({
+        id: 'mexc123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'sell',
+        price: 101,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
 
       const data: FetchPriceResult[] = [
         {
@@ -243,8 +376,38 @@ describe('createOrders', () => {
     });
 
     it('コンソールログが正しく出力される', async () => {
-      vi.mocked(createBybitOrder).mockResolvedValue({ orderId: 'bybit123' });
-      vi.mocked(createMexcOrder).mockResolvedValue({ orderId: 'mexc123' });
+      vi.mocked(createBybitOrder).mockResolvedValue({
+        id: 'bybit123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'buy',
+        price: 100,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
+      vi.mocked(createMexcOrder).mockResolvedValue({
+        id: 'mexc123',
+        clientOrderId: 'client123',
+        datetime: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000,
+        lastTradeTimestamp: 1672531200000,
+        status: 'closed',
+        symbol: 'PUMP/USDT',
+        type: 'market',
+        side: 'sell',
+        price: 101,
+        amount: 250,
+        filled: 250,
+        remaining: 0,
+        info: {},
+      } as Order);
 
       const data: FetchPriceResult[] = [
         {

@@ -2,7 +2,7 @@ import { createBybitOrder, createMexcOrder } from '../../clients';
 import { EXCHANGES, PAIRS } from '../../constants';
 import { FetchPriceResult } from '../fetch-price/fetch-price';
 
-const PUMP_DEFAULT_AMOUNT = 250;
+const PUMP_DEFAULT_AMOUNT = 500;
 
 export const createOrders = async (data: FetchPriceResult[]) => {
   const promises = [];

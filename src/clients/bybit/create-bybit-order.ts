@@ -27,7 +27,9 @@ export const createBybitOrder = async (
 
   try {
     // fetchOrderだとエラーになるのでfetchClosedOrderを使用
-    const response = await bybitClient.fetchClosedOrder(order.id, pair);
+    const response = await bybitClient.fetchOrder(order.id, pair, {
+      acknowledged: true,
+    });
     console.log('注文詳細:', response);
     return response;
   } catch (error) {

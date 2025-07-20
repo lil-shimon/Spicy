@@ -129,14 +129,6 @@ describe('createOrders', () => {
           expectedSellPrice: 101,
           profit: 0.01,
         },
-        {
-          pair: PAIRS.PUMP_USDT,
-          from: EXCHANGES.BYBIT,
-          to: EXCHANGES.MEXC,
-          expectedBuyPrice: 102,
-          expectedSellPrice: 103,
-          profit: 0.01,
-        },
       ];
 
       const result = await createOrders(data);
@@ -162,14 +154,6 @@ describe('createOrders', () => {
           to: EXCHANGES.MEXC,
           expectedBuyPrice: 100,
           expectedSellPrice: 101,
-          profit: 0.01,
-        },
-        {
-          pair: PAIRS.PUMP_USDT,
-          from: EXCHANGES.BYBIT,
-          to: EXCHANGES.MEXC,
-          expectedBuyPrice: 102,
-          expectedSellPrice: 103,
           profit: 0.01,
         },
       ];

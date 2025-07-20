@@ -30,7 +30,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'buy',
         price: 100,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -46,7 +46,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'sell',
         price: 101,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -71,12 +71,12 @@ describe('createOrders', () => {
       expect(createBybitOrder).toHaveBeenCalledWith(
         PAIRS.PUMP_USDT,
         'buy',
-        250
+        500
       );
       expect(createMexcOrder).toHaveBeenCalledWith(
         PAIRS.PUMP_USDT,
         'sell',
-        250
+        500
       );
       expect(result.successCount).toBe(2);
       expect(result.failCount).toBe(0);
@@ -117,11 +117,11 @@ describe('createOrders', () => {
 
       const result = await createOrders(data);
 
-      expect(createMexcOrder).toHaveBeenCalledWith(PAIRS.PUMP_USDT, 'buy', 250);
+      expect(createMexcOrder).toHaveBeenCalledWith(PAIRS.PUMP_USDT, 'buy', 500);
       expect(createBybitOrder).toHaveBeenCalledWith(
         PAIRS.PUMP_USDT,
         'sell',
-        250
+        500
       );
       expect(result.successCount).toBe(2);
       expect(result.failCount).toBe(0);
@@ -139,7 +139,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'buy',
         price: 100,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -155,7 +155,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'sell',
         price: 101,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -204,7 +204,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'sell',
         price: 101,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -245,7 +245,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'buy',
         price: 100,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -281,7 +281,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'buy',
         price: 100,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -300,7 +300,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'sell',
         price: 101,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -387,7 +387,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'buy',
         price: 100,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},
@@ -403,7 +403,7 @@ describe('createOrders', () => {
         type: 'market',
         side: 'sell',
         price: 101,
-        amount: 250,
+        amount: 500,
         filled: 250,
         remaining: 0,
         info: {},

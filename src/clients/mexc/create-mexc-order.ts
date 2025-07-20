@@ -1,5 +1,5 @@
 import { Pair } from '../../constants';
-import { postMessage } from '../discord/post-message';
+import { postOrderMessage } from '../discord/post-message';
 import { mexcClient } from './mexc-client';
 
 export const createMexcOrder = async (
@@ -10,13 +10,15 @@ export const createMexcOrder = async (
   try {
     const order = await mexcClient.createOrder(pair, 'market', side, amount);
     console.log('MEXCでの注文が成功しました:', order);
-    await postMessage(`MEXCでの注文が成功しました: ${JSON.stringify(order)}`);
+    await postOrderMessage(
+      `MEXCでの注文が成功しました: ${JSON.stringify(order)}`
+    );
     const response = await mexcClient.fetchOrder(order.id, pair);
     console.log('注文詳細:', response);
     return response;
   } catch (error) {
     console.error('MEXCでの注文作成中にエラーが発生しました:', error);
-    await postMessage(
+    await postOrderMessage(
       `MEXCでの注文作成中にエラーが発生しました: ${JSON.stringify(error)}`
     );
     throw error;

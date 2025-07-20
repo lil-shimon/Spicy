@@ -1,6 +1,6 @@
 import { Pair } from '../../constants';
 import { bybitClient } from './bybit-client';
-import { postMessage } from '../discord/post-message';
+import { postOrderMessage } from '../discord/post-message';
 
 export const createBybitOrder = async (
   pair: Pair,
@@ -11,7 +11,7 @@ export const createBybitOrder = async (
   try {
     order = await bybitClient.createOrder(pair, 'market', side, amount);
     console.log('Bybitでの注文作成(createOrder)に成功しました:', order);
-    await postMessage(
+    await postOrderMessage(
       `Bybitでの注文作成(createOrder)に成功しました: ${JSON.stringify(order)}`
     );
   } catch (error) {
@@ -19,7 +19,7 @@ export const createBybitOrder = async (
       'Bybitでの注文作成(createOrder)にエラーが発生しました:',
       error
     );
-    await postMessage(
+    await postOrderMessage(
       `Bybitでの注文作成(createOrder)にエラーが発生しました: ${JSON.stringify(error)}`
     );
     throw error;
@@ -35,7 +35,7 @@ export const createBybitOrder = async (
       'Bybitでの注文詳細取得(fetchClosedOrder)にエラーが発生しました:',
       error
     );
-    await postMessage(
+    await postOrderMessage(
       `Bybitでの注文詳細取得(fetchClosedOrder)にエラーが発生しました: ${JSON.stringify(error)}`
     );
     throw error;

@@ -1,5 +1,5 @@
 import { fetchPrices } from './logic';
-import { postMessage } from './clients';
+import { postMessage, postOrderMessage } from './clients';
 import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
 import { updateCountV2 } from './utils';
@@ -31,7 +31,7 @@ const execute = async () => {
 
   if (enableOrder) {
     const response = await createOrders(arbitrageOpportunities);
-    await postMessage(
+    await postOrderMessage(
       `注文結果: 成功: ${response.successCount}, 失敗: ${response.failCount}, 結果: ${JSON.stringify(
         response.results
       )} 機会検知時の期待値: ${JSON.stringify(arbitrageOpportunities)}`

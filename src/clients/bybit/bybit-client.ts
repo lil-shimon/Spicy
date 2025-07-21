@@ -14,4 +14,9 @@ if (!apiKey || !secret) {
 export const bybitClient = new bybit({
   apiKey: apiKey || '',
   secret: secret || '',
+  options: {
+    // 時間のずれを調整する
+    // https://github.com/ccxt/ccxt/issues/14410
+    adjustForTimeDifference: true,
+  },
 });

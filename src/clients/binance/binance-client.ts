@@ -9,6 +9,6 @@ if (!apiKey || !secret) {
 }
 
 export const binanceClient = new binance({
-  apiKey: apiKey || '',
-  secret: secret || '',
+  apiKey: apiKey,
+  secret: secret,
 });

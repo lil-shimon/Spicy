@@ -2,7 +2,7 @@ export const EXCHANGES = {
   BYBIT: 'bybit',
   MEXC: 'mexc',
   BINANCE: 'binance',
-  // kucoin: "kucoin",
+  kucoin: 'kucoin',
 } as const;
 
 export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];
@@ -18,7 +18,7 @@ export const TAKER_FEES = {
   // https://www.mexc.com/ja-JP/fee
   [EXCHANGES.MEXC]: 0.05,
   // https://www.kucoin.com/ja/vip/privilege
-  // [EXCHANGES.kucoin]: 0.1,
+  [EXCHANGES.kucoin]: 0.1,
 } as const;
 
 export const PAIRS = {

@@ -33,7 +33,7 @@ const fetchPriceByPairPromise = async (pair: Pair) => {
   ];
   const [bybit, mexc, binance] = await Promise.all(promises);
   console.log(
-    `価格取得結果: Bybit: ${bybit}, MEXC: ${mexc} Binance: ${binance}`
+    `価格取得結果: Bybit: ${bybit}, MEXC: ${mexc}, Binance: ${binance}`
   );
 
   return {

@@ -33,6 +33,7 @@ export const PAIRS = {
   // WLD_USDT: "WLD/USDT",
   SOL_USDT: 'SOL/USDT',
   PUMP_USDT: 'PUMP/USDT',
+  PUMP_USDC: 'PUMP/USDC',
   // 滅多に取引機会がないので除外
   // ZRO_USDT: 'ZRO/USDT',
   // TNSR_USDT: 'TNSR/USDT',

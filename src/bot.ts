@@ -14,7 +14,7 @@ export const startBot = async () => {
 
   await initExchanges();
   await execute();
-  const interval = 1000 * 30; // 30秒ごとに実行
+  const interval = 1000 * 15; // 15秒ごとに実行
 
   setInterval(execute, interval);
 };

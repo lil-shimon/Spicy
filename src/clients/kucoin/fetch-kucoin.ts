@@ -1,4 +1,4 @@
-import { kucoin } from 'ccxt';
+import { kucoinClient } from './kucoin-client';
 import { Pair, PAIRS } from '../../constants';
 
 export const fetchKucoin = async (pair: Pair) => {
@@ -9,9 +9,8 @@ export const fetchKucoin = async (pair: Pair) => {
     };
   }
 
-  const client = new kucoin();
   try {
-    const ticker = await client.fetchTicker(pair);
+    const ticker = await kucoinClient.fetchTicker(pair);
 
     return {
       // NOTE: レスポンスがNum形になっているので、nullチェックを行う

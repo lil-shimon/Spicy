@@ -13,12 +13,17 @@ describe('fetchPrices', () => {
     bid: 1.5,
     ask: 2.5,
   });
+  vi.spyOn(clientModule, 'fetchBinance').mockResolvedValue({
+    bid: 1.5,
+    ask: 2.5,
+  });
 
   it('should return prices', async () => {
     const result = await fetchPriceByPair(PAIRS.SOL_USDT);
     expect(result).toEqual({
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
+      binance: { bid: 1.5, ask: 2.5 },
     });
   });
 
@@ -27,6 +32,7 @@ describe('fetchPrices', () => {
     expect(result).toEqual({
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },
       mexc: { bid: expect.any(Number), ask: expect.any(Number) },
+      binance: { bid: expect.any(Number), ask: expect.any(Number) },
     });
   });
 });

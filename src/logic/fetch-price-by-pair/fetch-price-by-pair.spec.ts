@@ -17,6 +17,10 @@ describe('fetchPrices', () => {
     bid: 1.5,
     ask: 2.5,
   });
+  vi.spyOn(clientModule, 'fetchKucoin').mockResolvedValue({
+    bid: 1.5,
+    ask: 2.5,
+  });
 
   it('should return prices', async () => {
     const result = await fetchPriceByPair(PAIRS.SOL_USDT);
@@ -24,6 +28,7 @@ describe('fetchPrices', () => {
       bybit: { bid: 1.5, ask: 2.5 },
       mexc: { bid: 1.5, ask: 2.5 },
       binance: { bid: 1.5, ask: 2.5 },
+      kucoin: { bid: 1.5, ask: 2.5 },
     });
   });
 
@@ -33,6 +38,7 @@ describe('fetchPrices', () => {
       bybit: { bid: expect.any(Number), ask: expect.any(Number) },
       mexc: { bid: expect.any(Number), ask: expect.any(Number) },
       binance: { bid: expect.any(Number), ask: expect.any(Number) },
+      kucoin: { bid: expect.any(Number), ask: expect.any(Number) },
     });
   });
 });

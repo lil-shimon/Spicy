@@ -39,7 +39,8 @@
   },
   "dependencies": {
     "ccxt": "^4.4.92",
-    "dotenv": "^17.0.1"
+    "dotenv": "^17.0.1",
+    "ws": "^8.18.3"
   },
   "engines": {
     "npm": "npmではなく、pnpmを使用してください",

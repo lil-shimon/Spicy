@@ -5,8 +5,6 @@ const apiKey = process.env.BYBIT_API_KEY;
 const secret = process.env.BYBIT_SECRET;
 
 if (!apiKey || !secret) {
-  console.log('api key:', apiKey);
-  console.log('secret:', secret);
   console.error('Bybit APIキーまたはシークレットが設定されていません。');
   throw new Error('Bybit APIキーまたはシークレットが設定されていません。');
 }

@@ -57,10 +57,18 @@ export const run = async () => {
   const spreadSellPumpUsdcBuyPumpUsdt = pumpUsdcBidInUsdt - pumpUsdt.ask;
   const spreadSellPumpUsdtBuyPumpUsdc = pumpUsdt.bid - pumpUsdcAskInUsdt;
 
-  console.log('PUMP/USDC (USDT換算)', {
-    bidInUsdt: pumpUsdcBidInUsdt,
-    askInUsdt: pumpUsdcAskInUsdt,
-  });
+  console.log(
+    'PUMP/USDC (USDT換算)',
+    {
+      bidInUsdt: pumpUsdcBidInUsdt,
+      askInUsdt: pumpUsdcAskInUsdt,
+    },
+    'PUMP/USDT',
+    {
+      bid: pumpUsdt.bid,
+      ask: pumpUsdt.ask,
+    }
+  );
 
   console.log(
     'スプレッド（PumpをUSDTで買ってUSDCで売る）:',

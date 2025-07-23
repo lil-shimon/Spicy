@@ -95,8 +95,10 @@ export const run = async () => {
     0
   );
 
-  const coinWPumpUsdtBidFee = coinwPumpUsdt.bid * 0.002;
-  const coinWPumpUsdtAskFee = coinwPumpUsdt.ask * 0.002;
+  const coinWFeeRate = 0.002;
+
+  const coinWPumpUsdtAskFee = calcFeePrice(coinwPumpUsdt.ask, coinWFeeRate);
+  const coinWPumpUsdtBidFee = calcFeePrice(coinwPumpUsdt.bid, coinWFeeRate);
 
   // スプレッド（coinw）
   const spreadSellPumpUsdcBuyPumpUsdtCoinw = calcSpread(

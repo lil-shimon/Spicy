@@ -49,6 +49,10 @@ export const fetchUsdcUsdt = async () => {
   };
 };
 
+const calcSpread = (bid: number, ask: number, fee: number) => {
+  return ask - bid - fee;
+};
+
 export const run = async () => {
   const [pumpUsdc, pumpUsdt, usdcUsdt, coinwPumpUsdt] = await Promise.all([
     fetchPumpUsdc(),
@@ -75,22 +79,42 @@ export const run = async () => {
   const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdt.bid;
 
   // スプレッド（USDT基準）
-  const spreadSellPumpUsdcBuyPumpUsdt = pumpUsdcBidInUsdt - pumpUsdt.ask;
-  const spreadSellPumpUsdtBuyPumpUsdc = pumpUsdt.bid - pumpUsdcAskInUsdt;
+  const spreadSellPumpUsdcBuyPumpUsdt = calcSpread(
+    pumpUsdcBidInUsdt,
+    pumpUsdt.ask,
+    0
+  );
+  const spreadSellPumpUsdtBuyPumpUsdc = calcSpread(
+    pumpUsdt.bid,
+    pumpUsdcAskInUsdt,
+    0
+  );
 
   const coinWPumpUsdtBidFee = coinwPumpUsdt.bid * 0.002;
   const coinWPumpUsdtAskFee = coinwPumpUsdt.ask * 0.002;
 
   // スプレッド（coinw）
-  const spreadSellPumpUsdcBuyPumpUsdtCoinw =
-    pumpUsdcBidInUsdt - coinwPumpUsdt.ask - coinWPumpUsdtAskFee;
-  const spreadSellPumpUsdtBuyPumpUsdcCoinw =
-    coinwPumpUsdt.bid - pumpUsdcAskInUsdt - coinWPumpUsdtBidFee;
+  const spreadSellPumpUsdcBuyPumpUsdtCoinw = calcSpread(
+    pumpUsdcBidInUsdt,
+    coinwPumpUsdt.ask,
+    coinWPumpUsdtAskFee
+  );
+  const spreadSellPumpUsdtBuyPumpUsdcCoinw = calcSpread(
+    coinwPumpUsdt.bid,
+    pumpUsdcAskInUsdt,
+    coinWPumpUsdtBidFee
+  );
 
-  const spreadSellPumpUsdtBuyPumpUsdtCoinw =
-    pumpUsdt.bid - coinwPumpUsdt.ask - coinWPumpUsdtAskFee;
-  const spreadBuyPumpUsdtSellPumpUsdtCoinw =
-    coinwPumpUsdt.bid - pumpUsdt.ask - coinWPumpUsdtBidFee;
+  const spreadSellPumpUsdtBuyPumpUsdtCoinw = calcSpread(
+    pumpUsdt.bid,
+    coinwPumpUsdt.ask,
+    coinWPumpUsdtAskFee
+  );
+  const spreadBuyPumpUsdtSellPumpUsdtCoinw = calcSpread(
+    coinwPumpUsdt.bid,
+    pumpUsdt.ask,
+    coinWPumpUsdtBidFee
+  );
 
   console.log(
     'PUMP/USDC (USDT換算)',

@@ -3,7 +3,6 @@ import { mexcClient } from './mexc-client';
 
 const fetchPumpUsdc = async () => {
   const ticker = await mexcClient.fetchTicker(PAIRS.PUMP_USDC);
-  console.log('PUMP/USDC:', ticker);
 
   return {
     bid: ticker.bid,
@@ -13,7 +12,6 @@ const fetchPumpUsdc = async () => {
 
 const fetchPumpUsdt = async () => {
   const ticker = await mexcClient.fetchTicker(PAIRS.PUMP_USDT);
-  console.log('PUMP/USDT:', ticker);
 
   return {
     bid: ticker.bid,
@@ -23,7 +21,6 @@ const fetchPumpUsdt = async () => {
 
 export const fetchUsdcUsdt = async () => {
   const ticker = await mexcClient.fetchTicker('USDC/USDT');
-  console.log('USDC/USDT:', ticker);
 
   return {
     bid: ticker.bid,

@@ -19,6 +19,27 @@ const fetchPumpUsdt = async () => {
   };
 };
 
+const fetchCoinWPumpUsdt = async () => {
+  const ticker = await fetch(
+    'https://api.coinw.com/api/v1/public?command=returnOrderBook&symbol=PUMP_USDT&size=20'
+  );
+  try {
+    const { data } = await ticker.json();
+    const { bids, asks } = data;
+    const bid = bids[0][0];
+    const ask = asks[0][0];
+    console.log('bid', bid, 'ask', ask);
+
+    return {
+      bid,
+      ask,
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const fetchUsdcUsdt = async () => {
   const ticker = await mexcClient.fetchTicker('USDC/USDT');
 
@@ -29,10 +50,11 @@ export const fetchUsdcUsdt = async () => {
 };
 
 export const run = async () => {
-  const [pumpUsdc, pumpUsdt, usdcUsdt] = await Promise.all([
+  const [pumpUsdc, pumpUsdt, usdcUsdt, coinwPumpUsdt] = await Promise.all([
     fetchPumpUsdc(),
     fetchPumpUsdt(),
     fetchUsdcUsdt(),
+    fetchCoinWPumpUsdt(),
   ]);
 
   if (
@@ -40,7 +62,9 @@ export const run = async () => {
     !pumpUsdc.ask ||
     !usdcUsdt.bid ||
     !pumpUsdt.bid ||
-    !pumpUsdt.ask
+    !pumpUsdt.ask ||
+    !coinwPumpUsdt?.bid ||
+    !coinwPumpUsdt?.ask
   ) {
     console.log('🚨 価格情報が取得できませんでした');
     return;
@@ -53,6 +77,20 @@ export const run = async () => {
   // スプレッド（USDT基準）
   const spreadSellPumpUsdcBuyPumpUsdt = pumpUsdcBidInUsdt - pumpUsdt.ask;
   const spreadSellPumpUsdtBuyPumpUsdc = pumpUsdt.bid - pumpUsdcAskInUsdt;
+
+  const coinWPumpUsdtBidFee = coinwPumpUsdt.bid * 0.002;
+  const coinWPumpUsdtAskFee = coinwPumpUsdt.ask * 0.002;
+
+  // スプレッド（coinw）
+  const spreadSellPumpUsdcBuyPumpUsdtCoinw =
+    pumpUsdcBidInUsdt - coinwPumpUsdt.ask - coinWPumpUsdtAskFee;
+  const spreadSellPumpUsdtBuyPumpUsdcCoinw =
+    coinwPumpUsdt.bid - pumpUsdcAskInUsdt - coinWPumpUsdtBidFee;
+
+  const spreadSellPumpUsdtBuyPumpUsdtCoinw =
+    pumpUsdt.bid - coinwPumpUsdt.ask - coinWPumpUsdtAskFee;
+  const spreadBuyPumpUsdtSellPumpUsdtCoinw =
+    coinwPumpUsdt.bid - pumpUsdt.ask - coinWPumpUsdtBidFee;
 
   console.log(
     'PUMP/USDC (USDT換算)',
@@ -74,6 +112,24 @@ export const run = async () => {
   console.log(
     'スプレッド（PumpをUSDCで買ってUSDTで売る）:',
     spreadSellPumpUsdtBuyPumpUsdc
+  );
+
+  console.log(
+    'スプレッド（PumpをCoinWで買ってMEXCでUSDCで売る）:',
+    spreadSellPumpUsdcBuyPumpUsdtCoinw
+  );
+  console.log(
+    'スプレッド（PumpをMEXCで買ってCoinWでUSDCで売る）:',
+    spreadSellPumpUsdtBuyPumpUsdcCoinw
+  );
+
+  console.log(
+    'スプレッド（PumpをCoinWで買ってMEXCでUSDTで売る）:',
+    spreadSellPumpUsdtBuyPumpUsdtCoinw
+  );
+  console.log(
+    'スプレッド（PumpをMEXCで買ってCoinWでUSDTで売る）:',
+    spreadBuyPumpUsdtSellPumpUsdtCoinw
   );
 
   // 閾値を設定して通知/発注に繋げられる

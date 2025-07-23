@@ -53,6 +53,11 @@ const calcSpread = (bid: number, ask: number, fee: number) => {
   return ask - bid - fee;
 };
 
+const calcFeePrice = (price: number, feeRate: number) => {
+  const fee = price * feeRate;
+  return price - fee;
+};
+
 export const run = async () => {
   const [pumpUsdc, pumpUsdt, usdcUsdt, coinwPumpUsdt] = await Promise.all([
     fetchPumpUsdc(),

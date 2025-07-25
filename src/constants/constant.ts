@@ -43,4 +43,4 @@ export const PAIRS = {
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];
 
-export const ARBITRAGE_PROFIT_THRESHOLD = 0.03; // 3%
+export const ARBITRAGE_PROFIT_THRESHOLD = 0.01; // 1%

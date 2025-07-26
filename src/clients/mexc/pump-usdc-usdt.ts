@@ -1,5 +1,6 @@
 import { PAIRS } from '../../constants';
 import { mexcClient } from './mexc-client';
+import { postMessage, postOrderMessage } from '../discord/post-message';
 
 const fetchPumpUsdc = async () => {
   const ticker = await mexcClient.fetchTicker('PUMP/USDC');
@@ -92,9 +93,19 @@ export const run = async () => {
   const threshold = 0.00001;
   if (spreadSellPumpUsdcBuyPumpUsdt > threshold) {
     console.log('💰 USDT→USDCアービトラージのチャンス！');
+    await postMessage('💰 USDT→USDCアービトラージのチャンス！');
+    await Promise.all([
+      orderLimit('PUMP/USDT', 'buy', 1000, pumpUsdt.ask),
+      orderLimit('PUMP/USDC', 'sell', 1000, pumpUsdc.bid),
+    ]);
   }
   if (spreadSellPumpUsdtBuyPumpUsdc > threshold) {
     console.log('💰 USDC→USDTアービトラージのチャンス！');
+    await postMessage('💰 USDC→USDTアービトラージのチャンス！');
+    await Promise.all([
+      orderLimit('PUMP/USDC', 'buy', 1000, pumpUsdc.bid),
+      orderLimit('PUMP/USDT', 'sell', 1000, pumpUsdt.ask),
+    ]);
   }
 };
 
@@ -104,15 +115,27 @@ const orderLimit = async (
   amount: number,
   price: number
 ) => {
-  const response = await mexcClient.createOrder(
-    symbol,
-    'limit',
-    side,
-    amount,
-    price
-  );
+  try {
+    const response = await mexcClient.createOrder(
+      symbol,
+      'limit',
+      side,
+      amount,
+      price
+    );
 
-  console.log(response);
+    console.log(response);
+    await postOrderMessage(
+      `💰 注文を発注しました: ${symbol} ${side} ${amount} ${price}. log: ${JSON.stringify(
+        response
+      )}`
+    );
 
-  return response;
+    return response;
+  } catch (err) {
+    console.error(err);
+    await postMessage(`🚨 注文に失敗しました: ${err}`);
+  }
 };
+
+orderLimit('PUMP/USDC', 'buy', 1000, 0.002781);

@@ -120,7 +120,7 @@ const runSol = async () => {
     spreadSellSolUsdtBuySolUsdc
   );
 
-  const threshold = 0.00001;
+  const threshold = 0.1;
   const amount = 0.01;
 
   await executeBestArbitrageOpportunity(
@@ -220,7 +220,7 @@ export const runPump = async () => {
     spreadSellPumpUsdtBuyPumpUsdc
   );
 
-  const threshold = 0.00001;
+  const threshold = 0.1;
 
   await executeBestArbitrageOpportunity(
     [

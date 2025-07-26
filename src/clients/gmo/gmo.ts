@@ -37,45 +37,6 @@ export const fetchGmoAskBid = async (symbol: string) => {
   }
 };
 
-export const gmoAuth = async () => {
-  const timestamp = Date.now().toString();
-  const path = '/v1/ws-auth';
-  const url = `${coinEndPoint}${path}`;
-  const method = 'POST';
-  const reqBody = JSON.stringify({});
-  const text = timestamp + method + path + reqBody;
-
-  if (!coinApiSecret || !coinApiKey) {
-    console.error('GMO APIキーまたはシークレットが設定されていません。');
-    return;
-  }
-
-  const sign = crypto
-    .createHmac('sha256', coinApiSecret)
-    .update(text)
-    .digest('hex');
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'API-KEY': coinApiKey,
-        'API-TIMESTAMP': timestamp,
-        'API-SIGN': sign,
-      },
-      method,
-      body: reqBody,
-    });
-
-    const data = await response.json();
-    console.log('data', data);
-    accessToken = data.data;
-    return accessToken;
-  } catch (err) {
-    console.error('GMO APIエラー', err);
-    return;
-  }
-};
-
 export const fetchJpyUsd = async () => {
   const url = `https://forex-api.coin.z.com/public/v1/ticker`;
 

@@ -105,3 +105,52 @@ export const fetchGmoBalance = async () => {
   console.log('data', data);
   return data;
 };
+
+export const orderGmo = async (
+  // 注意: JPYまで含めるとレバレッジ取引になるので注意(例: SOL_JPY)
+  symbol: string,
+  side: 'BUY' | 'SELL',
+  size: string,
+  type: 'LIMIT' | 'MARKET',
+  price?: number
+) => {
+  try {
+    const timestamp = Date.now().toString();
+    const path = '/v1/order';
+    const url = `${coinEndPoint}${path}`;
+    const method = 'POST';
+    let reqBody = JSON.stringify({
+      symbol,
+      side,
+      executionType: type,
+      size,
+    });
+    if (type === 'LIMIT') {
+      reqBody += `&price=${price}`;
+    }
+    const sign = getSign(path, method, timestamp, reqBody);
+
+    if (!coinApiKey || !sign) {
+      console.error('GMO APIキーまたはシークレットが設定されていません。');
+      return;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        'API-KEY': coinApiKey,
+        'API-TIMESTAMP': timestamp,
+        'API-SIGN': sign,
+      },
+      method,
+      body: reqBody,
+    });
+
+    const data = await response.json();
+    console.log('data', data);
+    return data;
+  } catch (err) {
+    console.error('GMO APIエラー', err);
+    await postMessage(`GMO APIエラー: ${err}`);
+    return;
+  }
+};

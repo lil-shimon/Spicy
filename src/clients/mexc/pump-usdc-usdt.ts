@@ -89,7 +89,7 @@ export const run = async () => {
   );
 
   // 閾値を設定して通知/発注に繋げられる
-  const threshold = 0.000001;
+  const threshold = 0.00001;
   if (spreadSellPumpUsdcBuyPumpUsdt > threshold) {
     console.log('💰 USDT→USDCアービトラージのチャンス！');
   }

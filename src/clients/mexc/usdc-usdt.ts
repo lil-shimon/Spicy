@@ -276,6 +276,8 @@ export const run = async () => {
     );
     // NOTE: XRPはUSDC, USDT両方とも手数料がTakerでも0
     await runBySymbol('XRP', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
+    // NOTE: PENGUはUSDC, USDT両方とも手数料がTakerでも0
+    await runBySymbol('PENGU', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 10);
   } catch (err) {
     console.error(err);
     await postMessage(`🚨 エラーが発生しました: ${err}`);

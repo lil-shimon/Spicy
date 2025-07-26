@@ -33,7 +33,7 @@ export const exchangeArb = async () => {
   console.log('スプレッド（SOLをUSDTで買ってJPYで売る）', gmoSellSpreadRate);
 
   // 6. 差益があるかの判定
-  const threshold = 0.1;
+  const threshold = 0.2;
 
   // 7. TODO: 差益があれば、注文を出す
   if (gmoBuySpreadRate > threshold) {

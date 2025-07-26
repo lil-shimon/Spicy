@@ -123,7 +123,7 @@ const runSol = async () => {
   );
 
   const threshold = 0.00001;
-  const amount = 0.001;
+  const amount = 0.01;
 
   await executeBestArbitrageOpportunity(
     [

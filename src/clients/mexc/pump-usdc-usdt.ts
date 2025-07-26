@@ -157,27 +157,20 @@ const runSol = async () => {
   );
 };
 
-export const runPump = async () => {
-  const [pumpUsdc, pumpUsdt, usdcUsdt] = await Promise.all([
+export const runPump = async (usdcUsdtBid: number) => {
+  const [pumpUsdc, pumpUsdt] = await Promise.all([
     fetchTicker('PUMP/USDT'),
     fetchTicker('PUMP/USDC'),
-    fetchTicker('USDC/USDT'),
   ]);
 
-  if (
-    !pumpUsdc?.bid ||
-    !pumpUsdc?.ask ||
-    !usdcUsdt?.bid ||
-    !pumpUsdt?.bid ||
-    !pumpUsdt?.ask
-  ) {
+  if (!pumpUsdc?.bid || !pumpUsdc?.ask || !pumpUsdt?.bid || !pumpUsdt?.ask) {
     console.log('🚨 価格情報が取得できませんでした');
     return;
   }
 
   // USDC → USDT 換算（保守的に bid を使う）
-  const pumpUsdcBidInUsdt = pumpUsdc.bid * usdcUsdt.bid;
-  const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdt.bid;
+  const pumpUsdcBidInUsdt = pumpUsdc.bid * usdcUsdtBid;
+  const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdtBid;
 
   // スプレッド（USDT基準）
   const spreadSellPumpUsdcBuyPumpUsdt = calcSpreadRate(
@@ -286,6 +279,16 @@ const orderLimit = async (
 };
 
 export const run = async () => {
-  await runPump();
-  await runSol();
+  try {
+    const usdcUsdt = await fetchTicker('USDC/USDT');
+    if (!usdcUsdt?.bid) {
+      console.log('🚨 USDC/USDT価格情報が取得できませんでした');
+      return;
+    }
+    await runPump(usdcUsdt.bid);
+    await runSol();
+  } catch (err) {
+    console.error(err);
+    await postMessage(`🚨 エラーが発生しました: ${err}`);
+  }
 };

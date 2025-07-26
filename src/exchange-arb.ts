@@ -42,7 +42,6 @@ export const exchangeArb = async () => {
   // 6. 差益があるかの判定
   const threshold = 0.1;
 
-  // 7. TODO: 差益があれば、注文を出す
   if (gmoBuySpreadRate > threshold) {
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
     console.log(message);

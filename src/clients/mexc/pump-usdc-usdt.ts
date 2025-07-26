@@ -42,21 +42,6 @@ interface ArbitrageOpportunity {
   }>;
 }
 
-const executeArbitrageIfProfitable = async (
-  opportunity: ArbitrageOpportunity,
-  threshold: number
-) => {
-  if (opportunity.spread > threshold) {
-    console.log(opportunity.message);
-    await postMessage(opportunity.message);
-    await Promise.all(
-      opportunity.orders.map((order) =>
-        orderLimit(order.symbol, order.side, order.amount, order.price)
-      )
-    );
-  }
-};
-
 const executeBestArbitrageOpportunity = async (
   opportunities: ArbitrageOpportunity[],
   threshold: number

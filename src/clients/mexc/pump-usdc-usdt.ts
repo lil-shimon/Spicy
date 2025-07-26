@@ -55,13 +55,14 @@ const executeBestArbitrageOpportunity = async (
     current.spread > best.spread ? current : best
   );
 
-  console.log(bestOpportunity.message);
-  await postMessage(bestOpportunity.message);
+  const message = `💰 ${bestOpportunity.message} スプレッド: ${bestOpportunity.spread}`;
+  console.log(message);
   await Promise.all(
     bestOpportunity.orders.map((order) =>
       orderLimit(order.symbol, order.side, order.amount, order.price)
     )
   );
+  await postMessage(message);
 };
 
 const runSol = async () => {

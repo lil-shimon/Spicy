@@ -56,6 +56,77 @@ const executeBestArbitrageOpportunity = async (
   await postMessage(message);
 };
 
+const runBySymbol = async (
+  symbol: string,
+  usdcUsdt: { bid: number; ask: number }
+) => {
+  const [usdc, usdt] = await Promise.all([
+    fetchTicker(`${symbol}/USDC`),
+    fetchTicker(`${symbol}/USDT`),
+  ]);
+
+  if (!usdc?.bid || !usdc?.ask || !usdt?.bid || !usdt?.ask) {
+    console.log(`🚨 価格情報が取得できませんでした: ${symbol}`);
+    return;
+  }
+
+  const usdcBidInUsdt = usdc.bid * usdcUsdt.bid;
+  const usdcAskInUsdt = usdc.ask * usdcUsdt.ask;
+
+  const spreadSellUsdcBuyUsdt = calcSpreadRate(usdt.ask, usdcBidInUsdt);
+  const spreadSellUsdtBuyUsdc = calcSpreadRate(usdcAskInUsdt, usdt.bid);
+
+  console.log(
+    `${symbol}`,
+    {
+      bidInUsdt: usdcBidInUsdt,
+      askInUsdt: usdcAskInUsdt,
+    },
+    `${symbol}/USDT`,
+    {
+      bid: usdt.bid,
+      ask: usdt.ask,
+    }
+  );
+
+  console.log(
+    `スプレッド（${symbol}をUSDTで買ってUSDCで売る）:`,
+    spreadSellUsdcBuyUsdt
+  );
+
+  console.log(
+    `スプレッド（${symbol}をUSDCで買ってUSDTで売る）:`,
+    spreadSellUsdtBuyUsdc
+  );
+
+  const threshold = 0.1;
+  const amount = 0.01;
+
+  await executeBestArbitrageOpportunity(
+    [
+      {
+        spread: spreadSellUsdcBuyUsdt,
+        message: `💰 USDT→USDCアービトラージのチャンス！`,
+        orders: [
+          {
+            symbol: `${symbol}/USDT`,
+            side: 'buy',
+            amount,
+            price: usdt.ask,
+          },
+          {
+            symbol: `${symbol}/USDC`,
+            side: 'sell',
+            amount,
+            price: usdc.bid,
+          },
+        ],
+      },
+    ],
+    threshold
+  );
+};
+
 const runSol = async (usdcUsdt: { bid: number; ask: number }) => {
   const [solUsdc, solUsdt] = await Promise.all([
     fetchTicker('SOL/USDC'),

@@ -123,6 +123,7 @@ const runSol = async () => {
   );
 
   const threshold = 0.00001;
+  const amount = 0.001;
 
   await executeBestArbitrageOpportunity(
     [
@@ -130,11 +131,16 @@ const runSol = async () => {
         spread: spreadSellSolUsdcBuySolUsdt,
         message: '💰 USDT→USDCアービトラージのチャンス！',
         orders: [
-          { symbol: 'SOL/USDT', side: 'buy', amount: 1000, price: solUsdt.ask },
+          {
+            symbol: 'SOL/USDT',
+            side: 'buy',
+            amount,
+            price: solUsdt.ask,
+          },
           {
             symbol: 'SOL/USDC',
             side: 'sell',
-            amount: 1000,
+            amount,
             price: solUsdc.bid,
           },
         ],
@@ -143,11 +149,16 @@ const runSol = async () => {
         spread: spreadSellSolUsdtBuySolUsdc,
         message: '💰 USDC→USDTアービトラージのチャンス！',
         orders: [
-          { symbol: 'SOL/USDC', side: 'buy', amount: 1000, price: solUsdc.ask },
+          {
+            symbol: 'SOL/USDC',
+            side: 'buy',
+            amount,
+            price: solUsdc.ask,
+          },
           {
             symbol: 'SOL/USDT',
             side: 'sell',
-            amount: 1000,
+            amount,
             price: solUsdt.bid,
           },
         ],

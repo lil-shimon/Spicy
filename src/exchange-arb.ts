@@ -20,6 +20,7 @@ export const exchangeArb = async () => {
     console.log('GMOまたはMEXCのデータが取得できませんでした');
     return;
   }
+  console.log('💰 JPY/USD価格情報が取得できました', jpyUsd.ask, jpyUsd.bid);
 
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
   const mexcSolUsdtBid = mexcSolUsdt.bid * jpyUsd.ask;

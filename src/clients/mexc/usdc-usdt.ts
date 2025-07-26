@@ -258,6 +258,7 @@ export const run = async () => {
     );
     await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
     await runBySymbol('ADA', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 5);
+    await runBySymbol('SUI', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
   } catch (err) {
     console.error(err);
     await postMessage(`🚨 エラーが発生しました: ${err}`);

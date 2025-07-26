@@ -14,10 +14,6 @@ const fetchTicker = async (symbol: string) => {
   }
 };
 
-export const fetchUsdcUsdt = async () => {
-  return await fetchTicker('USDC/USDT');
-};
-
 const calcSpreadRate = (buyPrice: number, sellPrice: number) => {
   return ((sellPrice - buyPrice) / buyPrice) * 100;
 };

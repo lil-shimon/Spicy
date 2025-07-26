@@ -40,7 +40,7 @@ export const exchangeArb = async () => {
   console.log('スプレッド（SOLをUSDTで買ってJPYで売る）', gmoSellSpreadRate);
 
   // 6. 差益があるかの判定
-  const threshold = 0.1;
+  const threshold = 0.2;
 
   if (gmoBuySpreadRate > threshold) {
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;

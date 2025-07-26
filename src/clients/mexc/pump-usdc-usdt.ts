@@ -58,7 +58,9 @@ const executeBestArbitrageOpportunity = async (
 
 const runBySymbol = async (
   symbol: string,
-  usdcUsdt: { bid: number; ask: number }
+  usdcUsdt: { bid: number; ask: number },
+  amount: number,
+  threshold: number = 0.1
 ) => {
   const [usdc, usdt] = await Promise.all([
     fetchTicker(`${symbol}/USDC`),
@@ -98,9 +100,6 @@ const runBySymbol = async (
     `スプレッド（${symbol}をUSDCで買ってUSDTで売る）:`,
     spreadSellUsdtBuyUsdc
   );
-
-  const threshold = 0.1;
-  const amount = 0.01;
 
   await executeBestArbitrageOpportunity(
     [

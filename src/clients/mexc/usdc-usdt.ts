@@ -256,12 +256,24 @@ export const run = async () => {
       usdcUsdt.bid,
       usdcUsdt.ask
     );
+    const thresholdWithFee = 0.105; // 手数料を考慮したスプレッド
+
     // NOTE: SOLはUSDC, USDT両方とも手数料がTakerでも0
     await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
-    // NOTE: ADAはUSDTが手数料かかる
-    await runBySymbol('ADA', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 5);
-    // NOTE: SUIはUSDTが手数料かかる
-    await runBySymbol('SUI', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
+    // NOTE: ADAはUSDTが手数料かかる(0.005%)
+    await runBySymbol(
+      'ADA',
+      { bid: usdcUsdt.bid, ask: usdcUsdt.ask },
+      5,
+      thresholdWithFee
+    );
+    // NOTE: SUIはUSDTが手数料かかる(0.005%)
+    await runBySymbol(
+      'SUI',
+      { bid: usdcUsdt.bid, ask: usdcUsdt.ask },
+      3,
+      thresholdWithFee
+    );
     // NOTE: XRPはUSDC, USDT両方とも手数料がTakerでも0
     await runBySymbol('XRP', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
   } catch (err) {

@@ -101,8 +101,8 @@ export const runPump = async () => {
     console.log('💰 USDC→USDTアービトラージのチャンス！');
     await postMessage('💰 USDC→USDTアービトラージのチャンス！');
     await Promise.all([
-      orderLimit('PUMP/USDC', 'buy', 1000, pumpUsdc.bid),
-      orderLimit('PUMP/USDT', 'sell', 1000, pumpUsdt.ask),
+      orderLimit('PUMP/USDC', 'buy', 1000, pumpUsdc.ask),
+      orderLimit('PUMP/USDT', 'sell', 1000, pumpUsdt.bid),
     ]);
   }
 };

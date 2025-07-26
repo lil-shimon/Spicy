@@ -6,8 +6,6 @@ const secret = process.env.GMO_SECRET;
 const coinApiKey = process.env.GMO_COIN_API_KEY;
 const coinApiSecret = process.env.GMO_COIN_SECRET;
 
-let accessToken = '';
-
 if (!apiKey || !secret) {
   console.error('GMO APIキーまたはシークレットが設定されていません。');
   throw new Error('GMO APIキーまたはシークレットが設定されていません。');
@@ -111,8 +109,8 @@ export const orderGmo = async (
   symbol: string,
   side: 'BUY' | 'SELL',
   size: string,
-  type: 'LIMIT' | 'MARKET',
-  price?: number
+  // TODO: Limitの時、価格指定ができるようにする
+  type: 'LIMIT' | 'MARKET'
 ) => {
   try {
     const timestamp = Date.now().toString();
@@ -125,9 +123,6 @@ export const orderGmo = async (
       executionType: type,
       size,
     });
-    if (type === 'LIMIT') {
-      reqBody += `&price=${price}`;
-    }
     const sign = getSign(path, method, timestamp, reqBody);
 
     if (!coinApiKey || !sign) {

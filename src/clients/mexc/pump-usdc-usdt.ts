@@ -2,38 +2,36 @@ import { PAIRS } from '../../constants';
 import { mexcClient } from './mexc-client';
 import { postMessage, postOrderMessage } from '../discord/post-message';
 
-const fetchPumpUsdc = async () => {
-  const ticker = await mexcClient.fetchTicker('PUMP/USDC');
+const fetchTicker = async (symbol: string) => {
+  try {
+    const ticker = await mexcClient.fetchTicker(symbol);
+    return {
+      bid: ticker.bid,
+      ask: ticker.ask,
+    };
+  } catch (err) {
+    await postMessage(`🚨 価格情報が取得できませんでした: ${symbol} ${err}`);
+    return null;
+  }
+};
 
-  return {
-    bid: ticker.bid,
-    ask: ticker.ask,
-  };
+const fetchPumpUsdc = async () => {
+  return await fetchTicker('PUMP/USDC');
 };
 
 const fetchPumpUsdt = async () => {
-  const ticker = await mexcClient.fetchTicker(PAIRS.PUMP_USDT);
-
-  return {
-    bid: ticker.bid,
-    ask: ticker.ask,
-  };
+  return await fetchTicker(PAIRS.PUMP_USDT);
 };
 
 export const fetchUsdcUsdt = async () => {
-  const ticker = await mexcClient.fetchTicker('USDC/USDT');
-
-  return {
-    bid: ticker.bid,
-    ask: ticker.ask,
-  };
+  return await fetchTicker('USDC/USDT');
 };
 
 const calcSpread = (bid: number, ask: number, fee: number) => {
   return ask - bid - fee;
 };
 
-export const run = async () => {
+export const runPump = async () => {
   const [pumpUsdc, pumpUsdt, usdcUsdt] = await Promise.all([
     fetchPumpUsdc(),
     fetchPumpUsdt(),
@@ -41,11 +39,11 @@ export const run = async () => {
   ]);
 
   if (
-    !pumpUsdc.bid ||
-    !pumpUsdc.ask ||
-    !usdcUsdt.bid ||
-    !pumpUsdt.bid ||
-    !pumpUsdt.ask
+    !pumpUsdc?.bid ||
+    !pumpUsdc?.ask ||
+    !usdcUsdt?.bid ||
+    !pumpUsdt?.bid ||
+    !pumpUsdt?.ask
   ) {
     console.log('🚨 価格情報が取得できませんでした');
     return;
@@ -137,5 +135,3 @@ const orderLimit = async (
     await postMessage(`🚨 注文に失敗しました: ${err}`);
   }
 };
-
-orderLimit('PUMP/USDC', 'buy', 1000, 0.002781);

@@ -277,6 +277,7 @@ export const run = async () => {
       console.log('🚨 USDC/USDT価格情報が取得できませんでした');
       return;
     }
+    console.log('💰 USDC/USDT価格情報が取得できました', usdcUsdt.bid);
     await runPump(usdcUsdt.bid);
     await runSol(usdcUsdt.bid);
   } catch (err) {

@@ -1,7 +1,7 @@
 import { mexcClient } from './mexc-client';
 import { postMessage, postOrderMessage } from '../discord/post-message';
 
-const fetchTicker = async (symbol: string) => {
+const fetchAskBid = async (symbol: string) => {
   try {
     const ticker = await mexcClient.fetchTicker(symbol);
     return {
@@ -59,8 +59,8 @@ const runBySymbol = async (
   threshold: number = 0.1
 ) => {
   const [usdc, usdt] = await Promise.all([
-    fetchTicker(`${symbol}/USDC`),
-    fetchTicker(`${symbol}/USDT`),
+    fetchAskBid(`${symbol}/USDC`),
+    fetchAskBid(`${symbol}/USDT`),
   ]);
 
   if (!usdc?.bid || !usdc?.ask || !usdt?.bid || !usdt?.ask) {
@@ -153,7 +153,7 @@ const orderLimit = async (
 
 export const run = async () => {
   try {
-    const usdcUsdt = await fetchTicker('USDC/USDT');
+    const usdcUsdt = await fetchAskBid('USDC/USDT');
     if (!usdcUsdt?.ask || !usdcUsdt.bid) {
       console.log('🚨 USDC/USDT価格情報が取得できませんでした');
       return;

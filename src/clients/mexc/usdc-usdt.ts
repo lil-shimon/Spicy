@@ -256,9 +256,14 @@ export const run = async () => {
       usdcUsdt.bid,
       usdcUsdt.ask
     );
+    // NOTE: SOLはUSDC, USDT両方とも手数料がTakerでも0
     await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
+    // NOTE: ADAはUSDTが手数料かかる
     await runBySymbol('ADA', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 5);
+    // NOTE: SUIはUSDTが手数料かかる
     await runBySymbol('SUI', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
+    // NOTE: XRPはUSDC, USDT両方とも手数料がTakerでも0
+    await runBySymbol('XRP', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 3);
   } catch (err) {
     console.error(err);
     await postMessage(`🚨 エラーが発生しました: ${err}`);

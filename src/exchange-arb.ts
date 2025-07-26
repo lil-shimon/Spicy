@@ -1,14 +1,20 @@
 import { postMessage } from './clients';
-import { fetchGmoAskBid, fetchJpyUsd } from './clients/gmo/gmo';
-import { calcSpreadRate, fetchAskBid } from './clients/mexc/usdc-usdt';
+import { fetchGmoAskBid, fetchJpyUsd, orderGmo } from './clients/gmo/gmo';
+import {
+  calcSpreadRate,
+  fetchAskBid,
+  orderLimit,
+} from './clients/mexc/usdc-usdt';
 
 export const exchangeArb = async () => {
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
-  const gmoSolJpy = await fetchGmoAskBid('SOL');
-  const mexcSolUsdt = await fetchAskBid('SOL/USDT');
   // 3. 為替情報を取得(JPY/USD)
-  const jpyUsd = await fetchJpyUsd();
+  const [gmoSolJpy, mexcSolUsdt, jpyUsd] = await Promise.all([
+    fetchGmoAskBid('SOL'),
+    fetchAskBid('SOL/USDT'),
+    fetchJpyUsd(),
+  ]);
 
   if (
     !gmoSolJpy ||
@@ -34,18 +40,26 @@ export const exchangeArb = async () => {
   console.log('スプレッド（SOLをUSDTで買ってJPYで売る）', gmoSellSpreadRate);
 
   // 6. 差益があるかの判定
-  const threshold = 0.2;
+  const threshold = 0.1;
 
   // 7. TODO: 差益があれば、注文を出す
   if (gmoBuySpreadRate > threshold) {
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
     console.log(message);
+    await Promise.all([
+      orderGmo('SOL', 'BUY', '0.01', 'MARKET'),
+      orderLimit('SOL/USDT', 'sell', 0.01, mexcSolUsdt.ask),
+    ]);
     await postMessage(message);
   }
 
   if (gmoSellSpreadRate > threshold) {
     const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% `;
     console.log(message);
+    await Promise.all([
+      orderLimit('SOL/USDT', 'buy', 0.01, mexcSolUsdt.bid),
+      orderGmo('SOL', 'SELL', '0.01', 'MARKET'),
+    ]);
     await postMessage(message);
   }
 };

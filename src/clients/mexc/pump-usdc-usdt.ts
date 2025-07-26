@@ -352,7 +352,6 @@ export const run = async () => {
       usdcUsdt.bid,
       usdcUsdt.ask
     );
-    await runPump({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
     await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
     await runBySymbol('ADA', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 5);
   } catch (err) {

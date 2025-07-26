@@ -19,27 +19,6 @@ const fetchPumpUsdt = async () => {
   };
 };
 
-const fetchCoinWPumpUsdt = async () => {
-  const ticker = await fetch(
-    'https://api.coinw.com/api/v1/public?command=returnOrderBook&symbol=PUMP_USDT&size=20'
-  );
-  try {
-    const { data } = await ticker.json();
-    const { bids, asks } = data;
-    const bid = bids[0][0];
-    const ask = asks[0][0];
-    console.log('bid', bid, 'ask', ask);
-
-    return {
-      bid,
-      ask,
-    };
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
 export const fetchUsdcUsdt = async () => {
   const ticker = await mexcClient.fetchTicker('USDC/USDT');
 

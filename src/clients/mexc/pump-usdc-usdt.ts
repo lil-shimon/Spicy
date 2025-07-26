@@ -2,7 +2,7 @@ import { PAIRS } from '../../constants';
 import { mexcClient } from './mexc-client';
 
 const fetchPumpUsdc = async () => {
-  const ticker = await mexcClient.fetchTicker(PAIRS.PUMP_USDC);
+  const ticker = await mexcClient.fetchTicker('PUMP/USDC');
 
   return {
     bid: ticker.bid,

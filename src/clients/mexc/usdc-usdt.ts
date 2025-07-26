@@ -14,7 +14,7 @@ export const fetchAskBid = async (symbol: string) => {
   }
 };
 
-const calcSpreadRate = (buyPrice: number, sellPrice: number) => {
+export const calcSpreadRate = (buyPrice: number, sellPrice: number) => {
   return ((sellPrice - buyPrice) / buyPrice) * 100;
 };
 

@@ -27,8 +27,8 @@ export const fetchUsdcUsdt = async () => {
   return await fetchTicker('USDC/USDT');
 };
 
-const calcSpread = (bid: number, ask: number, fee: number) => {
-  return ask - bid - fee;
+const calcSpreadRate = (buyPrice: number, sellPrice: number) => {
+  return ((sellPrice - buyPrice) / buyPrice) * 100;
 };
 
 interface ArbitrageOpportunity {
@@ -87,16 +87,14 @@ const runSol = async () => {
   const solUsdcBidInUsdt = solUsdc.bid * usdcUsdt.bid;
   const solUsdcAskInUsdt = solUsdc.ask * usdcUsdt.bid;
 
-  const spreadSellSolUsdcBuySolUsdt = calcSpread(
-    solUsdcBidInUsdt,
+  const spreadSellSolUsdcBuySolUsdt = calcSpreadRate(
     solUsdt.ask,
-    0
+    solUsdcBidInUsdt
   );
 
-  const spreadSellSolUsdtBuySolUsdc = calcSpread(
-    solUsdt.bid,
+  const spreadSellSolUsdtBuySolUsdc = calcSpreadRate(
     solUsdcAskInUsdt,
-    0
+    solUsdt.bid
   );
 
   console.log(
@@ -191,15 +189,13 @@ export const runPump = async () => {
   const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdt.bid;
 
   // スプレッド（USDT基準）
-  const spreadSellPumpUsdcBuyPumpUsdt = calcSpread(
-    pumpUsdcBidInUsdt,
+  const spreadSellPumpUsdcBuyPumpUsdt = calcSpreadRate(
     pumpUsdt.ask,
-    0
+    pumpUsdcBidInUsdt
   );
-  const spreadSellPumpUsdtBuyPumpUsdc = calcSpread(
-    pumpUsdt.bid,
+  const spreadSellPumpUsdtBuyPumpUsdc = calcSpreadRate(
     pumpUsdcAskInUsdt,
-    0
+    pumpUsdt.bid
   );
 
   console.log(

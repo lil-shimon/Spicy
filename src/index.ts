@@ -1,7 +1,8 @@
-import { startBot } from './bot';
+import { startBot, startUsdcArb } from './bot';
 
 const main = async () => {
-  await startBot();
+  startBot();
+  startUsdcArb();
 };
 
 main();

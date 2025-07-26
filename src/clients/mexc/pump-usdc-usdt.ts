@@ -57,6 +57,28 @@ const executeArbitrageIfProfitable = async (
   }
 };
 
+const executeBestArbitrageOpportunity = async (
+  opportunities: ArbitrageOpportunity[],
+  threshold: number
+) => {
+  const profitableOpportunities = opportunities.filter(
+    (op) => op.spread > threshold
+  );
+  if (profitableOpportunities.length === 0) return;
+
+  const bestOpportunity = profitableOpportunities.reduce((best, current) =>
+    current.spread > best.spread ? current : best
+  );
+
+  console.log(bestOpportunity.message);
+  await postMessage(bestOpportunity.message);
+  await Promise.all(
+    bestOpportunity.orders.map((order) =>
+      orderLimit(order.symbol, order.side, order.amount, order.price)
+    )
+  );
+};
+
 const runSol = async () => {
   const [solUsdc, solUsdt, usdcUsdt] = await Promise.all([
     fetchTicker('SOL/USDC'),
@@ -116,27 +138,35 @@ const runSol = async () => {
 
   const threshold = 0.00001;
 
-  await executeArbitrageIfProfitable(
-    {
-      spread: spreadSellSolUsdcBuySolUsdt,
-      message: '💰 USDT→USDCアービトラージのチャンス！',
-      orders: [
-        { symbol: 'SOL/USDT', side: 'buy', amount: 1000, price: solUsdt.ask },
-        { symbol: 'SOL/USDC', side: 'sell', amount: 1000, price: solUsdc.bid },
-      ],
-    },
-    threshold
-  );
-
-  await executeArbitrageIfProfitable(
-    {
-      spread: spreadSellSolUsdtBuySolUsdc,
-      message: '💰 USDC→USDTアービトラージのチャンス！',
-      orders: [
-        { symbol: 'SOL/USDC', side: 'buy', amount: 1000, price: solUsdc.ask },
-        { symbol: 'SOL/USDT', side: 'sell', amount: 1000, price: solUsdt.bid },
-      ],
-    },
+  await executeBestArbitrageOpportunity(
+    [
+      {
+        spread: spreadSellSolUsdcBuySolUsdt,
+        message: '💰 USDT→USDCアービトラージのチャンス！',
+        orders: [
+          { symbol: 'SOL/USDT', side: 'buy', amount: 1000, price: solUsdt.ask },
+          {
+            symbol: 'SOL/USDC',
+            side: 'sell',
+            amount: 1000,
+            price: solUsdc.bid,
+          },
+        ],
+      },
+      {
+        spread: spreadSellSolUsdtBuySolUsdc,
+        message: '💰 USDC→USDTアービトラージのチャンス！',
+        orders: [
+          { symbol: 'SOL/USDC', side: 'buy', amount: 1000, price: solUsdc.ask },
+          {
+            symbol: 'SOL/USDT',
+            side: 'sell',
+            amount: 1000,
+            price: solUsdt.bid,
+          },
+        ],
+      },
+    ],
     threshold
   );
 };
@@ -199,37 +229,45 @@ export const runPump = async () => {
 
   const threshold = 0.00001;
 
-  await executeArbitrageIfProfitable(
-    {
-      spread: spreadSellPumpUsdcBuyPumpUsdt,
-      message: '💰 USDT→USDCアービトラージのチャンス！',
-      orders: [
-        { symbol: 'PUMP/USDT', side: 'buy', amount: 1000, price: pumpUsdt.ask },
-        {
-          symbol: 'PUMP/USDC',
-          side: 'sell',
-          amount: 1000,
-          price: pumpUsdc.bid,
-        },
-      ],
-    },
-    threshold
-  );
-
-  await executeArbitrageIfProfitable(
-    {
-      spread: spreadSellPumpUsdtBuyPumpUsdc,
-      message: '💰 USDC→USDTアービトラージのチャンス！',
-      orders: [
-        { symbol: 'PUMP/USDC', side: 'buy', amount: 1000, price: pumpUsdc.ask },
-        {
-          symbol: 'PUMP/USDT',
-          side: 'sell',
-          amount: 1000,
-          price: pumpUsdt.bid,
-        },
-      ],
-    },
+  await executeBestArbitrageOpportunity(
+    [
+      {
+        spread: spreadSellPumpUsdcBuyPumpUsdt,
+        message: '💰 USDT→USDCアービトラージのチャンス！',
+        orders: [
+          {
+            symbol: 'PUMP/USDT',
+            side: 'buy',
+            amount: 1000,
+            price: pumpUsdt.ask,
+          },
+          {
+            symbol: 'PUMP/USDC',
+            side: 'sell',
+            amount: 1000,
+            price: pumpUsdc.bid,
+          },
+        ],
+      },
+      {
+        spread: spreadSellPumpUsdtBuyPumpUsdc,
+        message: '💰 USDC→USDTアービトラージのチャンス！',
+        orders: [
+          {
+            symbol: 'PUMP/USDC',
+            side: 'buy',
+            amount: 1000,
+            price: pumpUsdc.ask,
+          },
+          {
+            symbol: 'PUMP/USDT',
+            side: 'sell',
+            amount: 1000,
+            price: pumpUsdt.bid,
+          },
+        ],
+      },
+    ],
     threshold
   );
 };

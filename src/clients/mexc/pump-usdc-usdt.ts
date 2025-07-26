@@ -1,4 +1,3 @@
-import { PAIRS } from '../../constants';
 import { mexcClient } from './mexc-client';
 import { postMessage, postOrderMessage } from '../discord/post-message';
 
@@ -13,14 +12,6 @@ const fetchTicker = async (symbol: string) => {
     await postMessage(`🚨 価格情報が取得できませんでした: ${symbol} ${err}`);
     return null;
   }
-};
-
-const fetchPumpUsdc = async () => {
-  return await fetchTicker('PUMP/USDC');
-};
-
-const fetchPumpUsdt = async () => {
-  return await fetchTicker(PAIRS.PUMP_USDT);
 };
 
 export const fetchUsdcUsdt = async () => {

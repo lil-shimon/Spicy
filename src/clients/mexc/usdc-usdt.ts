@@ -1,7 +1,7 @@
 import { mexcClient } from './mexc-client';
 import { postMessage, postOrderMessage } from '../discord/post-message';
 
-const fetchAskBid = async (symbol: string) => {
+export const fetchAskBid = async (symbol: string) => {
   try {
     const ticker = await mexcClient.fetchTicker(symbol);
     return {

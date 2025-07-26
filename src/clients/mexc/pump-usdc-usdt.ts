@@ -56,27 +56,19 @@ const executeBestArbitrageOpportunity = async (
   await postMessage(message);
 };
 
-const runSol = async () => {
-  const [solUsdc, solUsdt, usdcUsdt] = await Promise.all([
+const runSol = async (usdcUsdtBid: number) => {
+  const [solUsdc, solUsdt] = await Promise.all([
     fetchTicker('SOL/USDC'),
     fetchTicker('SOL/USDT'),
-    fetchTicker('USDC/USDT'),
   ]);
 
-  if (
-    !solUsdc?.bid ||
-    !solUsdc?.ask ||
-    !solUsdt?.bid ||
-    !solUsdt?.ask ||
-    !usdcUsdt?.bid ||
-    !usdcUsdt?.ask
-  ) {
+  if (!solUsdc?.bid || !solUsdc?.ask || !solUsdt?.bid || !solUsdt?.ask) {
     console.log('🚨 価格情報が取得できませんでした');
     return;
   }
 
-  const solUsdcBidInUsdt = solUsdc.bid * usdcUsdt.bid;
-  const solUsdcAskInUsdt = solUsdc.ask * usdcUsdt.bid;
+  const solUsdcBidInUsdt = solUsdc.bid * usdcUsdtBid;
+  const solUsdcAskInUsdt = solUsdc.ask * usdcUsdtBid;
 
   const spreadSellSolUsdcBuySolUsdt = calcSpreadRate(
     solUsdt.ask,
@@ -286,7 +278,7 @@ export const run = async () => {
       return;
     }
     await runPump(usdcUsdt.bid);
-    await runSol();
+    await runSol(usdcUsdt.bid);
   } catch (err) {
     console.error(err);
     await postMessage(`🚨 エラーが発生しました: ${err}`);

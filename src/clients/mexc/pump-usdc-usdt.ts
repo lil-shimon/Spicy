@@ -31,6 +31,32 @@ const calcSpread = (bid: number, ask: number, fee: number) => {
   return ask - bid - fee;
 };
 
+interface ArbitrageOpportunity {
+  spread: number;
+  message: string;
+  orders: Array<{
+    symbol: string;
+    side: 'buy' | 'sell';
+    amount: number;
+    price: number;
+  }>;
+}
+
+const executeArbitrageIfProfitable = async (
+  opportunity: ArbitrageOpportunity,
+  threshold: number
+) => {
+  if (opportunity.spread > threshold) {
+    console.log(opportunity.message);
+    await postMessage(opportunity.message);
+    await Promise.all(
+      opportunity.orders.map((order) =>
+        orderLimit(order.symbol, order.side, order.amount, order.price)
+      )
+    );
+  }
+};
+
 const runSol = async () => {
   const [solUsdc, solUsdt, usdcUsdt] = await Promise.all([
     fetchTicker('SOL/USDC'),
@@ -89,23 +115,30 @@ const runSol = async () => {
   );
 
   const threshold = 0.00001;
-  if (spreadSellSolUsdcBuySolUsdt > threshold) {
-    console.log('💰 USDT→USDCアービトラージのチャンス！');
-    await postMessage('💰 USDT→USDCアービトラージのチャンス！');
-    await Promise.all([
-      orderLimit('SOL/USDT', 'buy', 1000, solUsdt.ask),
-      orderLimit('SOL/USDC', 'sell', 1000, solUsdc.bid),
-    ]);
-  }
 
-  if (spreadSellSolUsdtBuySolUsdc > threshold) {
-    console.log('💰 USDC→USDTアービトラージのチャンス！');
-    await postMessage('💰 USDC→USDTアービトラージのチャンス！');
-    await Promise.all([
-      orderLimit('SOL/USDC', 'buy', 1000, solUsdc.ask),
-      orderLimit('SOL/USDT', 'sell', 1000, solUsdt.bid),
-    ]);
-  }
+  await executeArbitrageIfProfitable(
+    {
+      spread: spreadSellSolUsdcBuySolUsdt,
+      message: '💰 USDT→USDCアービトラージのチャンス！',
+      orders: [
+        { symbol: 'SOL/USDT', side: 'buy', amount: 1000, price: solUsdt.ask },
+        { symbol: 'SOL/USDC', side: 'sell', amount: 1000, price: solUsdc.bid },
+      ],
+    },
+    threshold
+  );
+
+  await executeArbitrageIfProfitable(
+    {
+      spread: spreadSellSolUsdtBuySolUsdc,
+      message: '💰 USDC→USDTアービトラージのチャンス！',
+      orders: [
+        { symbol: 'SOL/USDC', side: 'buy', amount: 1000, price: solUsdc.ask },
+        { symbol: 'SOL/USDT', side: 'sell', amount: 1000, price: solUsdt.bid },
+      ],
+    },
+    threshold
+  );
 };
 
 export const runPump = async () => {
@@ -164,24 +197,41 @@ export const runPump = async () => {
     spreadSellPumpUsdtBuyPumpUsdc
   );
 
-  // 閾値を設定して通知/発注に繋げられる
   const threshold = 0.00001;
-  if (spreadSellPumpUsdcBuyPumpUsdt > threshold) {
-    console.log('💰 USDT→USDCアービトラージのチャンス！');
-    await postMessage('💰 USDT→USDCアービトラージのチャンス！');
-    await Promise.all([
-      orderLimit('PUMP/USDT', 'buy', 1000, pumpUsdt.ask),
-      orderLimit('PUMP/USDC', 'sell', 1000, pumpUsdc.bid),
-    ]);
-  }
-  if (spreadSellPumpUsdtBuyPumpUsdc > threshold) {
-    console.log('💰 USDC→USDTアービトラージのチャンス！');
-    await postMessage('💰 USDC→USDTアービトラージのチャンス！');
-    await Promise.all([
-      orderLimit('PUMP/USDC', 'buy', 1000, pumpUsdc.ask),
-      orderLimit('PUMP/USDT', 'sell', 1000, pumpUsdt.bid),
-    ]);
-  }
+
+  await executeArbitrageIfProfitable(
+    {
+      spread: spreadSellPumpUsdcBuyPumpUsdt,
+      message: '💰 USDT→USDCアービトラージのチャンス！',
+      orders: [
+        { symbol: 'PUMP/USDT', side: 'buy', amount: 1000, price: pumpUsdt.ask },
+        {
+          symbol: 'PUMP/USDC',
+          side: 'sell',
+          amount: 1000,
+          price: pumpUsdc.bid,
+        },
+      ],
+    },
+    threshold
+  );
+
+  await executeArbitrageIfProfitable(
+    {
+      spread: spreadSellPumpUsdtBuyPumpUsdc,
+      message: '💰 USDC→USDTアービトラージのチャンス！',
+      orders: [
+        { symbol: 'PUMP/USDC', side: 'buy', amount: 1000, price: pumpUsdc.ask },
+        {
+          symbol: 'PUMP/USDT',
+          side: 'sell',
+          amount: 1000,
+          price: pumpUsdt.bid,
+        },
+      ],
+    },
+    threshold
+  );
 };
 
 const orderLimit = async (

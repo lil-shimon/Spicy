@@ -122,7 +122,7 @@ const runBySymbol = async (
   );
 };
 
-const orderLimit = async (
+export const orderLimit = async (
   symbol: string,
   side: 'buy' | 'sell',
   amount: number,

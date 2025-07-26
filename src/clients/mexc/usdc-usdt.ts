@@ -122,99 +122,6 @@ const runBySymbol = async (
   );
 };
 
-const runSol = async (usdcUsdt: { bid: number; ask: number }) => {
-  const [solUsdc, solUsdt] = await Promise.all([
-    fetchTicker('SOL/USDC'),
-    fetchTicker('SOL/USDT'),
-  ]);
-
-  if (!solUsdc?.bid || !solUsdc?.ask || !solUsdt?.bid || !solUsdt?.ask) {
-    console.log('🚨 価格情報が取得できませんでした');
-    return;
-  }
-
-  const solUsdcBidInUsdt = solUsdc.bid * usdcUsdt.bid;
-  const solUsdcAskInUsdt = solUsdc.ask * usdcUsdt.ask;
-
-  const spreadSellSolUsdcBuySolUsdt = calcSpreadRate(
-    solUsdt.ask,
-    solUsdcBidInUsdt
-  );
-
-  const spreadSellSolUsdtBuySolUsdc = calcSpreadRate(
-    solUsdcAskInUsdt,
-    solUsdt.bid
-  );
-
-  console.log(
-    'SOL/USDC',
-    {
-      bidInUsdt: solUsdcBidInUsdt,
-      askInUsdt: solUsdcAskInUsdt,
-    },
-    'SOL/USDT',
-    {
-      bid: solUsdt.bid,
-      ask: solUsdt.ask,
-    }
-  );
-
-  console.log(
-    'スプレッド（SOLをUSDCで買ってUSDTで売る）:',
-    spreadSellSolUsdcBuySolUsdt
-  );
-
-  console.log(
-    'スプレッド（SOLをUSDTで買ってUSDCで売る）:',
-    spreadSellSolUsdtBuySolUsdc
-  );
-
-  const threshold = 0.1;
-  const amount = 0.01;
-
-  await executeBestArbitrageOpportunity(
-    [
-      {
-        spread: spreadSellSolUsdcBuySolUsdt,
-        message: '💰 USDT→USDCアービトラージのチャンス！',
-        orders: [
-          {
-            symbol: 'SOL/USDT',
-            side: 'buy',
-            amount,
-            price: solUsdt.ask,
-          },
-          {
-            symbol: 'SOL/USDC',
-            side: 'sell',
-            amount,
-            price: solUsdc.bid,
-          },
-        ],
-      },
-      {
-        spread: spreadSellSolUsdtBuySolUsdc,
-        message: '💰 USDC→USDTアービトラージのチャンス！',
-        orders: [
-          {
-            symbol: 'SOL/USDC',
-            side: 'buy',
-            amount,
-            price: solUsdc.ask,
-          },
-          {
-            symbol: 'SOL/USDT',
-            side: 'sell',
-            amount,
-            price: solUsdt.bid,
-          },
-        ],
-      },
-    ],
-    threshold
-  );
-};
-
 const orderLimit = async (
   symbol: string,
   side: 'buy' | 'sell',
@@ -259,7 +166,7 @@ export const run = async () => {
     const thresholdWithFee = 0.105; // 手数料を考慮したスプレッド
 
     // NOTE: SOLはUSDC, USDT両方とも手数料がTakerでも0
-    await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
+    await runBySymbol('SOL', { bid: usdcUsdt.bid, ask: usdcUsdt.ask }, 0.01);
     // NOTE: ADAはUSDTが手数料かかる(0.005%)
     await runBySymbol(
       'ADA',

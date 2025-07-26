@@ -6,6 +6,7 @@ import { updateCountV2 } from './utils';
 import { mexcClient } from './clients/mexc/mexc-client';
 import { createOrders } from './logic/order/order';
 import 'dotenv/config';
+import { run as runUsdcArb } from './clients/mexc/usdc-usdt';
 
 const enableOrder = process.env.FEATURE_FLAG_ENABLE_ORDER === 'true';
 
@@ -17,6 +18,14 @@ export const startBot = async () => {
   const interval = 1000 * 15; // 15秒ごとに実行
 
   setInterval(execute, interval);
+};
+
+export const startUsdcArb = async () => {
+  console.log('USDCアービトラージBot起動');
+  const interval = 1000 * 15;
+  setInterval(async () => {
+    await runUsdcArb();
+  }, interval);
 };
 
 const execute = async () => {

@@ -150,7 +150,7 @@ const runSol = async (usdcUsdtBid: number) => {
 };
 
 export const runPump = async (usdcUsdtBid: number) => {
-  const [pumpUsdc, pumpUsdt] = await Promise.all([
+  const [pumpUsdt, pumpUsdc] = await Promise.all([
     fetchTicker('PUMP/USDT'),
     fetchTicker('PUMP/USDC'),
   ]);

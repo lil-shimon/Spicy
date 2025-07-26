@@ -172,3 +172,22 @@ export const run = async () => {
     console.log('💰 USDC→USDTアービトラージのチャンス！');
   }
 };
+
+const orderLimit = async (
+  symbol: string,
+  side: 'buy' | 'sell',
+  amount: number,
+  price: number
+) => {
+  const response = await mexcClient.createOrder(
+    symbol,
+    'limit',
+    side,
+    amount,
+    price
+  );
+
+  console.log(response);
+
+  return response;
+};

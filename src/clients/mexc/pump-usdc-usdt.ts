@@ -53,17 +53,11 @@ const calcSpread = (bid: number, ask: number, fee: number) => {
   return ask - bid - fee;
 };
 
-const calcFeePrice = (price: number, feeRate: number) => {
-  const fee = price * feeRate;
-  return price - fee;
-};
-
 export const run = async () => {
-  const [pumpUsdc, pumpUsdt, usdcUsdt, coinwPumpUsdt] = await Promise.all([
+  const [pumpUsdc, pumpUsdt, usdcUsdt] = await Promise.all([
     fetchPumpUsdc(),
     fetchPumpUsdt(),
     fetchUsdcUsdt(),
-    fetchCoinWPumpUsdt(),
   ]);
 
   if (
@@ -71,9 +65,7 @@ export const run = async () => {
     !pumpUsdc.ask ||
     !usdcUsdt.bid ||
     !pumpUsdt.bid ||
-    !pumpUsdt.ask ||
-    !coinwPumpUsdt?.bid ||
-    !coinwPumpUsdt?.ask
+    !pumpUsdt.ask
   ) {
     console.log('🚨 価格情報が取得できませんでした');
     return;
@@ -93,34 +85,6 @@ export const run = async () => {
     pumpUsdt.bid,
     pumpUsdcAskInUsdt,
     0
-  );
-
-  const coinWFeeRate = 0.002;
-
-  const coinWPumpUsdtAskFee = calcFeePrice(coinwPumpUsdt.ask, coinWFeeRate);
-  const coinWPumpUsdtBidFee = calcFeePrice(coinwPumpUsdt.bid, coinWFeeRate);
-
-  // スプレッド（coinw）
-  const spreadSellPumpUsdcBuyPumpUsdtCoinw = calcSpread(
-    pumpUsdcBidInUsdt,
-    coinwPumpUsdt.ask,
-    coinWPumpUsdtAskFee
-  );
-  const spreadSellPumpUsdtBuyPumpUsdcCoinw = calcSpread(
-    coinwPumpUsdt.bid,
-    pumpUsdcAskInUsdt,
-    coinWPumpUsdtBidFee
-  );
-
-  const spreadSellPumpUsdtBuyPumpUsdtCoinw = calcSpread(
-    pumpUsdt.bid,
-    coinwPumpUsdt.ask,
-    coinWPumpUsdtAskFee
-  );
-  const spreadBuyPumpUsdtSellPumpUsdtCoinw = calcSpread(
-    coinwPumpUsdt.bid,
-    pumpUsdt.ask,
-    coinWPumpUsdtBidFee
   );
 
   console.log(
@@ -143,24 +107,6 @@ export const run = async () => {
   console.log(
     'スプレッド（PumpをUSDCで買ってUSDTで売る）:',
     spreadSellPumpUsdtBuyPumpUsdc
-  );
-
-  console.log(
-    'スプレッド（PumpをCoinWで買ってMEXCでUSDCで売る）:',
-    spreadSellPumpUsdcBuyPumpUsdtCoinw
-  );
-  console.log(
-    'スプレッド（PumpをMEXCで買ってCoinWでUSDCで売る）:',
-    spreadSellPumpUsdtBuyPumpUsdcCoinw
-  );
-
-  console.log(
-    'スプレッド（PumpをCoinWで買ってMEXCでUSDTで売る）:',
-    spreadSellPumpUsdtBuyPumpUsdtCoinw
-  );
-  console.log(
-    'スプレッド（PumpをMEXCで買ってCoinWでUSDTで売る）:',
-    spreadBuyPumpUsdtSellPumpUsdtCoinw
   );
 
   // 閾値を設定して通知/発注に繋げられる

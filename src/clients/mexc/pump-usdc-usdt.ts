@@ -56,7 +56,7 @@ const executeBestArbitrageOpportunity = async (
   await postMessage(message);
 };
 
-const runSol = async (usdcUsdtBid: number) => {
+const runSol = async (usdcUsdt: { bid: number; ask: number }) => {
   const [solUsdc, solUsdt] = await Promise.all([
     fetchTicker('SOL/USDC'),
     fetchTicker('SOL/USDT'),
@@ -67,8 +67,8 @@ const runSol = async (usdcUsdtBid: number) => {
     return;
   }
 
-  const solUsdcBidInUsdt = solUsdc.bid * usdcUsdtBid;
-  const solUsdcAskInUsdt = solUsdc.ask * usdcUsdtBid;
+  const solUsdcBidInUsdt = solUsdc.bid * usdcUsdt.bid;
+  const solUsdcAskInUsdt = solUsdc.ask * usdcUsdt.ask;
 
   const spreadSellSolUsdcBuySolUsdt = calcSpreadRate(
     solUsdt.ask,
@@ -149,7 +149,7 @@ const runSol = async (usdcUsdtBid: number) => {
   );
 };
 
-export const runPump = async (usdcUsdtBid: number) => {
+export const runPump = async (usdcUsdt: { bid: number; ask: number }) => {
   const [pumpUsdt, pumpUsdc] = await Promise.all([
     fetchTicker('PUMP/USDT'),
     fetchTicker('PUMP/USDC'),
@@ -161,8 +161,8 @@ export const runPump = async (usdcUsdtBid: number) => {
   }
 
   // USDC → USDT 換算（保守的に bid を使う）
-  const pumpUsdcBidInUsdt = pumpUsdc.bid * usdcUsdtBid;
-  const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdtBid;
+  const pumpUsdcBidInUsdt = pumpUsdc.bid * usdcUsdt.bid;
+  const pumpUsdcAskInUsdt = pumpUsdc.ask * usdcUsdt.ask;
 
   // スプレッド（USDT基準）
   const spreadSellPumpUsdcBuyPumpUsdt = calcSpreadRate(
@@ -273,13 +273,17 @@ const orderLimit = async (
 export const run = async () => {
   try {
     const usdcUsdt = await fetchTicker('USDC/USDT');
-    if (!usdcUsdt?.bid) {
+    if (!usdcUsdt?.ask || !usdcUsdt.bid) {
       console.log('🚨 USDC/USDT価格情報が取得できませんでした');
       return;
     }
-    console.log('💰 USDC/USDT価格情報が取得できました', usdcUsdt.bid);
-    await runPump(usdcUsdt.bid);
-    await runSol(usdcUsdt.bid);
+    console.log(
+      '💰 USDC/USDT価格情報が取得できました',
+      usdcUsdt.bid,
+      usdcUsdt.ask
+    );
+    await runPump({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
+    await runSol({ bid: usdcUsdt.bid, ask: usdcUsdt.ask });
   } catch (err) {
     console.error(err);
     await postMessage(`🚨 エラーが発生しました: ${err}`);

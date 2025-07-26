@@ -97,22 +97,40 @@ export const fetchJpyUsd = async () => {
   }
 };
 
-export const fetchGmoBalance = async () => {
-  const timestamp = Date.now().toString();
-  const path = '/v1/account/assets';
-  const url = `${coinEndPoint}${path}`;
-  const method = 'GET';
-  const text = timestamp + method + path;
-
-  if (!coinApiSecret || !coinApiKey) {
+const getSign = (
+  path: string,
+  method: string,
+  timestamp: string,
+  reqBody?: string
+) => {
+  if (!coinApiSecret) {
     console.error('GMO APIキーまたはシークレットが設定されていません。');
     return;
+  }
+
+  let text = timestamp + method + path;
+  if (reqBody) {
+    text += reqBody;
   }
 
   const sign = crypto
     .createHmac('sha256', coinApiSecret)
     .update(text)
     .digest('hex');
+  return sign;
+};
+
+export const fetchGmoBalance = async () => {
+  const path = '/v1/account/assets';
+  const url = `${coinEndPoint}${path}`;
+  const method = 'GET';
+  const timestamp = Date.now().toString();
+  const sign = getSign(path, method, timestamp);
+
+  if (!coinApiKey || !sign) {
+    console.error('GMO APIキーまたはシークレットが設定されていません。');
+    return;
+  }
 
   const response = await fetch(url, {
     headers: {

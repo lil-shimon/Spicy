@@ -25,12 +25,12 @@ const exchangeArb = async (
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
   // 3. 為替情報を取得(JPY/USD)
-  const [gmoSolJpy, mexcSolUsdt] = await Promise.all([
+  const [gmoJpy, mexcSolUsdt] = await Promise.all([
     fetchGmoAskBid(symbol),
     fetchAskBid(`${symbol}/USDT`),
   ]);
 
-  if (!gmoSolJpy || !mexcSolUsdt?.ask || !mexcSolUsdt?.bid) {
+  if (!gmoJpy || !mexcSolUsdt?.ask || !mexcSolUsdt?.bid) {
     console.log('GMOまたはMEXCのデータが取得できませんでした');
     return;
   }
@@ -39,15 +39,15 @@ const exchangeArb = async (
   const mexcSolUsdtAsk = convert(mexcSolUsdt.ask, 'sell', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
-  const gmoBuySpreadRate = calcSpreadRate(gmoSolJpy.bid, mexcSolUsdtAsk);
-  const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtBid, gmoSolJpy.ask);
+  const gmoBuySpreadRate = calcSpreadRate(gmoJpy.bid, mexcSolUsdtAsk);
+  const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtBid, gmoJpy.ask);
 
   console.log(
-    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoSolJpy.bid} → MEXC売 ${mexcSolUsdtAsk}）`,
+    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoJpy.bid} → MEXC売 ${mexcSolUsdtAsk}）`,
     gmoBuySpreadRate
   );
   console.log(
-    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcSolUsdtBid} → GMO売 ${gmoSolJpy.ask}）`,
+    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcSolUsdtBid} → GMO売 ${gmoJpy.ask}）`,
     gmoSellSpreadRate
   );
 
@@ -58,7 +58,7 @@ const exchangeArb = async (
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
     console.log(message);
     await Promise.all([
-      orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoSolJpy.bid),
+      orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoJpy.bid),
       orderLimit(`${symbol}/USDT`, 'sell', amount, mexcSolUsdt.ask),
     ]);
     await postMessage(message);
@@ -69,7 +69,7 @@ const exchangeArb = async (
     console.log(message);
     await Promise.all([
       orderLimit(`${symbol}/USDT`, 'buy', amount, mexcSolUsdt.bid),
-      orderGmo(symbol, 'SELL', amount.toString(), 'LIMIT', gmoSolJpy.ask),
+      orderGmo(symbol, 'SELL', amount.toString(), 'LIMIT', gmoJpy.ask),
     ]);
     await postMessage(message);
   }

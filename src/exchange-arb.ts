@@ -159,7 +159,7 @@ export const startExchangeArbs = async () => {
     console.log('JPY/USD価格情報が取得できました', jpyUsd.ask, jpyUsd.bid);
     await Promise.all([
       exchangeArb('SOL', jpyUsd, 0.02),
-      exchangeArb('XRP', jpyUsd, 200),
+      exchangeArb('XRP', jpyUsd, 1),
       exchangeArb('BTC', jpyUsd, 0.001),
       exchangeArb('ETH', jpyUsd, 0.001),
     ]);

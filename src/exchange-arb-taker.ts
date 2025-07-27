@@ -153,7 +153,7 @@ const executeBestArbitrageOpportunity = async (
 };
 
 export const startExchangeArbsTaker = async () => {
-  const interval = 1000 * 15;
+  const interval = 1000 * 10;
 
   setInterval(async () => {
     console.log('実行開始:為替アビトラ成行');
@@ -165,10 +165,7 @@ export const startExchangeArbsTaker = async () => {
     console.log('JPY/USD価格情報が取得できました', jpyUsd.ask, jpyUsd.bid);
     await Promise.all([
       exchangeArb('SOL', jpyUsd, 0.02, 'MARKET'),
-      exchangeArb('XRP', jpyUsd, 200),
-      exchangeArb('BTC', jpyUsd, 0.001),
-      exchangeArb('ETH', jpyUsd, 0.001),
-      exchangeArb('DAI', jpyUsd, 10),
+      exchangeArb('XRP', jpyUsd, 1, 'MARKET'),
     ]);
     console.log('実行終了');
   }, interval);

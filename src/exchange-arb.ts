@@ -55,7 +55,7 @@ const exchangeArb = async (
   const threshold = 0.2;
 
   if (gmoBuySpreadRate > threshold) {
-    const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
+    const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% GMO買 ${gmoJpy.bid} → MEXC売 ${mexcUsdt.ask} ペア: ${symbol}`;
     console.log(message);
     await Promise.all([
       orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoJpy.bid),
@@ -65,7 +65,7 @@ const exchangeArb = async (
   }
 
   if (gmoSellSpreadRate > threshold) {
-    const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% `;
+    const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% MEXC買 ${mexcUsdt.bid} → GMO売 ${gmoJpy.ask} ペア: ${symbol}`;
     console.log(message);
     await Promise.all([
       orderLimit(`${symbol}/USDT`, 'buy', amount, mexcUsdt.bid),
@@ -89,6 +89,8 @@ export const startExchangeArbs = async () => {
     await Promise.all([
       exchangeArb('SOL', jpyUsd, 0.02),
       exchangeArb('XRP', jpyUsd, 200),
+      exchangeArb('BTC', jpyUsd, 0.001),
+      exchangeArb('ETH', jpyUsd, 0.001),
     ]);
     console.log('実行終了');
   }, interval);

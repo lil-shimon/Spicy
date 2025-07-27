@@ -150,7 +150,7 @@ export const startExchangeArbs = async () => {
   const interval = 1000 * 15;
 
   setInterval(async () => {
-    console.log('実行開始');
+    console.log('実行開始:為替アビトラ指値');
     const jpyUsd = await fetchJpyUsd();
     if (!jpyUsd) {
       console.log('JPY/USD価格情報が取得できませんでした');
@@ -162,7 +162,6 @@ export const startExchangeArbs = async () => {
       exchangeArb('XRP', jpyUsd, 200),
       exchangeArb('BTC', jpyUsd, 0.001),
       exchangeArb('ETH', jpyUsd, 0.001),
-      exchangeArb('DAI', jpyUsd, 10, 'MARKET'),
     ]);
     console.log('実行終了');
   }, interval);

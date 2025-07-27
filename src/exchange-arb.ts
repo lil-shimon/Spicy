@@ -6,28 +6,22 @@ import {
   orderLimit,
 } from './clients/mexc/usdc-usdt';
 
-const exchangeArb = async (symbol: string) => {
+const exchangeArb = async (
+  symbol: string,
+  jpyUsd: { ask: number; bid: number }
+) => {
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
   // 3. 為替情報を取得(JPY/USD)
-  const [gmoSolJpy, mexcSolUsdt, jpyUsd] = await Promise.all([
+  const [gmoSolJpy, mexcSolUsdt] = await Promise.all([
     fetchGmoAskBid(symbol),
     fetchAskBid(`${symbol}/USDT`),
-    fetchJpyUsd(),
   ]);
 
-  if (
-    !gmoSolJpy ||
-    !mexcSolUsdt?.ask ||
-    !mexcSolUsdt?.bid ||
-    !jpyUsd?.ask ||
-    !jpyUsd?.bid
-  ) {
+  if (!gmoSolJpy || !mexcSolUsdt?.ask || !mexcSolUsdt?.bid) {
     console.log('GMOまたはMEXCのデータが取得できませんでした');
     return;
   }
-  console.log('💰 JPY/USD価格情報が取得できました', jpyUsd.ask, jpyUsd.bid);
-
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
   const mexcSolUsdtBid = mexcSolUsdt.bid * jpyUsd.ask;
   const mexcSolUsdtAsk = mexcSolUsdt.ask * jpyUsd.bid;
@@ -74,7 +68,12 @@ export const startExchangeArbs = async () => {
 
   setInterval(async () => {
     console.log('実行開始');
-    await Promise.all([exchangeArb('SOL'), exchangeArb('XRP')]);
+    const jpyUsd = await fetchJpyUsd();
+    if (!jpyUsd) {
+      console.log('JPY/USD価格情報が取得できませんでした');
+      return;
+    }
+    await Promise.all([exchangeArb('SOL', jpyUsd), exchangeArb('XRP', jpyUsd)]);
     console.log('実行終了');
   }, interval);
 };

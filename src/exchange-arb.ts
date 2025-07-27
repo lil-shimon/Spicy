@@ -25,18 +25,18 @@ const exchangeArb = async (
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
   // 3. 為替情報を取得(JPY/USD)
-  const [gmoJpy, mexcSolUsdt] = await Promise.all([
+  const [gmoJpy, mexcUsdt] = await Promise.all([
     fetchGmoAskBid(symbol),
     fetchAskBid(`${symbol}/USDT`),
   ]);
 
-  if (!gmoJpy || !mexcSolUsdt?.ask || !mexcSolUsdt?.bid) {
+  if (!gmoJpy || !mexcUsdt?.ask || !mexcUsdt?.bid) {
     console.log('GMOまたはMEXCのデータが取得できませんでした');
     return;
   }
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
-  const mexcSolUsdtBid = convert(mexcSolUsdt.bid, 'buy', jpyUsd);
-  const mexcSolUsdtAsk = convert(mexcSolUsdt.ask, 'sell', jpyUsd);
+  const mexcSolUsdtBid = convert(mexcUsdt.bid, 'buy', jpyUsd);
+  const mexcSolUsdtAsk = convert(mexcUsdt.ask, 'sell', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
   const gmoBuySpreadRate = calcSpreadRate(gmoJpy.bid, mexcSolUsdtAsk);
@@ -59,7 +59,7 @@ const exchangeArb = async (
     console.log(message);
     await Promise.all([
       orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoJpy.bid),
-      orderLimit(`${symbol}/USDT`, 'sell', amount, mexcSolUsdt.ask),
+      orderLimit(`${symbol}/USDT`, 'sell', amount, mexcUsdt.ask),
     ]);
     await postMessage(message);
   }
@@ -68,7 +68,7 @@ const exchangeArb = async (
     const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% `;
     console.log(message);
     await Promise.all([
-      orderLimit(`${symbol}/USDT`, 'buy', amount, mexcSolUsdt.bid),
+      orderLimit(`${symbol}/USDT`, 'buy', amount, mexcUsdt.bid),
       orderGmo(symbol, 'SELL', amount.toString(), 'LIMIT', gmoJpy.ask),
     ]);
     await postMessage(message);

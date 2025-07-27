@@ -8,7 +8,8 @@ import {
 
 const exchangeArb = async (
   symbol: string,
-  jpyUsd: { ask: number; bid: number }
+  jpyUsd: { ask: number; bid: number },
+  amount: number
 ) => {
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
@@ -46,8 +47,8 @@ const exchangeArb = async (
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
     console.log(message);
     await Promise.all([
-      orderGmo(symbol, 'BUY', '0.02', 'MARKET'),
-      orderLimit(`${symbol}/USDT`, 'sell', 0.02, mexcSolUsdt.ask),
+      orderGmo(symbol, 'BUY', amount.toString(), 'MARKET'),
+      orderLimit(`${symbol}/USDT`, 'sell', amount, mexcSolUsdt.ask),
     ]);
     await postMessage(message);
   }
@@ -56,8 +57,8 @@ const exchangeArb = async (
     const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% `;
     console.log(message);
     await Promise.all([
-      orderLimit(`${symbol}/USDT`, 'buy', 0.02, mexcSolUsdt.bid),
-      orderGmo(symbol, 'SELL', '0.02', 'MARKET'),
+      orderLimit(`${symbol}/USDT`, 'buy', amount, mexcSolUsdt.bid),
+      orderGmo(symbol, 'SELL', amount.toString(), 'MARKET'),
     ]);
     await postMessage(message);
   }
@@ -73,7 +74,10 @@ export const startExchangeArbs = async () => {
       console.log('JPY/USD価格情報が取得できませんでした');
       return;
     }
-    await Promise.all([exchangeArb('SOL', jpyUsd), exchangeArb('XRP', jpyUsd)]);
+    await Promise.all([
+      exchangeArb('SOL', jpyUsd, 0.02),
+      exchangeArb('XRP', jpyUsd, 200),
+    ]);
     console.log('実行終了');
   }, interval);
 };

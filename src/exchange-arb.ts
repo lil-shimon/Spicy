@@ -24,8 +24,8 @@ const exchangeArb = async (
     return;
   }
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
-  const mexcSolUsdtBid = mexcSolUsdt.bid * jpyUsd.ask;
-  const mexcSolUsdtAsk = mexcSolUsdt.ask * jpyUsd.bid;
+  const mexcSolUsdtBid = mexcSolUsdt.bid * jpyUsd.bid;
+  const mexcSolUsdtAsk = mexcSolUsdt.ask * jpyUsd.ask;
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
   const gmoBuySpreadRate = calcSpreadRate(gmoSolJpy.ask, mexcSolUsdtBid);
@@ -74,6 +74,7 @@ export const startExchangeArbs = async () => {
       console.log('JPY/USD価格情報が取得できませんでした');
       return;
     }
+    console.log('JPY/USD価格情報が取得できました', jpyUsd.ask, jpyUsd.bid);
     await Promise.all([
       exchangeArb('SOL', jpyUsd, 0.02),
       exchangeArb('XRP', jpyUsd, 200),

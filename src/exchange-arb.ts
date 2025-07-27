@@ -6,6 +6,17 @@ import {
   orderLimit,
 } from './clients/mexc/usdc-usdt';
 
+const convert = (
+  priceUsdt: number,
+  side: 'buy' | 'sell',
+  fx: { ask: number; bid: number }
+) => {
+  if (side === 'buy') {
+    return priceUsdt * fx.ask;
+  }
+  return priceUsdt * fx.bid;
+};
+
 const exchangeArb = async (
   symbol: string,
   jpyUsd: { ask: number; bid: number },
@@ -24,8 +35,8 @@ const exchangeArb = async (
     return;
   }
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
-  const mexcSolUsdtBid = mexcSolUsdt.bid * jpyUsd.bid;
-  const mexcSolUsdtAsk = mexcSolUsdt.ask * jpyUsd.ask;
+  const mexcSolUsdtBid = convert(mexcSolUsdt.bid, 'buy', jpyUsd);
+  const mexcSolUsdtAsk = convert(mexcSolUsdt.ask, 'sell', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
   const gmoBuySpreadRate = calcSpreadRate(gmoSolJpy.ask, mexcSolUsdtBid);
@@ -82,5 +93,3 @@ export const startExchangeArbs = async () => {
     console.log('実行終了');
   }, interval);
 };
-
-startExchangeArbs();

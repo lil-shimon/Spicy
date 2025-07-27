@@ -105,7 +105,7 @@ export const fetchGmoBalance = async () => {
 };
 
 export const orderGmo = async (
-  // 注意: JPYまで含めるとレバレッジ取引になるので注意(例: SOL_JPY)
+  // 注意: JPYまで含めると先物取引になるので注意(例: SOL_JPY)
   symbol: string,
   side: 'BUY' | 'SELL',
   size: string,

@@ -43,11 +43,11 @@ const exchangeArb = async (
   const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtBid, gmoSolJpy.ask);
 
   console.log(
-    `スプレッド（${symbol}をJPYで買ってUSDTで売る）`,
+    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoSolJpy.bid} → MEXC売 ${mexcSolUsdtAsk}）`,
     gmoBuySpreadRate
   );
   console.log(
-    `スプレッド（${symbol}をUSDTで買ってJPYで売る）`,
+    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcSolUsdtBid} → GMO売 ${gmoSolJpy.ask}）`,
     gmoSellSpreadRate
   );
 

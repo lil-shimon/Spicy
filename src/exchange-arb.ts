@@ -35,19 +35,19 @@ const exchangeArb = async (
     return;
   }
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
-  const mexcSolUsdtBid = convert(mexcUsdt.bid, 'buy', jpyUsd);
-  const mexcSolUsdtAsk = convert(mexcUsdt.ask, 'sell', jpyUsd);
+  const mexcUsdtBid = convert(mexcUsdt.bid, 'buy', jpyUsd);
+  const mexcUsdtAsk = convert(mexcUsdt.ask, 'sell', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
-  const gmoBuySpreadRate = calcSpreadRate(gmoJpy.bid, mexcSolUsdtAsk);
-  const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtBid, gmoJpy.ask);
+  const gmoBuySpreadRate = calcSpreadRate(gmoJpy.bid, mexcUsdtAsk);
+  const gmoSellSpreadRate = calcSpreadRate(mexcUsdtBid, gmoJpy.ask);
 
   console.log(
-    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoJpy.bid} → MEXC売 ${mexcSolUsdtAsk}）`,
+    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoJpy.bid} → MEXC売 ${mexcUsdtAsk}）`,
     gmoBuySpreadRate
   );
   console.log(
-    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcSolUsdtBid} → GMO売 ${gmoJpy.ask}）`,
+    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcUsdtBid} → GMO売 ${gmoJpy.ask}）`,
     gmoSellSpreadRate
   );
 

@@ -109,7 +109,6 @@ export const orderGmo = async (
   symbol: string,
   side: 'BUY' | 'SELL',
   size: string,
-  // TODO: Limitの時、価格指定ができるようにする
   type: 'LIMIT' | 'MARKET',
   price?: number
 ) => {

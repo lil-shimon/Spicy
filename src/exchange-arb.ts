@@ -54,25 +54,94 @@ const exchangeArb = async (
   // 6. 差益があるかの判定
   const threshold = 0.2;
 
-  if (gmoBuySpreadRate > threshold) {
-    const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% GMO買 ${gmoJpy.bid} → MEXC売 ${mexcUsdt.ask} ペア: ${symbol}`;
-    console.log(message);
-    await Promise.all([
-      orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoJpy.bid),
-      orderLimit(`${symbol}/USDT`, 'sell', amount, mexcUsdt.ask),
-    ]);
-    await postMessage(message);
-  }
+  const opportunities: ArbitrageOpportunity[] = [
+    {
+      spread: gmoBuySpreadRate,
+      message: `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% GMO買 ${gmoJpy.bid} → MEXC売 ${mexcUsdt.ask} ペア: ${symbol}`,
+      orders: [
+        {
+          symbol: symbol,
+          side: 'buy',
+          amount: amount,
+          price: gmoJpy.bid,
+          exchange: 'GMO',
+        },
+        {
+          symbol: `${symbol}/USDT`,
+          side: 'sell',
+          amount: amount,
+          price: mexcUsdt.ask,
+          exchange: 'MEXC',
+        },
+      ],
+    },
+    {
+      spread: gmoSellSpreadRate,
+      message: `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% MEXC買 ${mexcUsdt.bid} → GMO売 ${gmoJpy.ask} ペア: ${symbol}`,
+      orders: [
+        {
+          symbol: `${symbol}/USDT`,
+          side: 'buy',
+          amount: amount,
+          price: mexcUsdt.bid,
+          exchange: 'MEXC',
+        },
+        {
+          symbol: symbol,
+          side: 'sell',
+          amount: amount,
+          price: gmoJpy.ask,
+          exchange: 'GMO',
+        },
+      ],
+    },
+  ];
 
-  if (gmoSellSpreadRate > threshold) {
-    const message = `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% MEXC買 ${mexcUsdt.bid} → GMO売 ${gmoJpy.ask} ペア: ${symbol}`;
-    console.log(message);
-    await Promise.all([
-      orderLimit(`${symbol}/USDT`, 'buy', amount, mexcUsdt.bid),
-      orderGmo(symbol, 'SELL', amount.toString(), 'LIMIT', gmoJpy.ask),
-    ]);
-    await postMessage(message);
-  }
+  await executeBestArbitrageOpportunity(opportunities, threshold);
+};
+
+interface ArbitrageOpportunity {
+  spread: number;
+  message: string;
+  orders: Array<{
+    symbol: string;
+    side: 'buy' | 'sell';
+    amount: number;
+    price: number;
+    exchange: 'GMO' | 'MEXC';
+  }>;
+}
+
+const executeBestArbitrageOpportunity = async (
+  opportunities: ArbitrageOpportunity[],
+  threshold: number
+) => {
+  const profitableOpportunities = opportunities.filter(
+    (op) => op.spread > threshold
+  );
+  if (profitableOpportunities.length === 0) return;
+
+  const bestOpportunity = profitableOpportunities.reduce((best, current) =>
+    current.spread > best.spread ? current : best
+  );
+  const message = `💰 ${bestOpportunity.message} スプレッド: ${bestOpportunity.spread}`;
+  console.log(message);
+  await Promise.all(
+    bestOpportunity.orders.map((order) => {
+      if (order.exchange === 'GMO') {
+        return orderGmo(
+          order.symbol,
+          order.side === 'buy' ? 'BUY' : 'SELL',
+          order.amount.toString(),
+          'LIMIT',
+          order.price
+        );
+      } else {
+        return orderLimit(order.symbol, order.side, order.amount, order.price);
+      }
+    })
+  );
+  await postMessage(message);
 };
 
 export const startExchangeArbs = async () => {

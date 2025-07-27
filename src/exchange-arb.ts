@@ -39,8 +39,8 @@ const exchangeArb = async (
   const mexcSolUsdtAsk = convert(mexcSolUsdt.ask, 'sell', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
-  const gmoBuySpreadRate = calcSpreadRate(gmoSolJpy.ask, mexcSolUsdtBid);
-  const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtAsk, gmoSolJpy.bid);
+  const gmoBuySpreadRate = calcSpreadRate(gmoSolJpy.bid, mexcSolUsdtAsk);
+  const gmoSellSpreadRate = calcSpreadRate(mexcSolUsdtBid, gmoSolJpy.ask);
 
   console.log(
     `スプレッド（${symbol}をJPYで買ってUSDTで売る）`,

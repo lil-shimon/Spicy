@@ -47,7 +47,7 @@ const exchangeArb = async (
     const message = `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% `;
     console.log(message);
     await Promise.all([
-      orderGmo(symbol, 'BUY', amount.toString(), 'MARKET'),
+      orderGmo(symbol, 'BUY', amount.toString(), 'LIMIT', gmoSolJpy.bid),
       orderLimit(`${symbol}/USDT`, 'sell', amount, mexcSolUsdt.ask),
     ]);
     await postMessage(message);
@@ -58,7 +58,7 @@ const exchangeArb = async (
     console.log(message);
     await Promise.all([
       orderLimit(`${symbol}/USDT`, 'buy', amount, mexcSolUsdt.bid),
-      orderGmo(symbol, 'SELL', amount.toString(), 'MARKET'),
+      orderGmo(symbol, 'SELL', amount.toString(), 'LIMIT', gmoSolJpy.ask),
     ]);
     await postMessage(message);
   }

@@ -36,19 +36,19 @@ const exchangeArb = async (
     return;
   }
   // 4. 為替情報を使って、MEXCのSOL/USDTをJPYに変換
-  const mexcUsdtBid = convert(mexcUsdt.bid, 'sell', jpyUsd);
-  const mexcUsdtAsk = convert(mexcUsdt.ask, 'buy', jpyUsd);
+  const mexcUsdtToJpyBid = convert(mexcUsdt.bid, 'sell', jpyUsd);
+  const mexcUsdtToJpyAsk = convert(mexcUsdt.ask, 'buy', jpyUsd);
 
   // 5. 変換後の価格をGMOのSOL/JPYと比較
-  const gmoBuySpreadRate = calcSpreadRate(gmoJpy.ask, mexcUsdtBid);
-  const gmoSellSpreadRate = calcSpreadRate(mexcUsdtAsk, gmoJpy.bid);
+  const gmoBuySpreadRate = calcSpreadRate(gmoJpy.ask, mexcUsdtToJpyBid);
+  const gmoSellSpreadRate = calcSpreadRate(mexcUsdtToJpyAsk, gmoJpy.bid);
 
   console.log(
-    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoJpy.ask} → MEXC売 ${mexcUsdtBid}）`,
+    `スプレッド（${symbol}をJPYで買ってUSDTで売る: GMO買 ${gmoJpy.ask} → MEXC売 ${mexcUsdtToJpyBid}）`,
     gmoBuySpreadRate
   );
   console.log(
-    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcUsdtAsk} → GMO売 ${gmoJpy.bid}）`,
+    `スプレッド（${symbol}をUSDTで買ってJPYで売る: MEXC買 ${mexcUsdtToJpyAsk} → GMO売 ${gmoJpy.bid}）`,
     gmoSellSpreadRate
   );
 
@@ -58,7 +58,7 @@ const exchangeArb = async (
   const opportunities: ArbitrageOpportunity[] = [
     {
       spread: gmoBuySpreadRate,
-      message: `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% GMO買 ${gmoJpy.ask} → MEXC売 ${mexcUsdtBid} ペア: ${symbol}`,
+      message: `💰 GMO買→MEXC売アービトラージのチャンス！ スプレッド: ${gmoBuySpreadRate}% GMO買 ${gmoJpy.ask} → MEXC売 ${mexcUsdtToJpyBid} ペア: ${symbol}`,
       orders: [
         {
           symbol: symbol,
@@ -71,20 +71,20 @@ const exchangeArb = async (
           symbol: `${symbol}/USDT`,
           side: 'sell',
           amount: amount,
-          price: mexcUsdtBid,
+          price: mexcUsdt.bid,
           exchange: 'MEXC',
         },
       ],
     },
     {
       spread: gmoSellSpreadRate,
-      message: `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% MEXC買 ${mexcUsdtAsk} → GMO売 ${gmoJpy.bid} ペア: ${symbol}`,
+      message: `💰 MEXC買→GMO売アービトラージのチャンス！ スプレッド: ${gmoSellSpreadRate}% MEXC買 ${mexcUsdtToJpyAsk} → GMO売 ${gmoJpy.bid} ペア: ${symbol}`,
       orders: [
         {
           symbol: `${symbol}/USDT`,
           side: 'buy',
           amount: amount,
-          price: mexcUsdtAsk,
+          price: mexcUsdt.ask,
           exchange: 'MEXC',
         },
         {
@@ -131,6 +131,13 @@ const executeBestArbitrageOpportunity = async (
   await Promise.all(
     bestOpportunity.orders.map((order) => {
       if (order.exchange === 'GMO') {
+        console.log(
+          'orderGmo',
+          order.symbol,
+          order.side,
+          order.amount,
+          order.price
+        );
         return orderGmo(
           order.symbol,
           order.side === 'buy' ? 'BUY' : 'SELL',
@@ -139,12 +146,23 @@ const executeBestArbitrageOpportunity = async (
           order.price
         );
       } else {
+        console.log(
+          'orderLimit',
+          'symbol',
+          order.symbol,
+          'side',
+          order.side,
+          'amount',
+          order.amount,
+          'price',
+          order.price
+        );
         return orderLimit(
           order.symbol,
           order.side,
           order.amount,
           order.price,
-          executeType === 'LIMIT' ? 'limit' : 'market'
+          'market'
         );
       }
     })

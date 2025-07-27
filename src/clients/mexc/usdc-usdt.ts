@@ -126,12 +126,13 @@ export const orderLimit = async (
   symbol: string,
   side: 'buy' | 'sell',
   amount: number,
-  price: number
+  price: number,
+  executeType: 'limit' | 'market' = 'limit'
 ) => {
   try {
     const response = await mexcClient.createOrder(
       symbol,
-      'limit',
+      executeType,
       side,
       amount,
       price

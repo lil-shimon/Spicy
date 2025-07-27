@@ -20,7 +20,8 @@ const convert = (
 const exchangeArb = async (
   symbol: string,
   jpyUsd: { ask: number; bid: number },
-  amount: number
+  amount: number,
+  executeType: 'LIMIT' | 'MARKET' = 'LIMIT'
 ) => {
   // 1. 各取引所の価格を取得 (最初はGMO, MEXC)
   // 2. GMOはSOL/JPY, MEXCはSOL/USDT
@@ -97,7 +98,7 @@ const exchangeArb = async (
     },
   ];
 
-  await executeBestArbitrageOpportunity(opportunities, threshold);
+  await executeBestArbitrageOpportunity(opportunities, threshold, executeType);
 };
 
 interface ArbitrageOpportunity {
@@ -114,7 +115,8 @@ interface ArbitrageOpportunity {
 
 const executeBestArbitrageOpportunity = async (
   opportunities: ArbitrageOpportunity[],
-  threshold: number
+  threshold: number,
+  executeType: 'LIMIT' | 'MARKET' = 'LIMIT'
 ) => {
   const profitableOpportunities = opportunities.filter(
     (op) => op.spread > threshold
@@ -133,7 +135,7 @@ const executeBestArbitrageOpportunity = async (
           order.symbol,
           order.side === 'buy' ? 'BUY' : 'SELL',
           order.amount.toString(),
-          'LIMIT',
+          executeType,
           order.price
         );
       } else {
@@ -160,6 +162,7 @@ export const startExchangeArbs = async () => {
       exchangeArb('XRP', jpyUsd, 200),
       exchangeArb('BTC', jpyUsd, 0.001),
       exchangeArb('ETH', jpyUsd, 0.001),
+      exchangeArb('DAI', jpyUsd, 10, 'MARKET'),
     ]);
     console.log('実行終了');
   }, interval);

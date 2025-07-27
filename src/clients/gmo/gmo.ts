@@ -110,19 +110,29 @@ export const orderGmo = async (
   side: 'BUY' | 'SELL',
   size: string,
   // TODO: Limitの時、価格指定ができるようにする
-  type: 'LIMIT' | 'MARKET'
+  type: 'LIMIT' | 'MARKET',
+  price?: number
 ) => {
   try {
     const timestamp = Date.now().toString();
     const path = '/v1/order';
     const url = `${coinEndPoint}${path}`;
     const method = 'POST';
-    let reqBody = JSON.stringify({
-      symbol,
-      side,
-      executionType: type,
-      size,
-    });
+    const reqBody =
+      type === 'LIMIT'
+        ? JSON.stringify({
+            symbol,
+            side,
+            executionType: type,
+            size,
+            price,
+          })
+        : JSON.stringify({
+            symbol,
+            side,
+            executionType: type,
+            size,
+          });
     const sign = getSign(path, method, timestamp, reqBody);
 
     if (!coinApiKey || !sign) {

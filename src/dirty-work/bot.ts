@@ -10,12 +10,13 @@ const spreadThreshold = 0.1; // スプレッドの閾値を設定
 const TICK = 0.0001;
 const FULL_SPREAD = 0.0001;
 const HALF = FULL_SPREAD / 2;
+let tickSize = TICK;
 
 /**
  * TICK の倍数に切り捨て
  * roundDown(99.9517)  // → 99.951
  */
-const roundDown = (price: number, tick = TICK) => {
+const roundDown = (price: number, tick = tickSize) => {
   return Math.floor(price / tick) * tick;
 };
 
@@ -23,7 +24,7 @@ const roundDown = (price: number, tick = TICK) => {
  * TICK の倍数に切り上げ
  * roundUp  (99.9517)  // → 99.952
  */
-const roundUp = (price: number, tick = TICK) => {
+const roundUp = (price: number, tick = tickSize) => {
   return Math.ceil(price / tick) * tick;
 };
 
@@ -36,8 +37,8 @@ const handleEnableOrder = async (
 ) => {
   const mid = (bestBid + bestAsk) / 2;
 
-  const buyPrice = roundDown(mid * (1 - HALF), TICK);
-  const sellPrice = roundUp(mid * (1 + HALF), TICK);
+  const buyPrice = roundDown(mid * (1 - HALF), tickSize);
+  const sellPrice = roundUp(mid * (1 + HALF), tickSize);
 
   console.log('buyPrice', buyPrice);
   console.log('sellPrice', sellPrice);
@@ -105,13 +106,7 @@ const handleUpdate = (
   handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };
 
-export const startDirtyWork = async (symbol: string, amount: number) => {
-  console.log('MMBot start');
-  const market = await mexcClient.loadMarkets();
-  console.log('market', market);
-  const tickSize = market[symbol]?.precision.price;
-  console.log('tickSize', tickSize);
-
+const dirtyWork = async (symbol: string, amount: number) => {
   const response = await fetchMexcOrderbook(symbol as Pair);
 
   const bestBid = response.bids[0][0];
@@ -122,4 +117,15 @@ export const startDirtyWork = async (symbol: string, amount: number) => {
   }
 
   handleUpdate(bestBid, bestAsk, symbol, amount);
+};
+
+export const startDirtyWork = async (symbol: string, amount: number) => {
+  console.log('MMBot start');
+  const market = await mexcClient.loadMarkets();
+  console.log('market', market);
+  tickSize = market[symbol]?.precision.price ?? TICK;
+  console.log('tickSize', tickSize);
+
+  const interval = 1000 * 10;
+  setInterval(async () => dirtyWork(symbol, amount), interval);
 };

@@ -1,7 +1,17 @@
+import { postMessage } from '../clients';
 import { connectCoinw } from '../clients/coinw/coinw-ws';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
+
+const handleEnableOrder = async (
+  bestBid: number,
+  bestAsk: number,
+  spreadRate: number
+) => {
+  const message = `[DirtyWork] スプレッドが ${spreadThreshold}% を超えました。現在のスプレッド: ${spreadRate}%, ベストビッド: ${bestBid}, ベストアスク: ${bestAsk}`;
+  await postMessage(message);
+};
 
 const handleUpdate = (bestBid: number, bestAsk: number) => {
   console.log('Best Bid:', bestBid);
@@ -11,7 +21,7 @@ const handleUpdate = (bestBid: number, bestAsk: number) => {
 
   if (spread > spreadThreshold) {
     console.log('Spread is above threshold, taking action...');
-    // ここにアクションを追加
+    handleEnableOrder(bestBid, bestAsk, spread);
   }
 };
 

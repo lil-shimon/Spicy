@@ -122,9 +122,8 @@ const dirtyWork = async (symbol: string, amount: number) => {
 export const startDirtyWork = async (symbol: string, amount: number) => {
   console.log('MMBot start');
   const market = await mexcClient.loadMarkets();
-  console.log('market', market);
   tickSize = market[symbol]?.precision.price ?? TICK;
-  console.log('tickSize', tickSize);
+  console.log(`${symbol} tickSize: ${tickSize}`);
 
   const interval = 1000 * 10;
   setInterval(async () => dirtyWork(symbol, amount), interval);

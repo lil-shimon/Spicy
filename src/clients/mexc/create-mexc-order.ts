@@ -24,3 +24,14 @@ export const createMexcOrder = async (
     throw error;
   }
 };
+
+export const fetchMexcOrder = async (orderId: string) => {
+  try {
+    const order = await mexcClient.fetchOrder(orderId);
+    return order;
+  } catch (err) {
+    await postOrderMessage(
+      `MEXCでの注文取得中にエラーが発生しました: ${JSON.stringify(err)}`
+    );
+  }
+};

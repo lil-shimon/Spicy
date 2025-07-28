@@ -70,6 +70,9 @@ const handleEnableOrder = async (
   const tStart = Date.now();
   const TIMEOUT_MS = 1000 * 60;
 
+  let buyOrderClosed = false;
+  let sellOrderClosed = false;
+
   while (Date.now() - tStart < TIMEOUT_MS) {
     const [buyOrder, sellOrder] = await Promise.all([
       fetchMexcOrder(buyOrderId, symbol),
@@ -83,6 +86,14 @@ const handleEnableOrder = async (
       console.log('まだポジションが開いているので、何もしません', symbol);
     }
 
+    if (buyOrder?.status === 'closed' && !buyOrderClosed) {
+      buyOrderClosed = true;
+    }
+
+    if (sellOrder?.status === 'closed' && !sellOrderClosed) {
+      sellOrderClosed = true;
+    }
+
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
       console.log('ポジションが閉じられたので、注文を解除します', symbol);
       ordered = false;
@@ -90,6 +101,14 @@ const handleEnableOrder = async (
     }
 
     await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+  // タイムアウトしたら、注文を解除する
+  if (!buyOrderClosed) {
+    await mexcClient.cancelOrder(buyOrderId, symbol);
+  }
+
+  if (!sellOrderClosed) {
+    await mexcClient.cancelOrder(sellOrderId, symbol);
   }
 };
 

@@ -1,6 +1,7 @@
 import { postMMMessage } from '../clients/discord/post-message';
 import { fetchMexcOrder } from '../clients/mexc/create-mexc-order';
 import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
+import { mexcClient } from '../clients/mexc/mexc-client';
 import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
 import { calculateSpreadRate } from './spread';
@@ -30,7 +31,8 @@ const handleEnableOrder = async (
   bestBid: number,
   bestAsk: number,
   spreadRate: number,
-  symbol: string
+  symbol: string,
+  amount: number
 ) => {
   const mid = (bestBid + bestAsk) / 2;
 
@@ -41,8 +43,8 @@ const handleEnableOrder = async (
   console.log('sellPrice', sellPrice);
 
   const [buyOrder, sellOrder] = await Promise.all([
-    orderLimit(symbol, 'buy', buyPrice, 0.001),
-    orderLimit(symbol, 'sell', sellPrice, 0.001),
+    orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
+    orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
   ]);
 
   console.log('buyOrder', buyOrder);
@@ -81,12 +83,18 @@ const handleEnableOrder = async (
   }
 };
 
-const handleUpdate = (bestBid: number, bestAsk: number, symbol: string) => {
+const handleUpdate = (
+  bestBid: number,
+  bestAsk: number,
+  symbol: string,
+  amount: number
+) => {
   const spread = calculateSpreadRate(bestBid, bestAsk);
 
   if (spread < spreadThreshold) {
     console.log(
       'スプレッドが閾値以下になったので、何もしません',
+      symbol,
       spread,
       bestBid,
       bestAsk
@@ -94,11 +102,16 @@ const handleUpdate = (bestBid: number, bestAsk: number, symbol: string) => {
     return;
   }
 
-  handleEnableOrder(bestBid, bestAsk, spread, symbol);
+  handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };
 
-export const startDirtyWork = async (symbol: string) => {
+export const startDirtyWork = async (symbol: string, amount: number) => {
   console.log('MMBot start');
+  const market = await mexcClient.loadMarkets();
+  console.log('market', market);
+  const tickSize = market[symbol]?.precision.price;
+  console.log('tickSize', tickSize);
+
   const response = await fetchMexcOrderbook(symbol as Pair);
 
   const bestBid = response.bids[0][0];
@@ -108,5 +121,5 @@ export const startDirtyWork = async (symbol: string) => {
     return;
   }
 
-  handleUpdate(bestBid, bestAsk, symbol);
+  handleUpdate(bestBid, bestAsk, symbol, amount);
 };

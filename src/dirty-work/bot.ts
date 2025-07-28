@@ -11,6 +11,7 @@ const TICK = 0.0001;
 const FULL_SPREAD = 0.0001;
 const HALF = FULL_SPREAD / 2;
 let tickSize = TICK;
+let ordered = false;
 
 /**
  * TICK の倍数に切り捨て
@@ -64,6 +65,8 @@ const handleEnableOrder = async (
     return;
   }
 
+  ordered = true;
+
   const tStart = Date.now();
   const TIMEOUT_MS = 1000 * 60;
 
@@ -100,6 +103,11 @@ const handleUpdate = (
       bestBid,
       bestAsk
     );
+    return;
+  }
+
+  if (ordered) {
+    console.log('注文済みなので、何もしません', symbol);
     return;
   }
 

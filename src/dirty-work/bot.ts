@@ -13,6 +13,8 @@ const handleEnableOrder = async (
     timeZone: 'Asia/Tokyo',
   });
   const message = `[DirtyWork] スプレッドが ${spreadThreshold}% を超えました。現在のスプレッド: ${spreadRate}%, ベストビッド: ${bestBid}, ベストアスク: ${bestAsk} 時刻: ${now}`;
+  // TODO: 毎回通知するとToo Many Requestsになる。
+  // どのタイミングでどのようなメッセー通知通知するかを検討する
   await postMMMessage(message);
 };
 

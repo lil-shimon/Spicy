@@ -53,7 +53,7 @@ const exchangeArb = async (
   );
 
   // 6. 差益があるかの判定
-  const threshold = 0.2;
+  const threshold = 0.3;
 
   const opportunities: ArbitrageOpportunity[] = [
     {

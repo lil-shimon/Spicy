@@ -2,13 +2,16 @@ import WebSocket from 'ws';
 
 const WS_URL = 'wss://ws.futurescw.com';
 
+const SOL_PAIR_CODE = 711; // SOL-USDTのペアコード
+const BTC_PAIR_CODE = 78; // BTC-USDTのペアコード
+
 const subscribeMsg = {
   event: 'sub',
   params: {
     biz: 'exchange',
     type: 'depth_snapshot',
     // BTC-USDT
-    pairCode: 78,
+    pairCode: SOL_PAIR_CODE,
   },
 };
 

@@ -9,7 +9,10 @@ const handleEnableOrder = async (
   bestAsk: number,
   spreadRate: number
 ) => {
-  const message = `[DirtyWork] スプレッドが ${spreadThreshold}% を超えました。現在のスプレッド: ${spreadRate}%, ベストビッド: ${bestBid}, ベストアスク: ${bestAsk}`;
+  const now = new Date().toLocaleDateString('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+  });
+  const message = `[DirtyWork] スプレッドが ${spreadThreshold}% を超えました。現在のスプレッド: ${spreadRate}%, ベストビッド: ${bestBid}, ベストアスク: ${bestAsk} 時刻: ${now}`;
   await postMMMessage(message);
 };
 

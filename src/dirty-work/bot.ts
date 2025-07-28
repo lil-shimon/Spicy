@@ -72,8 +72,8 @@ const handleEnableOrder = async (
 
   while (Date.now() - tStart < TIMEOUT_MS) {
     const [buyOrder, sellOrder] = await Promise.all([
-      fetchMexcOrder(buyOrderId),
-      fetchMexcOrder(sellOrderId),
+      fetchMexcOrder(buyOrderId, symbol),
+      fetchMexcOrder(sellOrderId, symbol),
     ]);
 
     console.log('buyOrder', buyOrder);

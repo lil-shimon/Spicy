@@ -25,9 +25,9 @@ export const createMexcOrder = async (
   }
 };
 
-export const fetchMexcOrder = async (orderId: string) => {
+export const fetchMexcOrder = async (orderId: string, symbol: string) => {
   try {
-    const order = await mexcClient.fetchOrder(orderId);
+    const order = await mexcClient.fetchOrder(orderId, symbol);
     return order;
   } catch (err) {
     await postOrderMessage(

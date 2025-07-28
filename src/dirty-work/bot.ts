@@ -80,6 +80,12 @@ const handleEnableOrder = async (
     console.log('sellOrder', sellOrder);
 
     if (buyOrder?.status === 'open' && sellOrder?.status === 'open') {
+      console.log('まだポジションが開いているので、何もしません', symbol);
+    }
+
+    if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
+      console.log('ポジションが閉じられたので、注文を解除します', symbol);
+      ordered = false;
       break;
     }
 

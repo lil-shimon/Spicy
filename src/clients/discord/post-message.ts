@@ -48,3 +48,14 @@ export const postOrderMessage = async (message: string): Promise<boolean> => {
   }
   return sendToDiscord(webhookUrl, message);
 };
+
+export const postMMMessage = async (message: string): Promise<boolean> => {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL_MM;
+  if (!webhookUrl) {
+    console.error(
+      'Discordマーケットメイキング通知用webhook URLが環境変数に設定されていません。'
+    );
+    return false;
+  }
+  return sendToDiscord(webhookUrl, message);
+};

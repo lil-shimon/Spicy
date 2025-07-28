@@ -1,5 +1,5 @@
-import { postMessage } from '../clients';
 import { connectCoinw } from '../clients/coinw/coinw-ws';
+import { postMMMessage } from '../clients/discord/post-message';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -10,7 +10,7 @@ const handleEnableOrder = async (
   spreadRate: number
 ) => {
   const message = `[DirtyWork] スプレッドが ${spreadThreshold}% を超えました。現在のスプレッド: ${spreadRate}%, ベストビッド: ${bestBid}, ベストアスク: ${bestAsk}`;
-  await postMessage(message);
+  await postMMMessage(message);
 };
 
 const handleUpdate = (bestBid: number, bestAsk: number) => {

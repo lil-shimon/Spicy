@@ -95,8 +95,6 @@ const handleEnableOrder = async (
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
-      console.log('ポジションが閉じられたので、注文を解除します', symbol);
-      ordered = false;
       break;
     }
 
@@ -110,6 +108,10 @@ const handleEnableOrder = async (
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
   }
+
+  // TODO: ここで注文を解除する
+  console.log('ポジションが閉じられたので、注文を解除します', symbol);
+  // ordered = false
 };
 
 const handleUpdate = (

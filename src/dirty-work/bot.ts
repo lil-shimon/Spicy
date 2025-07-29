@@ -20,6 +20,7 @@ let ordered = false;
  * 2回キャンセルしたら注文をできないようにする
  */
 let cancelCount = 0;
+let completeCount = 0;
 
 /**
  * TICK の倍数に切り捨て
@@ -54,6 +55,9 @@ const handleEnableOrder = async (
     );
     return;
   }
+  postMMMessage(
+    `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spreadRate}`
+  );
 
   const mid = (bestBid + bestAsk) / 2;
 
@@ -114,8 +118,9 @@ const handleEnableOrder = async (
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
+      completeCount++;
       await postMMMessage(
-        `[DirtyWork] ポジションが閉じられたので、注文を解除します: ${symbol}`
+        `[DirtyWork] ポジションが閉じられたので、注文を解除します: ${symbol} ${completeCount}回目`
       );
       break;
     }
@@ -172,10 +177,6 @@ const handleUpdate = (
     console.log('注文済みなので、何もしません', symbol);
     return;
   }
-
-  postMMMessage(
-    `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spread}`
-  );
 
   handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };

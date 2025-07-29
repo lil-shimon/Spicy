@@ -53,6 +53,9 @@ const handleOnFill = ({ side, qty, price }: OnFillParams) => {
   console.log(
     `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
   );
+  postMMMessage(
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
+  );
   // TODO: CSVに記録するならここでやる
 };
 

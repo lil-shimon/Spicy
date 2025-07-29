@@ -205,7 +205,9 @@ const handleUpdate = (
   // 中ボラ時：0 .12–0 .15 %
   // 高ボラ時：0 .20 % 以上に自動拡大
   // thresholdRateで設定するようにする。
-  if (spread < 0.1 || spread > 0.15) {
+  // Ver1.0では、0.1~0.15%のスプレッドで注文するようにする。
+  // Ver1.1(元に戻した)では0.2%以上のスプレッドで注文するようにする。
+  if (spread < thresholdRate) {
     console.log(
       'スプレッドが閾値範囲を満たしていないので、何もしません',
       symbol,

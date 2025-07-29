@@ -49,6 +49,7 @@ const handleOnFill = ({ side, qty, price }: OnFillParams) => {
     invPump -= qty;
     invUsdt += qty * price;
   }
+  // TODO: 将来的には手数料が0％じゃないペアでも取引すると思うので、その時は手数料を引く
   realizedPnL = invUsdt;
   console.log(
     `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`

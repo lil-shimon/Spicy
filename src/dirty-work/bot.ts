@@ -19,7 +19,8 @@ let ordered = false;
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする
  */
-let cancelCount = 0;
+let buyCancelCount = 0;
+let sellCancelCount = 0;
 let completeCount = 0;
 
 /**
@@ -45,7 +46,7 @@ const handleEnableOrder = async (
   symbol: string,
   amount: number
 ) => {
-  if (cancelCount > 2) {
+  if (buyCancelCount + sellCancelCount > 2) {
     console.log(
       '注文が約定せずキャンセルした回数が2回を超えたので、何もしません',
       symbol
@@ -55,14 +56,18 @@ const handleEnableOrder = async (
     );
     return;
   }
+
   postMMMessage(
     `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spreadRate}`
   );
 
   const mid = (bestBid + bestAsk) / 2;
 
-  const buyPrice = roundDown(mid * (1 - HALF), tickSize);
-  const sellPrice = roundUp(mid * (1 + HALF), tickSize);
+  const buyShift = sellCancelCount * tickSize;
+  const sellShift = buyCancelCount * tickSize;
+
+  const buyPrice = roundDown(mid * (1 - HALF), tickSize) - buyShift;
+  const sellPrice = roundUp(mid * (1 + HALF), tickSize) + sellShift;
 
   console.log('buyPrice', buyPrice);
   console.log('sellPrice', sellPrice);
@@ -71,6 +76,10 @@ const handleEnableOrder = async (
     orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
     orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
   ]);
+
+  postMMMessage(
+    `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice} 買いシフト${buyShift} 売りシフト${sellShift}`
+  );
 
   console.log('buyOrder', buyOrder);
   console.log('sellOrder', sellOrder);
@@ -111,10 +120,12 @@ const handleEnableOrder = async (
 
     if (buyOrder?.status === 'closed' && !buyOrderClosed) {
       buyOrderClosed = true;
+      buyCancelCount = 0;
     }
 
     if (sellOrder?.status === 'closed' && !sellOrderClosed) {
       sellOrderClosed = true;
+      sellCancelCount = 0;
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
@@ -130,17 +141,17 @@ const handleEnableOrder = async (
   // タイムアウトしたら、注文を解除する
   if (!buyOrderClosed) {
     await mexcClient.cancelOrder(buyOrderId, symbol);
-    cancelCount++;
+    buyCancelCount++;
     postOrderMessage(
-      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${cancelCount}回目`
+      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );
   }
 
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
-    cancelCount++;
+    sellCancelCount++;
     postOrderMessage(
-      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${cancelCount}回目`
+      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );
   }
 

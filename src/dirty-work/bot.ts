@@ -1,4 +1,7 @@
-import { postMMMessage } from '../clients/discord/post-message';
+import {
+  postMMMessage,
+  postOrderMessage,
+} from '../clients/discord/post-message';
 import { fetchMexcOrder } from '../clients/mexc/create-mexc-order';
 import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
 import { mexcClient } from '../clients/mexc/mexc-client';
@@ -95,6 +98,9 @@ const handleEnableOrder = async (
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
+      await postOrderMessage(
+        `[DirtyWork] ポジションが閉じられたので、注文を解除します: ${symbol}`
+      );
       break;
     }
 

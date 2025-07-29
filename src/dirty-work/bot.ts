@@ -1,7 +1,4 @@
-import {
-  postMMMessage,
-  postOrderMessage,
-} from '../clients/discord/post-message';
+import { postMMMessage } from '../clients/discord/post-message';
 import { fetchMexcOrder } from '../clients/mexc/create-mexc-order';
 import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
 import { mexcClient } from '../clients/mexc/mexc-client';
@@ -142,7 +139,7 @@ const handleEnableOrder = async (
   if (!buyOrderClosed) {
     await mexcClient.cancelOrder(buyOrderId, symbol);
     buyCancelCount++;
-    postOrderMessage(
+    postMMMessage(
       `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );
   }
@@ -150,7 +147,7 @@ const handleEnableOrder = async (
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
     sellCancelCount++;
-    postOrderMessage(
+    postMMMessage(
       `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );
   }

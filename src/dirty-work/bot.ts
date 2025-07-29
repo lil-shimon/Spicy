@@ -134,6 +134,8 @@ const handleEnableOrder = async (
       buyOrderClosed = true;
       buyCancelCount = 0;
 
+      // TODO: priceを使うと、約定時の価格になるので、部分約定した場合価格がズレる恐れがある
+      // order.argPriceを使うように変更する
       handleOnFill({
         side: 'buy',
         qty: buyOrder?.filled ?? 0,

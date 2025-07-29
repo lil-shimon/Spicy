@@ -219,3 +219,5 @@ export const startDirtyWork = async (
   const interval = 1000 * 10;
   setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
 };
+
+startDirtyWork('PUMP/USDT', 2000, 0.2);

@@ -101,7 +101,7 @@ const handleEnableOrder = async (
     console.log('buyOrder', buyOrder);
     console.log('sellOrder', sellOrder);
 
-    if (buyOrder?.status === 'open' && sellOrder?.status === 'open') {
+    if (buyOrder?.status === 'open' || sellOrder?.status === 'open') {
       console.log('まだポジションが開いているので、何もしません', symbol);
     }
 
@@ -114,7 +114,7 @@ const handleEnableOrder = async (
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
-      await postOrderMessage(
+      await postMMMessage(
         `[DirtyWork] ポジションが閉じられたので、注文を解除します: ${symbol}`
       );
       break;
@@ -152,9 +152,14 @@ const handleUpdate = (
 ) => {
   const spread = calculateSpreadRate(bestBid, bestAsk);
 
-  if (spread < thresholdRate) {
+  // TODO: ボラでも判断するようにしたい。
+  // 例：小ボラ時：0 .08–0 .10 %
+  // 中ボラ時：0 .12–0 .15 %
+  // 高ボラ時：0 .20 % 以上に自動拡大
+  // thresholdRateで設定するようにする。
+  if (spread < 0.1 || spread > 0.15) {
     console.log(
-      'スプレッドが閾値以下になったので、何もしません',
+      'スプレッドが閾値範囲を満たしていないので、何もしません',
       symbol,
       spread,
       bestBid,
@@ -167,6 +172,10 @@ const handleUpdate = (
     console.log('注文済みなので、何もしません', symbol);
     return;
   }
+
+  postMMMessage(
+    `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spread}`
+  );
 
   handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };

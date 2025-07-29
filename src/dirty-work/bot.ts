@@ -15,6 +15,11 @@ const FULL_SPREAD = 0.0001;
 const HALF = FULL_SPREAD / 2;
 let tickSize = TICK;
 let ordered = false;
+/**
+ * 注文が約定せずキャンセルした回数。
+ * 2回キャンセルしたら注文をできないようにする
+ */
+let cancelCount = 0;
 
 /**
  * TICK の倍数に切り捨て
@@ -39,6 +44,17 @@ const handleEnableOrder = async (
   symbol: string,
   amount: number
 ) => {
+  if (cancelCount > 2) {
+    console.log(
+      '注文が約定せずキャンセルした回数が2回を超えたので、何もしません',
+      symbol
+    );
+    await postMMMessage(
+      `[DirtyWork] 注文が約定せずキャンセルした回数が2回を超えたので、何もしません: ${symbol}`
+    );
+    return;
+  }
+
   const mid = (bestBid + bestAsk) / 2;
 
   const buyPrice = roundDown(mid * (1 - HALF), tickSize);
@@ -109,32 +125,34 @@ const handleEnableOrder = async (
   // タイムアウトしたら、注文を解除する
   if (!buyOrderClosed) {
     await mexcClient.cancelOrder(buyOrderId, symbol);
+    cancelCount++;
     postOrderMessage(
-      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId}`
+      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${cancelCount}回目`
     );
   }
 
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
+    cancelCount++;
     postOrderMessage(
-      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId}`
+      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${cancelCount}回目`
     );
   }
 
-  // TODO: ここで注文を解除する
   console.log('ポジションが閉じられたので、注文を解除します', symbol);
-  // ordered = false
+  ordered = false;
 };
 
 const handleUpdate = (
   bestBid: number,
   bestAsk: number,
   symbol: string,
-  amount: number
+  amount: number,
+  thresholdRate: number
 ) => {
   const spread = calculateSpreadRate(bestBid, bestAsk);
 
-  if (spread < spreadThreshold) {
+  if (spread < thresholdRate) {
     console.log(
       'スプレッドが閾値以下になったので、何もしません',
       symbol,
@@ -153,7 +171,11 @@ const handleUpdate = (
   handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };
 
-const dirtyWork = async (symbol: string, amount: number) => {
+const dirtyWork = async (
+  symbol: string,
+  amount: number,
+  thresholdRate: number
+) => {
   const response = await fetchMexcOrderbook(symbol as Pair);
 
   const bestBid = response.bids[0][0];
@@ -163,15 +185,19 @@ const dirtyWork = async (symbol: string, amount: number) => {
     return;
   }
 
-  handleUpdate(bestBid, bestAsk, symbol, amount);
+  handleUpdate(bestBid, bestAsk, symbol, amount, thresholdRate);
 };
 
-export const startDirtyWork = async (symbol: string, amount: number) => {
+export const startDirtyWork = async (
+  symbol: string,
+  amount: number,
+  thresholdRate = spreadThreshold
+) => {
   console.log('MMBot start');
   const market = await mexcClient.loadMarkets();
   tickSize = market[symbol]?.precision.price ?? TICK;
   console.log(`${symbol} tickSize: ${tickSize}`);
 
   const interval = 1000 * 10;
-  setInterval(async () => dirtyWork(symbol, amount), interval);
+  setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
 };

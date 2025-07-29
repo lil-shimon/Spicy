@@ -109,10 +109,16 @@ const handleEnableOrder = async (
   // タイムアウトしたら、注文を解除する
   if (!buyOrderClosed) {
     await mexcClient.cancelOrder(buyOrderId, symbol);
+    postOrderMessage(
+      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId}`
+    );
   }
 
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
+    postOrderMessage(
+      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId}`
+    );
   }
 
   // TODO: ここで注文を解除する

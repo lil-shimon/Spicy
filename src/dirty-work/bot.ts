@@ -20,6 +20,41 @@ let ordered = false;
 let buyCancelCount = 0;
 let sellCancelCount = 0;
 let completeCount = 0;
+/**
+ * PUMPの残高
+ */
+let invPump = 0;
+/**
+ * USDTの残高
+ */
+let invUsdt = 0;
+
+/**
+ * 実現損益
+ */
+let realizedPnL = 0;
+
+type OnFillParams = {
+  side: 'buy' | 'sell';
+  qty: number;
+  price: number;
+};
+
+const handleOnFill = ({ side, qty, price }: OnFillParams) => {
+  console.log('debug', { side, qty, price });
+  if (side === 'buy') {
+    invPump += qty;
+    invUsdt -= qty * price;
+  } else {
+    invPump -= qty;
+    invUsdt += qty * price;
+  }
+  realizedPnL = invUsdt;
+  console.log(
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
+  );
+  // TODO: CSVに記録するならここでやる
+};
 
 const handleEnableOrder = async (
   bestBid: number,
@@ -103,11 +138,23 @@ const handleEnableOrder = async (
     if (buyOrder?.status === 'closed' && !buyOrderClosed) {
       buyOrderClosed = true;
       buyCancelCount = 0;
+
+      handleOnFill({
+        side: 'buy',
+        qty: buyOrder?.filled ?? 0,
+        price: buyOrder?.price ?? 0,
+      });
     }
 
     if (sellOrder?.status === 'closed' && !sellOrderClosed) {
       sellOrderClosed = true;
       sellCancelCount = 0;
+
+      handleOnFill({
+        side: 'sell',
+        qty: sellOrder?.filled ?? 0,
+        price: sellOrder?.price ?? 0,
+      });
     }
 
     if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {

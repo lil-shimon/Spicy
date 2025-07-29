@@ -4,6 +4,7 @@ import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
 import { mexcClient } from '../clients/mexc/mexc-client';
 import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
+import { roundDown, roundUp } from './round';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -19,22 +20,6 @@ let ordered = false;
 let buyCancelCount = 0;
 let sellCancelCount = 0;
 let completeCount = 0;
-
-/**
- * TICK の倍数に切り捨て
- * roundDown(99.9517)  // → 99.951
- */
-const roundDown = (price: number, tick = tickSize) => {
-  return Math.floor(price / tick) * tick;
-};
-
-/**
- * TICK の倍数に切り上げ
- * roundUp  (99.9517)  // → 99.952
- */
-const roundUp = (price: number, tick = tickSize) => {
-  return Math.ceil(price / tick) * tick;
-};
 
 const handleEnableOrder = async (
   bestBid: number,

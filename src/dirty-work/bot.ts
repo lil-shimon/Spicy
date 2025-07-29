@@ -86,9 +86,6 @@ const handleEnableOrder = async (
   const buyPrice = roundDown(mid * (1 - HALF), tickSize) - buyShift;
   const sellPrice = roundUp(mid * (1 + HALF), tickSize) + sellShift;
 
-  console.log('buyPrice', buyPrice);
-  console.log('sellPrice', sellPrice);
-
   const [buyOrder, sellOrder] = await Promise.all([
     orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
     orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
@@ -98,8 +95,6 @@ const handleEnableOrder = async (
     `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice} 買いシフト${buyShift} 売りシフト${sellShift}`
   );
 
-  console.log('buyOrder', buyOrder);
-  console.log('sellOrder', sellOrder);
   const [buyOrderId, sellOrderId] = [buyOrder?.id, sellOrder?.id];
 
   if (!buyOrderId || !sellOrderId) {
@@ -127,9 +122,6 @@ const handleEnableOrder = async (
       fetchMexcOrder(buyOrderId, symbol),
       fetchMexcOrder(sellOrderId, symbol),
     ]);
-
-    console.log('buyOrder', buyOrder);
-    console.log('sellOrder', sellOrder);
 
     if (buyOrder?.status === 'open' || sellOrder?.status === 'open') {
       console.log('まだポジションが開いているので、何もしません', symbol);

@@ -4,6 +4,7 @@ import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
 import { mexcClient } from '../clients/mexc/mexc-client';
 import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
+import { writePnlCSV } from './csv';
 import { roundDown, roundUp } from './round';
 import { calculateSpreadRate } from './spread';
 
@@ -34,7 +35,7 @@ let invUsdt = 0;
  */
 let realizedPnL = 0;
 
-type OnFillParams = {
+export type OnFillParams = {
   side: 'buy' | 'sell';
   qty: number;
   price: number;
@@ -57,7 +58,11 @@ const handleOnFill = ({ side, qty, price }: OnFillParams) => {
   postMMMessage(
     `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
   );
-  // TODO: CSVに記録するならここでやる
+  writePnlCSV({
+    realizedPnL,
+    invPump,
+    invUsdt,
+  });
 };
 
 const handleEnableOrder = async (

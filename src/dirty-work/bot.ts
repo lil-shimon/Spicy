@@ -1,4 +1,5 @@
 import { postMMMessage } from '../clients/discord/post-message';
+import { cancelMexcOrder } from '../clients/mexc/cancel-mexc-order';
 import { fetchMexcOrder } from '../clients/mexc/create-mexc-order';
 import { fetchMexcOrderbook } from '../clients/mexc/fetch-mexc-orderbook';
 import { mexcClient } from '../clients/mexc/mexc-client';
@@ -174,7 +175,12 @@ const handleEnableOrder = async (
   }
   // タイムアウトしたら、注文を解除する
   if (!buyOrderClosed) {
-    await mexcClient.cancelOrder(buyOrderId, symbol);
+    const response = await cancelMexcOrder(buyOrderId, symbol);
+    // キャンセルできなかった場合は、何もしない(おそらく約定している)
+    if (!response?.id) {
+      return;
+    }
+
     // 売り注文が約定していたら、買い注文をキャンセルした回数を増やす
     if (sellOrderClosed) {
       buyCancelCount++;
@@ -185,7 +191,12 @@ const handleEnableOrder = async (
   }
 
   if (!sellOrderClosed) {
-    await mexcClient.cancelOrder(sellOrderId, symbol);
+    const response = await cancelMexcOrder(sellOrderId, symbol);
+    // キャンセルできなかった場合は、何もしない(おそらく約定している)
+    if (!response?.id) {
+      return;
+    }
+
     // 買い注文が約定していたら、売り注文をキャンセルした回数を増やす
     if (buyOrderClosed) {
       sellCancelCount++;

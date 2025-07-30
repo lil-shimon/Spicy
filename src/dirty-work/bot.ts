@@ -74,13 +74,13 @@ const handleEnableOrder = async (
   symbol: string,
   amount: number
 ) => {
-  if (buyCancelCount + sellCancelCount > 2) {
+  if (buyCancelCount + sellCancelCount > 6) {
     console.log(
-      '注文が約定せずキャンセルした回数が2回を超えたので、何もしません',
+      '注文が約定せずキャンセルした回数が6回を超えたので、何もしません',
       symbol
     );
     await postMMMessage(
-      `[DirtyWork] 注文が約定せずキャンセルした回数が2回を超えたので、何もしません: ${symbol}`
+      `[DirtyWork] 注文が約定せずキャンセルした回数が6回を超えたので、何もしません: ${symbol}`
     );
     return;
   }
@@ -123,7 +123,7 @@ const handleEnableOrder = async (
   ordered = true;
 
   const tStart = Date.now();
-  const TIMEOUT_MS = 1000 * 30;
+  const TIMEOUT_MS = 1000 * 10;
 
   let buyOrderClosed = false;
   let sellOrderClosed = false;
@@ -175,7 +175,10 @@ const handleEnableOrder = async (
   // タイムアウトしたら、注文を解除する
   if (!buyOrderClosed) {
     await mexcClient.cancelOrder(buyOrderId, symbol);
-    buyCancelCount++;
+    // 売り注文が約定していたら、買い注文をキャンセルした回数を増やす
+    if (sellOrderClosed) {
+      buyCancelCount++;
+    }
     postMMMessage(
       `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );
@@ -183,7 +186,10 @@ const handleEnableOrder = async (
 
   if (!sellOrderClosed) {
     await mexcClient.cancelOrder(sellOrderId, symbol);
-    sellCancelCount++;
+    // 買い注文が約定していたら、売り注文をキャンセルした回数を増やす
+    if (buyOrderClosed) {
+      sellCancelCount++;
+    }
     postMMMessage(
       `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
     );

@@ -110,7 +110,7 @@ DISCORD_WEBHOOK_URL=your_webhook_url_here
 
 ```bash
 # サーバーへのSSH接続
-ssh -i ~/.ssh/spicy.pem bitnami@13.114.216.83
+ssh -i ~/.ssh/spicy.pem bitnami@<ip>
 
 # pm2でサーバーとして起動
 pm2 start dist/index.js --name spicy

@@ -62,6 +62,8 @@ const handleOnFill = ({ side, qty, price }: OnFillParams) => {
     realizedPnL,
     invPump,
     invUsdt,
+    price,
+    side,
   });
 };
 
@@ -207,7 +209,8 @@ const handleUpdate = (
   // thresholdRateで設定するようにする。
   // Ver1.0では、0.1~0.15%のスプレッドで注文するようにする。
   // Ver1.1(元に戻した)では0.2%以上のスプレッドで注文するようにする。
-  if (spread < thresholdRate) {
+  // Ver1.2では0.15%以上のスプレッドで注文するようにする。
+  if (spread < 0.15) {
     console.log(
       'スプレッドが閾値範囲を満たしていないので、何もしません',
       symbol,

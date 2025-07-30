@@ -7,6 +7,8 @@ type PnlCSV = {
   realizedPnL: number;
   invPump: number;
   invUsdt: number;
+  price: number;
+  side: 'buy' | 'sell';
 };
 
 export const writePnlCSV = (f: PnlCSV) => {
@@ -16,7 +18,7 @@ export const writePnlCSV = (f: PnlCSV) => {
 
   const jstIso = getJstIso();
 
-  const row = `${jstIso},${f.realizedPnL},${f.invPump},${f.invUsdt}`;
+  const row = `${jstIso},${f.realizedPnL},${f.side},${f.invPump},${f.invUsdt},${f.price}`;
   fs.appendFileSync(filePath, row + '\n');
 };
 

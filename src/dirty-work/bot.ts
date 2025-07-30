@@ -89,8 +89,8 @@ const handleEnableOrder = async (
 
   const mid = (bestBid + bestAsk) / 2;
 
-  const buyShift = sellCancelCount * tickSize;
-  const sellShift = buyCancelCount * tickSize;
+  const buyShift = sellCancelCount * (tickSize * 2);
+  const sellShift = buyCancelCount * (tickSize * 2);
 
   const buyPrice = roundDown(mid * (1 - HALF), tickSize) - buyShift;
   const sellPrice = roundUp(mid * (1 + HALF), tickSize) + sellShift;
@@ -121,7 +121,7 @@ const handleEnableOrder = async (
   ordered = true;
 
   const tStart = Date.now();
-  const TIMEOUT_MS = 1000 * 60;
+  const TIMEOUT_MS = 1000 * 30;
 
   let buyOrderClosed = false;
   let sellOrderClosed = false;

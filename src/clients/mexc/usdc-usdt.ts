@@ -138,7 +138,6 @@ export const orderLimit = async (
       price
     );
 
-    console.log(response);
     await postOrderMessage(
       `💰 注文を発注しました: ${symbol} ${side} ${amount} ${price}. log: ${JSON.stringify(
         response

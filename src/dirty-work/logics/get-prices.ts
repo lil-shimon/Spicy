@@ -6,8 +6,8 @@ const HALF = FULL_SPREAD / 2;
 type GetPricesParams = {
   bestBid: number;
   bestAsk: number;
-  sellCancelCount: number;
-  buyCancelCount: number;
+  inventory: number;
+  amount: number;
   tickSize: number;
 };
 
@@ -15,39 +15,50 @@ type GetPricesParams = {
 export const getPrices = ({
   bestBid,
   bestAsk,
-  sellCancelCount,
-  buyCancelCount,
+  inventory,
+  amount,
   tickSize,
 }: GetPricesParams) => {
   const mid = (bestBid + bestAsk) / 2;
 
   const buyPrice = getPrice({
-    cancel: sellCancelCount,
     mid,
     side: 'buy',
     tickSize,
+    inventory,
+    amount,
   });
   const sellPrice = getPrice({
-    cancel: buyCancelCount,
     mid,
     side: 'sell',
     tickSize,
+    inventory,
+    amount,
   });
 
   return { buyPrice, sellPrice };
 };
 
 type GetPriceParams = {
-  cancel: number;
   mid: number;
   side: 'buy' | 'sell';
   tickSize: number;
+  inventory: number;
+  amount: number;
 };
-const getPrice = ({ cancel, mid, side, tickSize }: GetPriceParams) => {
-  const shift = cancel * (tickSize * 2);
+
+const getPrice = ({
+  mid,
+  side,
+  tickSize,
+  inventory,
+  amount,
+}: GetPriceParams) => {
+  const inventoryShift = (inventory / amount) * tickSize;
+
   const price =
     side === 'buy'
-      ? roundDown(mid * (1 - HALF), tickSize) - shift
-      : roundUp(mid * (1 + HALF), tickSize) + shift;
+      ? roundDown(mid * (1 - HALF), tickSize) - inventoryShift
+      : roundUp(mid * (1 + HALF), tickSize) + inventoryShift;
   return price;
 };

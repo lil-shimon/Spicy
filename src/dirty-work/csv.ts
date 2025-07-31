@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-const dirName = 'pnl';
+const dirName = 'data';
 const filePath = `${dirName}/pnl.csv`;
 
 type PnlCSV = {

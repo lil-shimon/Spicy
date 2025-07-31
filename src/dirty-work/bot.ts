@@ -132,10 +132,11 @@ const handleEnableOrder = async (
   let sellOrderClosed = false;
 
   while (Date.now() - tStart < TIMEOUT_MS) {
-    const [buyOrder, sellOrder] = await Promise.all([
+    const fetchOrderPromises = [
       fetchMexcOrder(buyOrderId, symbol),
       fetchMexcOrder(sellOrderId, symbol),
-    ]);
+    ];
+    const [buyOrder, sellOrder] = await Promise.all(fetchOrderPromises);
 
     const { isOpened, isClosed } = handleStatus({
       orders: [buyOrder, sellOrder],

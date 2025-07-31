@@ -6,13 +6,12 @@ import { mexcClient } from '../clients/mexc/mexc-client';
 import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
-import { roundDown, roundUp } from './round';
+import { getPrices } from './logic';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
 const TICK = 0.0001;
-const FULL_SPREAD = 0.0001;
-const HALF = FULL_SPREAD / 2;
+
 let tickSize = TICK;
 let ordered = false;
 /**
@@ -90,13 +89,13 @@ const handleEnableOrder = async (
     `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spreadRate}`
   );
 
-  const mid = (bestBid + bestAsk) / 2;
-
-  const buyShift = sellCancelCount * (tickSize * 2);
-  const sellShift = buyCancelCount * (tickSize * 2);
-
-  const buyPrice = roundDown(mid * (1 - HALF), tickSize) - buyShift;
-  const sellPrice = roundUp(mid * (1 + HALF), tickSize) + sellShift;
+  const { buyPrice, sellPrice } = getPrices(
+    bestBid,
+    bestAsk,
+    sellCancelCount,
+    buyCancelCount,
+    tickSize
+  );
 
   const [buyOrder, sellOrder] = await Promise.all([
     orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
@@ -104,7 +103,7 @@ const handleEnableOrder = async (
   ]);
 
   postMMMessage(
-    `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice} 買いシフト${buyShift} 売りシフト${sellShift}`
+    `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice}`
   );
 
   const [buyOrderId, sellOrderId] = [buyOrder?.id, sellOrder?.id];
@@ -222,7 +221,7 @@ const handleUpdate = (
   // Ver1.0では、0.1~0.15%のスプレッドで注文するようにする。
   // Ver1.1(元に戻した)では0.2%以上のスプレッドで注文するようにする。
   // Ver1.2では0.15%以上のスプレッドで注文するようにする。
-  if (spread < 0.15) {
+  if (spread < thresholdRate) {
     console.log(
       'スプレッドが閾値範囲を満たしていないので、何もしません',
       symbol,
@@ -272,4 +271,4 @@ export const startDirtyWork = async (
   setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
 };
 
-startDirtyWork('PUMP/USDT', 2000, 0.2);
+startDirtyWork('PUMP/USDT', 2000, 0.12);

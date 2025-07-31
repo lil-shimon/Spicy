@@ -93,8 +93,8 @@ const handleEnableOrder = async (
   const { buyPrice, sellPrice } = getPrices({
     bestBid,
     bestAsk,
-    sellCancelCount,
-    buyCancelCount,
+    inventory: invPump,
+    amount,
     tickSize,
   });
 

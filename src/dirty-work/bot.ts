@@ -7,6 +7,7 @@ import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
+import { handleStatus } from './logics/status';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -134,7 +135,8 @@ const handleEnableOrder = async (
       fetchMexcOrder(sellOrderId, symbol),
     ]);
 
-    if (buyOrder?.status === 'open' || sellOrder?.status === 'open') {
+    const { isOpened } = handleStatus({ orders: [buyOrder, sellOrder] });
+    if (isOpened) {
       console.log('まだポジションが開いているので、何もしません', symbol);
     }
 

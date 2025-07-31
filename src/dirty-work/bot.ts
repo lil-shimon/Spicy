@@ -135,7 +135,9 @@ const handleEnableOrder = async (
       fetchMexcOrder(sellOrderId, symbol),
     ]);
 
-    const { isOpened } = handleStatus({ orders: [buyOrder, sellOrder] });
+    const { isOpened, isClosed } = handleStatus({
+      orders: [buyOrder, sellOrder],
+    });
     if (isOpened) {
       console.log('まだポジションが開いているので、何もしません', symbol);
     }
@@ -164,7 +166,7 @@ const handleEnableOrder = async (
       });
     }
 
-    if (buyOrder?.status === 'closed' && sellOrder?.status === 'closed') {
+    if (isClosed) {
       completeCount++;
       await postMMMessage(
         `[DirtyWork] ポジションが閉じられたので、注文を解除します: ${symbol} ${completeCount}回目`

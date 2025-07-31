@@ -98,10 +98,12 @@ const handleEnableOrder = async (
     tickSize,
   });
 
-  const [buyOrder, sellOrder] = await Promise.all([
+  const orderPromises = [
     orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
     orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
-  ]);
+  ];
+
+  const [buyOrder, sellOrder] = await Promise.all(orderPromises);
 
   postMMMessage(
     `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice}`

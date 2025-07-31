@@ -6,7 +6,7 @@ import { mexcClient } from '../clients/mexc/mexc-client';
 import { orderLimit } from '../clients/mexc/usdc-usdt';
 import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
-import { getPrices } from './logic';
+import { getPrices } from './logics/logic';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定

@@ -10,13 +10,13 @@ describe('getPrices', () => {
     const sellCancelCount = 0;
     const buyCancelCount = 0;
 
-    const { buyPrice, sellPrice } = getPrices(
+    const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
       sellCancelCount,
       buyCancelCount,
-      tickSize
-    );
+      tickSize,
+    });
 
     expect(buyPrice).toEqual(0.0014);
     expect(sellPrice).toEqual(0.0016);
@@ -26,13 +26,13 @@ describe('getPrices', () => {
     const sellCancelCount = 1;
     const buyCancelCount = 0;
 
-    const { buyPrice, sellPrice } = getPrices(
+    const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
       sellCancelCount,
       buyCancelCount,
-      tickSize
-    );
+      tickSize,
+    });
 
     expect(buyPrice).toEqual(0.0012);
     expect(sellPrice).toEqual(0.0016);
@@ -42,13 +42,13 @@ describe('getPrices', () => {
     const sellCancelCount = 0;
     const buyCancelCount = 1;
 
-    const { buyPrice, sellPrice } = getPrices(
+    const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
       sellCancelCount,
       buyCancelCount,
-      tickSize
-    );
+      tickSize,
+    });
 
     expect(buyPrice).toEqual(0.0014);
     expect(sellPrice).toBeCloseTo(0.0018, 4);
@@ -58,13 +58,13 @@ describe('getPrices', () => {
     const sellCancelCount = 1;
     const buyCancelCount = 1;
 
-    const { buyPrice, sellPrice } = getPrices(
+    const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
       sellCancelCount,
       buyCancelCount,
-      tickSize
-    );
+      tickSize,
+    });
 
     expect(buyPrice).toEqual(0.0012);
     expect(sellPrice).toBeCloseTo(0.0018);
@@ -74,13 +74,13 @@ describe('getPrices', () => {
     const sellCancelCount = 2;
     const buyCancelCount = 2;
 
-    const { buyPrice, sellPrice } = getPrices(
+    const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
       sellCancelCount,
       buyCancelCount,
-      tickSize
-    );
+      tickSize,
+    });
 
     expect(buyPrice).toEqual(0.001);
     expect(sellPrice).toBeCloseTo(0.002);

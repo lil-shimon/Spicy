@@ -37,4 +37,20 @@ describe('getPrices', () => {
     expect(buyPrice).toEqual(0.0012);
     expect(sellPrice).toEqual(0.0016);
   });
+
+  it('should return the correct prices when buyCancelCount is 1', () => {
+    const sellCancelCount = 0;
+    const buyCancelCount = 1;
+
+    const { buyPrice, sellPrice } = getPrices(
+      bestBid,
+      bestAsk,
+      sellCancelCount,
+      buyCancelCount,
+      tickSize
+    );
+
+    expect(buyPrice).toEqual(0.0014);
+    expect(sellPrice).toBeCloseTo(0.0018, 4);
+  });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getPrices } from './logic';
+import { getPrices } from './get-prices';
 
 describe('getPrices', () => {
   const bestBid = 0.001;

@@ -177,33 +177,28 @@ const handleEnableOrder = async (
   if (!buyOrderClosed) {
     const response = await cancelMexcOrder(buyOrderId, symbol);
     // キャンセルできなかった場合は、何もしない(おそらく約定している)
-    if (!response?.id) {
-      return;
+    if (response?.id) {
+      // 売り注文が約定していたら、買い注文をキャンセルした回数を増やす
+      if (sellOrderClosed) {
+        buyCancelCount++;
+      }
+      postMMMessage(
+        `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
+      );
     }
-
-    // 売り注文が約定していたら、買い注文をキャンセルした回数を増やす
-    if (sellOrderClosed) {
-      buyCancelCount++;
-    }
-    postMMMessage(
-      `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
-    );
   }
 
   if (!sellOrderClosed) {
     const response = await cancelMexcOrder(sellOrderId, symbol);
-    // キャンセルできなかった場合は、何もしない(おそらく約定している)
-    if (!response?.id) {
-      return;
+    if (response?.id) {
+      // 買い注文が約定していたら、売り注文をキャンセルした回数を増やす
+      if (buyOrderClosed) {
+        sellCancelCount++;
+      }
+      postMMMessage(
+        `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
+      );
     }
-
-    // 買い注文が約定していたら、売り注文をキャンセルした回数を増やす
-    if (buyOrderClosed) {
-      sellCancelCount++;
-    }
-    postMMMessage(
-      `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
-    );
   }
 
   console.log('ポジションが閉じられたので、注文を解除します', symbol);

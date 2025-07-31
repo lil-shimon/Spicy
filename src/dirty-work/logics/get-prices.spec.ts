@@ -5,16 +5,14 @@ describe('getPrices', () => {
   const bestBid = 0.001;
   const bestAsk = 0.002;
   const tickSize = 0.0001;
+  const amount = 2000;
 
   it('should return the correct prices', () => {
-    const sellCancelCount = 0;
-    const buyCancelCount = 0;
-
     const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
-      sellCancelCount,
-      buyCancelCount,
+      inventory: 0,
+      amount,
       tickSize,
     });
 
@@ -22,47 +20,25 @@ describe('getPrices', () => {
     expect(sellPrice).toEqual(0.0016);
   });
 
-  it('should return the correct prices when sellCancelCount is 1', () => {
-    const sellCancelCount = 1;
-    const buyCancelCount = 0;
-
+  it('should return the correct prices when inventory is 2000', () => {
     const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
-      sellCancelCount,
-      buyCancelCount,
+      inventory: 2000,
+      amount,
       tickSize,
     });
 
-    expect(buyPrice).toEqual(0.0012);
-    expect(sellPrice).toEqual(0.0016);
+    expect(buyPrice).toEqual(0.0013);
+    expect(sellPrice).toBeCloseTo(0.0017);
   });
 
-  it('should return the correct prices when buyCancelCount is 1', () => {
-    const sellCancelCount = 0;
-    const buyCancelCount = 1;
-
+  it('should return the correct prices when inventory is 4000', () => {
     const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
-      sellCancelCount,
-      buyCancelCount,
-      tickSize,
-    });
-
-    expect(buyPrice).toEqual(0.0014);
-    expect(sellPrice).toBeCloseTo(0.0018, 4);
-  });
-
-  it('should return the correct prices when sellCancelCount is 1 and buyCancelCount is 1', () => {
-    const sellCancelCount = 1;
-    const buyCancelCount = 1;
-
-    const { buyPrice, sellPrice } = getPrices({
-      bestBid,
-      bestAsk,
-      sellCancelCount,
-      buyCancelCount,
+      inventory: 4000,
+      amount,
       tickSize,
     });
 
@@ -70,19 +46,16 @@ describe('getPrices', () => {
     expect(sellPrice).toBeCloseTo(0.0018);
   });
 
-  it('should return the correct prices when sellCancelCount is 2 and buyCancelCount is 2', () => {
-    const sellCancelCount = 2;
-    const buyCancelCount = 2;
-
+  it('should return the correct prices when inventory is 6000', () => {
     const { buyPrice, sellPrice } = getPrices({
       bestBid,
       bestAsk,
-      sellCancelCount,
-      buyCancelCount,
+      inventory: 6000,
+      amount,
       tickSize,
     });
 
-    expect(buyPrice).toEqual(0.001);
-    expect(sellPrice).toBeCloseTo(0.002);
+    expect(buyPrice).toBeCloseTo(0.0011);
+    expect(sellPrice).toBeCloseTo(0.0019);
   });
 });

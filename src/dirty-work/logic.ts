@@ -12,11 +12,33 @@ export const getPrices = (
 ) => {
   const mid = (bestBid + bestAsk) / 2;
 
-  const buyShift = sellCancelCount * (tickSize * 2);
-  const sellShift = buyCancelCount * (tickSize * 2);
-
-  const buyPrice = roundDown(mid * (1 - HALF), tickSize) - buyShift;
-  const sellPrice = roundUp(mid * (1 + HALF), tickSize) + sellShift;
+  const buyPrice = getPrice({
+    cancel: sellCancelCount,
+    mid,
+    side: 'buy',
+    tickSize,
+  });
+  const sellPrice = getPrice({
+    cancel: buyCancelCount,
+    mid,
+    side: 'sell',
+    tickSize,
+  });
 
   return { buyPrice, sellPrice };
+};
+
+type GetPriceParams = {
+  cancel: number;
+  mid: number;
+  side: 'buy' | 'sell';
+  tickSize: number;
+};
+const getPrice = ({ cancel, mid, side, tickSize }: GetPriceParams) => {
+  const shift = cancel * (tickSize * 2);
+  const price =
+    side === 'buy'
+      ? roundDown(mid * (1 - HALF), tickSize) - shift
+      : roundUp(mid * (1 + HALF), tickSize) + shift;
+  return price;
 };

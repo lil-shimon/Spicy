@@ -89,13 +89,13 @@ const handleEnableOrder = async (
     `[DirtyWork] スプレッドが閾値範囲を満たしているので、注文を出します: ${symbol} ${spreadRate}`
   );
 
-  const { buyPrice, sellPrice } = getPrices(
+  const { buyPrice, sellPrice } = getPrices({
     bestBid,
     bestAsk,
     sellCancelCount,
     buyCancelCount,
-    tickSize
-  );
+    tickSize,
+  });
 
   const [buyOrder, sellOrder] = await Promise.all([
     orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),

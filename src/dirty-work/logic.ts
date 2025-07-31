@@ -3,13 +3,21 @@ import { roundDown, roundUp } from './round';
 const FULL_SPREAD = 0.0001;
 const HALF = FULL_SPREAD / 2;
 
-export const getPrices = (
-  bestBid: number,
-  bestAsk: number,
-  sellCancelCount: number,
-  buyCancelCount: number,
-  tickSize: number
-) => {
+type GetPricesParams = {
+  bestBid: number;
+  bestAsk: number;
+  sellCancelCount: number;
+  buyCancelCount: number;
+  tickSize: number;
+};
+
+export const getPrices = ({
+  bestBid,
+  bestAsk,
+  sellCancelCount,
+  buyCancelCount,
+  tickSize,
+}: GetPricesParams) => {
   const mid = (bestBid + bestAsk) / 2;
 
   const buyPrice = getPrice({

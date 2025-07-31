@@ -11,6 +11,7 @@ type GetPricesParams = {
   tickSize: number;
 };
 
+// TODO: 在庫数も考慮に入れたい
 export const getPrices = ({
   bestBid,
   bestAsk,

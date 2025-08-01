@@ -29,8 +29,8 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toEqual(0.0013);
-    expect(sellPrice).toBeCloseTo(0.0017);
+    expect(buyPrice).toBeCloseTo(0.0013, 4);
+    expect(sellPrice).toBeCloseTo(0.0016, 4);
   });
 
   it('should return the correct prices when inventory is 4000', () => {
@@ -42,8 +42,8 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toEqual(0.0012);
-    expect(sellPrice).toBeCloseTo(0.0018);
+    expect(buyPrice).toBeCloseTo(0.0012, 4);
+    expect(sellPrice).toBeCloseTo(0.0016, 4);
   });
 
   it('should return the correct prices when inventory is 6000', () => {
@@ -55,7 +55,33 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toBeCloseTo(0.0011);
-    expect(sellPrice).toBeCloseTo(0.0019);
+    expect(buyPrice).toBeCloseTo(0.0011, 4);
+    expect(sellPrice).toBeCloseTo(0.0016, 4);
+  });
+
+  it('should return the correct prices when inventory is -2000', () => {
+    const { buyPrice, sellPrice } = getPrices({
+      bestBid,
+      bestAsk,
+      inventory: -2000,
+      amount,
+      tickSize,
+    });
+
+    expect(buyPrice).toBeCloseTo(0.0014, 4);
+    expect(sellPrice).toBeCloseTo(0.0017, 4);
+  });
+
+  it('should return the correct prices when inventory is -4000', () => {
+    const { buyPrice, sellPrice } = getPrices({
+      bestBid,
+      bestAsk,
+      inventory: -4000,
+      amount,
+      tickSize,
+    });
+
+    expect(buyPrice).toBeCloseTo(0.0014, 4);
+    expect(sellPrice).toBeCloseTo(0.0018, 4);
   });
 });

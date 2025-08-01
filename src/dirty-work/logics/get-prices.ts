@@ -21,20 +21,26 @@ export const getPrices = ({
 }: GetPricesParams) => {
   const mid = (bestBid + bestAsk) / 2;
 
-  const buyPrice = getPrice({
+  let buyPrice = getPrice({
     mid,
     side: 'buy',
     tickSize,
-    inventory,
-    amount,
   });
-  const sellPrice = getPrice({
+  let sellPrice = getPrice({
     mid,
     side: 'sell',
     tickSize,
-    inventory,
-    amount,
   });
+
+  const inventoryShift = (inventory / amount) * tickSize;
+  if (inventory > 0) {
+    // 在庫がプラスの場合は、買い価格を下げる
+    buyPrice = buyPrice - inventoryShift;
+  } else if (inventory < 0) {
+    // 在庫がマイナスの場合は、売り価格を上げる
+    // inventoryShift はマイナスなので、Math.abs で絶対値に変換する
+    sellPrice = sellPrice + Math.abs(inventoryShift);
+  }
 
   return { buyPrice, sellPrice };
 };
@@ -43,22 +49,13 @@ type GetPriceParams = {
   mid: number;
   side: 'buy' | 'sell';
   tickSize: number;
-  inventory: number;
-  amount: number;
 };
 
-const getPrice = ({
-  mid,
-  side,
-  tickSize,
-  inventory,
-  amount,
-}: GetPriceParams) => {
-  const inventoryShift = (inventory / amount) * tickSize;
-
+const getPrice = ({ mid, side, tickSize }: GetPriceParams) => {
   const price =
     side === 'buy'
-      ? roundDown(mid * (1 - HALF), tickSize) - inventoryShift
-      : roundUp(mid * (1 + HALF), tickSize) + inventoryShift;
+      ? roundDown(mid * (1 - HALF), tickSize)
+      : roundUp(mid * (1 + HALF), tickSize);
+
   return price;
 };

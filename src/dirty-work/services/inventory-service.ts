@@ -15,7 +15,7 @@ export class InventoryService {
 
   getInventory = (pair: string) => {
     const symbol = pair.split('/')[0];
-    console.log('inventory', this.inventory[symbol]);
+    console.log('inventory', this.inventory[symbol], symbol);
     return this.inventory[symbol] ?? 0;
   };
 }

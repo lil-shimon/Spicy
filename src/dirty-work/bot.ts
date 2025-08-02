@@ -105,7 +105,6 @@ const handleEnableOrder = async (
   ];
 
   const orders = await Promise.all(orderPromises);
-  const [buyOrder, sellOrder] = orders;
 
   if (orders.length) {
     orderService.addOrder(orders.filter((o) => o !== undefined));
@@ -115,14 +114,14 @@ const handleEnableOrder = async (
     `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice}`
   );
 
-  const [buyOrderId, sellOrderId] = [buyOrder?.id, sellOrder?.id];
+  const buyOrderId = orderService.getOrderIdBySide('buy');
+  const sellOrderId = orderService.getOrderIdBySide('sell');
 
   if (!buyOrderId || !sellOrderId) {
     await postMMMessage(
       `[DirtyWork] 注文作成中にエラーが発生しました?? (IDが取得できない): ${JSON.stringify(
         {
-          buyOrder,
-          sellOrder,
+          orders,
         }
       )}`
     );

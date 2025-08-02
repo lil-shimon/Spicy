@@ -28,11 +28,6 @@ let buyCancelCount = 0;
 let sellCancelCount = 0;
 let completeCount = 0;
 
-/**
- * 実現損益
- */
-let realizedPnL = 0;
-
 export type OnFillParams = {
   side: 'buy' | 'sell';
   price: number;
@@ -42,7 +37,6 @@ export type OnFillParams = {
 const handleOnFill = ({ side, price, symbol }: OnFillParams) => {
   const token = symbol.split('/')[0];
   const stable = symbol.split('/')[1];
-  pnlService.updatePnl(token, stable, price);
   console.log(
     `通知：損益: ${pnlService.getPnl()}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
   );
@@ -142,6 +136,9 @@ const handleEnableOrder = async (
     if (buyOrder?.status === 'closed' && !buyOrderClosed) {
       buyOrderClosed = true;
       buyCancelCount = 0;
+      // TODO: この場合だと毎回最終の約定の価格になるので、ちゃんとした損益計算はできていない
+      // 今の価格でのPUMP保持している量のUSDT価格としては適切ですが、MMBotの利益計算としては少し微妙かも？
+      pnlService.updateCurrentPrice(buyOrder?.price ?? 0);
 
       // TODO: priceを使うと、約定時の価格になるので、部分約定した場合価格がズレる恐れがある
       // order.argPriceを使うように変更する
@@ -225,6 +222,9 @@ const handleEnableOrder = async (
 
   console.log('ポジションが閉じられたので、注文を解除します', symbol);
   orderService.updateOrderStatus(false);
+  const token = symbol.split('/')[0];
+  const stable = symbol.split('/')[1];
+  pnlService.updatePnl(token, stable);
 };
 
 const handleUpdate = async (

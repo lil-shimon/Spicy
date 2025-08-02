@@ -13,8 +13,7 @@ export const createMexcOrder = async (
     await postOrderMessage(
       `MEXCでの注文が成功しました: ${JSON.stringify(order)}`
     );
-    const response = await mexcClient.fetchOrder(order.id, pair);
-    return response;
+    return order;
   } catch (error) {
     console.error('MEXCでの注文作成中にエラーが発生しました:', error);
     await postOrderMessage(

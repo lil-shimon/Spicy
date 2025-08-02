@@ -16,7 +16,6 @@ const TICK = 0.0001;
 
 let tickSize = TICK;
 const orderService = new OrderService();
-const ordered = orderService.ordered;
 /**
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする

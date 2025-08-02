@@ -25,10 +25,6 @@ const inventoryService = new InventoryService();
 let buyCancelCount = 0;
 let sellCancelCount = 0;
 let completeCount = 0;
-/**
- * USDTの残高
- */
-let invUsdt = 0;
 
 /**
  * 実現損益
@@ -38,22 +34,22 @@ let realizedPnL = 0;
 export type OnFillParams = {
   side: 'buy' | 'sell';
   price: number;
-  pair: string;
+  symbol: string;
 };
 
-const handleOnFill = ({ side, price, pair }: OnFillParams) => {
-  // TODO: 将来的には手数料が0％じゃないペアでも取引すると思うので、その時は手数料を引く
-  realizedPnL = invUsdt;
+const handleOnFill = ({ side, price, symbol }: OnFillParams) => {
+  const token = symbol.split('/')[0];
+  const stable = symbol.split('/')[1];
   console.log(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(pair)}, 在庫USDT: ${invUsdt}`
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
   );
   postMMMessage(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(pair)}, 在庫USDT: ${invUsdt}`
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
   );
   writePnlCSV({
     realizedPnL,
-    invPump: inventoryService.getInventory(pair),
-    invUsdt,
+    invPump: inventoryService.getInventory(token),
+    invUsdt: inventoryService.getInventory(stable),
     price,
     side,
   });
@@ -149,7 +145,7 @@ const handleEnableOrder = async (
       handleOnFill({
         side: 'buy',
         price: buyOrder?.price ?? 0,
-        pair: symbol,
+        symbol,
       });
       orderService.removeOrder(buyOrderId);
     }
@@ -161,7 +157,7 @@ const handleEnableOrder = async (
       handleOnFill({
         side: 'sell',
         price: sellOrder?.price ?? 0,
-        pair: symbol,
+        symbol,
       });
       orderService.removeOrder(sellOrderId);
     }
@@ -228,7 +224,7 @@ const handleEnableOrder = async (
   orderService.updateOrderStatus(false);
 };
 
-const handleUpdate = (
+const handleUpdate = async (
   bestBid: number,
   bestAsk: number,
   symbol: string,
@@ -236,9 +232,6 @@ const handleUpdate = (
   thresholdRate: number
 ) => {
   const spread = calculateSpreadRate(bestBid, bestAsk);
-
-  const pair = symbol.split('/')[0];
-  inventoryService.updateInventory(pair);
 
   // TODO: ボラでも判断するようにしたい。
   // 例：小ボラ時：0 .08–0 .10 %
@@ -264,6 +257,13 @@ const handleUpdate = (
     return;
   }
 
+  const token = symbol.split('/')[0];
+  const stable = symbol.split('/')[1];
+  const promises = [
+    inventoryService.updateInventory(token),
+    inventoryService.updateInventory(stable),
+  ];
+  await Promise.all(promises);
   handleEnableOrder(bestBid, bestAsk, spread, symbol, amount);
 };
 
@@ -285,7 +285,7 @@ const dirtyWork = async (
     return;
   }
 
-  handleUpdate(bestBid, bestAsk, symbol, amount, thresholdRate);
+  await handleUpdate(bestBid, bestAsk, symbol, amount, thresholdRate);
 };
 
 export const startDirtyWork = async (

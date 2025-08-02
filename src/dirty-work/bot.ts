@@ -17,6 +17,7 @@ const TICK = 0.0001;
 
 let tickSize = TICK;
 const orderService = new OrderService();
+const inventoryService = new InventoryService();
 /**
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする
@@ -24,10 +25,6 @@ const orderService = new OrderService();
 let buyCancelCount = 0;
 let sellCancelCount = 0;
 let completeCount = 0;
-/**
- * PUMPの残高
- */
-let invPump = 0;
 /**
  * USDTの残高
  */
@@ -40,30 +37,22 @@ let realizedPnL = 0;
 
 export type OnFillParams = {
   side: 'buy' | 'sell';
-  qty: number;
   price: number;
+  pair: string;
 };
 
-const handleOnFill = ({ side, qty, price }: OnFillParams) => {
-  console.log('debug', { side, qty, price });
-  if (side === 'buy') {
-    invPump += qty;
-    invUsdt -= qty * price;
-  } else {
-    invPump -= qty;
-    invUsdt += qty * price;
-  }
+const handleOnFill = ({ side, price, pair }: OnFillParams) => {
   // TODO: 将来的には手数料が0％じゃないペアでも取引すると思うので、その時は手数料を引く
   realizedPnL = invUsdt;
   console.log(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(pair)}, 在庫USDT: ${invUsdt}`
   );
   postMMMessage(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${invPump}, 在庫USDT: ${invUsdt}`
+    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(pair)}, 在庫USDT: ${invUsdt}`
   );
   writePnlCSV({
     realizedPnL,
-    invPump,
+    invPump: inventoryService.getInventory(pair),
     invUsdt,
     price,
     side,
@@ -95,7 +84,7 @@ const handleEnableOrder = async (
   const { buyPrice, sellPrice } = getPrices({
     bestBid,
     bestAsk,
-    inventory: invPump,
+    inventory: inventoryService.getInventory(symbol),
     amount,
     tickSize,
   });
@@ -159,8 +148,8 @@ const handleEnableOrder = async (
       // order.argPriceを使うように変更する
       handleOnFill({
         side: 'buy',
-        qty: buyOrder?.filled ?? 0,
         price: buyOrder?.price ?? 0,
+        pair: symbol,
       });
       orderService.removeOrder(buyOrderId);
     }
@@ -171,8 +160,8 @@ const handleEnableOrder = async (
 
       handleOnFill({
         side: 'sell',
-        qty: sellOrder?.filled ?? 0,
         price: sellOrder?.price ?? 0,
+        pair: symbol,
       });
       orderService.removeOrder(sellOrderId);
     }
@@ -248,6 +237,9 @@ const handleUpdate = (
 ) => {
   const spread = calculateSpreadRate(bestBid, bestAsk);
 
+  const pair = symbol.split('/')[0];
+  inventoryService.updateInventory(pair);
+
   // TODO: ボラでも判断するようにしたい。
   // 例：小ボラ時：0 .08–0 .10 %
   // 中ボラ時：0 .12–0 .15 %
@@ -305,9 +297,6 @@ export const startDirtyWork = async (
   const market = await mexcClient.loadMarkets();
   tickSize = market[pair]?.precision.price ?? TICK;
   console.log(`${pair} tickSize: ${tickSize}`);
-  const inventoryService = new InventoryService();
-  const symbol = pair.split('/')[0];
-  inventoryService.updateInventory(symbol);
 
   const interval = 1000 * 6;
   setInterval(async () => dirtyWork(pair, amount, thresholdRate), interval);

@@ -216,6 +216,24 @@ const handleEnableOrder = async (
     orderService.removeOrder(sellOrderId);
   }
 
+  if (orderService.orders.length !== 0) {
+    console.log(
+      'なんらかのエラーで注文が残っています。なので全てキャンセルします。'
+    );
+    const cancelPromises = orderService.orders.map((o) => {
+      return cancelMexcOrder(o.id, symbol);
+    });
+    const response = await Promise.all(cancelPromises);
+    response.forEach((res) => {
+      if (res?.id) {
+        orderService.removeOrder(res.id);
+        postMMMessage(
+          `[DirtyWork] 注文を解除しました: ${symbol} ${res.id} ${res.side} ${res.status}`
+        );
+      }
+    });
+  }
+
   console.log('ポジションが閉じられたので、注文を解除します', symbol);
   orderService.updateOrderStatus(false);
 };

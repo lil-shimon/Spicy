@@ -17,4 +17,9 @@ export class OrderService {
     this.orders = this.orders.filter((o) => o.id !== id);
     console.log('removeOrder', this.orders.length);
   };
+
+  getOrderIdBySide = (side: 'buy' | 'sell') => {
+    const order = this.orders.find((o) => o.side === side);
+    return order?.id;
+  };
 }

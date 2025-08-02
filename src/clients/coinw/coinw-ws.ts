@@ -1,4 +1,5 @@
 import WebSocket from 'ws';
+import { Asks, Bids } from '../../drama/type';
 
 const WS_URL = 'wss://ws.futurescw.com';
 
@@ -6,7 +7,7 @@ type Props = {
   biz: 'exchange' | 'futures';
   pairCode: string;
   type: 'depth_snapshot' | 'depth';
-  onUpdate: (asks: number, bids: number) => void;
+  onUpdate: (asks: Asks, bids: Bids) => void;
   onError: (error: Error, exchange?: string) => void;
   onClose: (exchange?: string) => void;
 };

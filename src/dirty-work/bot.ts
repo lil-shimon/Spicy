@@ -104,7 +104,12 @@ const handleEnableOrder = async (
     orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
   ];
 
-  const [buyOrder, sellOrder] = await Promise.all(orderPromises);
+  const orders = await Promise.all(orderPromises);
+  const [buyOrder, sellOrder] = orders;
+
+  if (orders.length) {
+    orderService.addOrder(orders.filter((o) => o !== undefined));
+  }
 
   postMMMessage(
     `[DirtyWork] 注文を出します: ${symbol} 買い${buyPrice} 売り${sellPrice}`
@@ -157,6 +162,7 @@ const handleEnableOrder = async (
         qty: buyOrder?.filled ?? 0,
         price: buyOrder?.price ?? 0,
       });
+      orderService.removeOrder(buyOrderId);
     }
 
     if (sellOrder?.status === 'closed' && !sellOrderClosed) {
@@ -168,6 +174,7 @@ const handleEnableOrder = async (
         qty: sellOrder?.filled ?? 0,
         price: sellOrder?.price ?? 0,
       });
+      orderService.removeOrder(sellOrderId);
     }
 
     if (isClosed) {
@@ -192,6 +199,7 @@ const handleEnableOrder = async (
       postMMMessage(
         `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
       );
+      orderService.removeOrder(buyOrderId);
     }
   }
 
@@ -205,6 +213,7 @@ const handleEnableOrder = async (
       postMMMessage(
         `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
       );
+      orderService.removeOrder(sellOrderId);
     }
   }
 

@@ -282,6 +282,5 @@ export const startDirtyWork = async (
   setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
 };
 
-// startDirtyWork('PUMP/USDT', 2000, 0.12);
+startDirtyWork('PUMP/USDT', 2000, 0.12);
 // startDirtyWork('SOL/USDT', 0.03, 0.002);
-startDirtyWork('PENGU/USDT', 100, 0.002);

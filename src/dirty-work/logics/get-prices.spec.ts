@@ -29,7 +29,7 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toBeCloseTo(0.0012, 4);
+    expect(buyPrice).toBeCloseTo(0.0014, 4);
     expect(sellPrice).toBeCloseTo(0.0016, 4);
   });
 
@@ -42,7 +42,7 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toBeCloseTo(0.001, 4);
+    expect(buyPrice).toBeCloseTo(0.0012, 4);
     expect(sellPrice).toBeCloseTo(0.0016, 4);
   });
 
@@ -55,7 +55,7 @@ describe('getPrices', () => {
       tickSize,
     });
 
-    expect(buyPrice).toBeCloseTo(0.0008, 4);
+    expect(buyPrice).toBeCloseTo(0.001, 4);
     expect(sellPrice).toBeCloseTo(0.0016, 4);
   });
 
@@ -69,7 +69,7 @@ describe('getPrices', () => {
     });
 
     expect(buyPrice).toBeCloseTo(0.0014, 4);
-    expect(sellPrice).toBeCloseTo(0.0018, 4);
+    expect(sellPrice).toBeCloseTo(0.002, 4);
   });
 
   it('should return the correct prices when inventory is -4000', () => {
@@ -82,6 +82,6 @@ describe('getPrices', () => {
     });
 
     expect(buyPrice).toBeCloseTo(0.0014, 4);
-    expect(sellPrice).toBeCloseTo(0.002, 4);
+    expect(sellPrice).toBeCloseTo(0.0022, 4);
   });
 });

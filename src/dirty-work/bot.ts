@@ -126,7 +126,7 @@ const handleEnableOrder = async (
   ordered = true;
 
   const tStart = Date.now();
-  const TIMEOUT_MS = 1000 * 10;
+  const TIMEOUT_MS = 1000 * 6;
 
   let buyOrderClosed = false;
   let sellOrderClosed = false;
@@ -252,10 +252,14 @@ const dirtyWork = async (
   amount: number,
   thresholdRate: number
 ) => {
-  const response = await fetchMexcOrderbook(symbol as Pair);
+  let response;
+  // 注文が約定していない場合は、Orderbookを取得しない
+  if (!ordered) {
+    response = await fetchMexcOrderbook(symbol as Pair);
+  }
 
-  const bestBid = response.bids[0][0];
-  const bestAsk = response.asks[0][0];
+  const bestBid = response?.bids[0][0];
+  const bestAsk = response?.asks[0][0];
 
   if (!bestBid || !bestAsk) {
     return;
@@ -274,8 +278,10 @@ export const startDirtyWork = async (
   tickSize = market[symbol]?.precision.price ?? TICK;
   console.log(`${symbol} tickSize: ${tickSize}`);
 
-  const interval = 1000 * 10;
+  const interval = 1000 * 6;
   setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
 };
 
-startDirtyWork('PUMP/USDT', 2000, 0.12);
+// startDirtyWork('PUMP/USDT', 2000, 0.12);
+// startDirtyWork('SOL/USDT', 0.03, 0.002);
+startDirtyWork('PENGU/USDT', 100, 0.002);

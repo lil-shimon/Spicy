@@ -1,7 +1,7 @@
 import { fetchMexcBalance } from '../../clients';
 
 export class InventoryService {
-  public inventory: Record<string, number> = {};
+  private inventory: Record<string, number> = {};
 
   addInventory = (symbol: string, amount: number) => {
     this.inventory[symbol] = amount;
@@ -11,5 +11,11 @@ export class InventoryService {
     const balance = await fetchMexcBalance();
     const inventory = balance[symbol]?.total;
     this.addInventory(symbol, inventory ?? 0);
+  };
+
+  getInventory = (pair: string) => {
+    const symbol = pair.split('/')[0];
+    console.log('inventory', this.inventory[symbol]);
+    return this.inventory[symbol] ?? 0;
   };
 }

@@ -31,7 +31,9 @@ export const getPrices = ({
     tickSize,
   });
 
-  const inventoryShift = (inventory / amount) * tickSize;
+  const inventoryWithoutMinAmount = inventory - amount;
+
+  const inventoryShift = (inventoryWithoutMinAmount / amount) * tickSize;
   if (inventory > 0) {
     // 在庫がプラスの場合は、買い価格を下げる
     buyPrice = buyPrice - inventoryShift * 2;

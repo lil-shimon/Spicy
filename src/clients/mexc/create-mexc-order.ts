@@ -9,7 +9,6 @@ export const createMexcOrder = async (
 ) => {
   try {
     const order = await mexcClient.createOrder(pair, 'market', side, amount);
-    console.log('MEXCでの注文が成功しました:', order);
     await postOrderMessage(
       `MEXCでの注文が成功しました: ${JSON.stringify(order)}`
     );

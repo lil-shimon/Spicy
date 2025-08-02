@@ -82,10 +82,18 @@ const handleEnableOrder = async (
     tickSize,
   });
 
-  const orderPromises = [
-    orderLimit(symbol, 'buy', amount, buyPrice, 'limit'),
-    orderLimit(symbol, 'sell', amount, sellPrice, 'limit'),
-  ];
+  const orderPromises = [orderLimit(symbol, 'buy', amount, buyPrice, 'limit')];
+
+  const handleSellOrderEnabled = () => {
+    const token = symbol.split('/')[0];
+    const enableOrder = inventoryService.getInventory(token) > amount;
+    console.log('enableSellOrder', enableOrder, token, amount);
+    return enableOrder;
+  };
+
+  if (handleSellOrderEnabled()) {
+    orderPromises.push(orderLimit(symbol, 'sell', amount, sellPrice, 'limit'));
+  }
 
   const orders = await Promise.all(orderPromises);
 

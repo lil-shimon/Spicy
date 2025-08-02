@@ -34,11 +34,11 @@ export const getPrices = ({
   const inventoryShift = (inventory / amount) * tickSize;
   if (inventory > 0) {
     // 在庫がプラスの場合は、買い価格を下げる
-    buyPrice = buyPrice - inventoryShift;
+    buyPrice = buyPrice - inventoryShift * 2;
   } else if (inventory < 0) {
     // 在庫がマイナスの場合は、売り価格を上げる
     // inventoryShift はマイナスなので、Math.abs で絶対値に変換する
-    sellPrice = sellPrice + Math.abs(inventoryShift);
+    sellPrice = sellPrice + Math.abs(inventoryShift * 2);
   }
 
   return { buyPrice, sellPrice };

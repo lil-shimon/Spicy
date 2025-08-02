@@ -2,21 +2,11 @@ import WebSocket from 'ws';
 
 const WS_URL = 'wss://ws.futurescw.com';
 
-const SOL_PAIR_CODE = 711; // SOL-USDTのペアコード
-const BTC_PAIR_CODE = 78; // BTC-USDTのペアコード
-
-const subscribeMsg = {
-  event: 'sub',
-  params: {
-    biz: 'exchange',
-    type: 'depth_snapshot',
-    // BTC-USDT
-    pairCode: SOL_PAIR_CODE,
-  },
-};
-
 type Props = {
-  onUpdate: (bestBid: number, bestAsk: number) => void;
+  biz: 'exchange' | 'futures';
+  pairCode: string;
+  type: 'depth_snapshot' | 'depth';
+  onUpdate: (asks: number, bids: number) => void;
   onError: (error: Error, exchange?: string) => void;
   onClose: (exchange?: string) => void;
 };
@@ -27,8 +17,25 @@ const PING_INTERVAL_MS = 10_000;
 // .infoはSocket.ioのエンドポイントなので、.comを使う
 // その場合は認証が必要
 // https://www.coinw.com/api-doc/en/spot-trading/market/subscribe-order-book#authentication-1
-export const connectCoinw = async ({ onUpdate, onError, onClose }: Props) => {
-  const ws = new WebSocket(WS_URL);
+export const connectCoinw = async ({
+  biz,
+  type,
+  pairCode,
+  onUpdate,
+  onError,
+  onClose,
+}: Props) => {
+  const url = biz === 'futures' ? `${WS_URL}/perpum` : WS_URL;
+  const ws = new WebSocket(url);
+
+  const subscribeMsg = {
+    event: 'sub',
+    params: {
+      biz,
+      type,
+      pairCode,
+    },
+  };
 
   ws.on('open', () => {
     console.log('open');
@@ -51,13 +58,7 @@ export const connectCoinw = async ({ onUpdate, onError, onClose }: Props) => {
     const asks = parsedData?.asks;
     const bids = parsedData?.bids;
 
-    if (!asks || !bids) return;
-    if (asks.length === 0 || bids.length === 0) return;
-
-    const bestBid = parseFloat(bids[0][0]);
-    const bestAsk = parseFloat(asks[0][0]);
-
-    onUpdate(bestBid, bestAsk);
+    onUpdate(asks, bids);
   });
 
   ws.on('error', (error) => {
@@ -68,16 +69,3 @@ export const connectCoinw = async ({ onUpdate, onError, onClose }: Props) => {
     onClose('Coinw');
   });
 };
-
-connectCoinw({
-  onUpdate: (bestBid, bestAsk) => {
-    console.log('bestBid', bestBid);
-    console.log('bestAsk', bestAsk);
-  },
-  onError: (error) => {
-    console.error('error', error);
-  },
-  onClose: () => {
-    console.log('close');
-  },
-});

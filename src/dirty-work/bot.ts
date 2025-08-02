@@ -199,8 +199,8 @@ const handleEnableOrder = async (
       postMMMessage(
         `[DirtyWork] 買い注文を解除しました: ${symbol} ${buyOrderId} ${buyCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
       );
-      orderService.removeOrder(buyOrderId);
     }
+    orderService.removeOrder(buyOrderId);
   }
 
   if (!sellOrderClosed) {
@@ -213,8 +213,8 @@ const handleEnableOrder = async (
       postMMMessage(
         `[DirtyWork] 売り注文を解除しました: ${symbol} ${sellOrderId} ${sellCancelCount}回目 合計${buyCancelCount + sellCancelCount}回目`
       );
-      orderService.removeOrder(sellOrderId);
     }
+    orderService.removeOrder(sellOrderId);
   }
 
   console.log('ポジションが閉じられたので、注文を解除します', symbol);

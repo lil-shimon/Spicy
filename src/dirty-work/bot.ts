@@ -8,13 +8,15 @@ import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
+import { OrderService } from './order-service';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
 const TICK = 0.0001;
 
 let tickSize = TICK;
-let ordered = false;
+const orderService = new OrderService();
+const ordered = orderService.ordered;
 /**
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする
@@ -123,7 +125,7 @@ const handleEnableOrder = async (
     return;
   }
 
-  ordered = true;
+  orderService.updateOrderStatus(true);
 
   const tStart = Date.now();
   const TIMEOUT_MS = 1000 * 6;
@@ -208,7 +210,7 @@ const handleEnableOrder = async (
   }
 
   console.log('ポジションが閉じられたので、注文を解除します', symbol);
-  ordered = false;
+  orderService.updateOrderStatus(false);
 };
 
 const handleUpdate = (
@@ -239,7 +241,7 @@ const handleUpdate = (
     return;
   }
 
-  if (ordered) {
+  if (orderService.ordered) {
     console.log('注文済みなので、何もしません', symbol);
     return;
   }
@@ -254,7 +256,7 @@ const dirtyWork = async (
 ) => {
   let response;
   // 注文が約定していない場合は、Orderbookを取得しない
-  if (!ordered) {
+  if (!orderService.ordered) {
     response = await fetchMexcOrderbook(symbol as Pair);
   }
 

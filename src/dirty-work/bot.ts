@@ -10,6 +10,7 @@ import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
 import { OrderService } from './order-service';
 import { InventoryService } from './services/inventory-service';
+import { PnLService } from './services/pnl-service';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -18,6 +19,7 @@ const TICK = 0.0001;
 let tickSize = TICK;
 const orderService = new OrderService();
 const inventoryService = new InventoryService();
+const pnlService = new PnLService(inventoryService);
 /**
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする
@@ -40,14 +42,15 @@ export type OnFillParams = {
 const handleOnFill = ({ side, price, symbol }: OnFillParams) => {
   const token = symbol.split('/')[0];
   const stable = symbol.split('/')[1];
+  pnlService.updatePnl(token, stable, price);
   console.log(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
+    `通知：損益: ${pnlService.getPnl()}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
   );
   postMMMessage(
-    `通知：損益: ${realizedPnL}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
+    `通知：損益: ${pnlService.getPnl()}USDT, 在庫PUMP: ${inventoryService.getInventory(token)}, 在庫USDT: ${inventoryService.getInventory(stable)}`
   );
   writePnlCSV({
-    realizedPnL,
+    realizedPnL: pnlService.getPnl(),
     invPump: inventoryService.getInventory(token),
     invUsdt: inventoryService.getInventory(stable),
     price,

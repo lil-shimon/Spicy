@@ -9,6 +9,7 @@ import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
 import { OrderService } from './order-service';
+import { InventoryService } from './services/inventory-service';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -296,17 +297,20 @@ const dirtyWork = async (
 };
 
 export const startDirtyWork = async (
-  symbol: string,
+  pair: string,
   amount: number,
   thresholdRate = spreadThreshold
 ) => {
   console.log('MMBot start');
   const market = await mexcClient.loadMarkets();
-  tickSize = market[symbol]?.precision.price ?? TICK;
-  console.log(`${symbol} tickSize: ${tickSize}`);
+  tickSize = market[pair]?.precision.price ?? TICK;
+  console.log(`${pair} tickSize: ${tickSize}`);
+  const inventoryService = new InventoryService();
+  const symbol = pair.split('/')[0];
+  inventoryService.updateInventory(symbol);
 
   const interval = 1000 * 6;
-  setInterval(async () => dirtyWork(symbol, amount, thresholdRate), interval);
+  setInterval(async () => dirtyWork(pair, amount, thresholdRate), interval);
 };
 
 startDirtyWork('PUMP/USDT', 2000, 0.12);

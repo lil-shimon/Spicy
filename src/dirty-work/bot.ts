@@ -86,9 +86,7 @@ const handleEnableOrder = async (
 
   const handleSellOrderEnabled = () => {
     const token = symbol.split('/')[0];
-    const enableOrder = inventoryService.getInventory(token) > amount;
-    console.log('enableSellOrder', enableOrder, token, amount);
-    return enableOrder;
+    return inventoryService.getInventory(token) > amount;
   };
 
   if (handleSellOrderEnabled()) {

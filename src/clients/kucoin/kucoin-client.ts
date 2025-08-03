@@ -1,4 +1,5 @@
 import { kucoin } from 'ccxt';
+import 'dotenv/config';
 
 const apiKey = process.env.KUCOIN_API_KEY;
 const secret = process.env.KUCOIN_SECRET;

@@ -299,6 +299,25 @@ const dirtyWork = async (
   await handleUpdate(bestBid, bestAsk, symbol, amount, thresholdRate);
 };
 
+const initialize = async (symbol: string) => {
+  const token = symbol.split('/')[0];
+  const stable = symbol.split('/')[1];
+
+  const response = await fetchMexcOrderbook(symbol as Pair);
+  const bestBid = response?.bids[0][0];
+  if (!bestBid) {
+    return;
+  }
+
+  const promises = [
+    inventoryService.updateInventory(token),
+    inventoryService.updateInventory(stable),
+  ];
+  await Promise.all(promises);
+  pnlService.initialize(bestBid, token, stable);
+  console.log('initialize', bestBid, token, stable);
+};
+
 export const startDirtyWork = async (
   pair: string,
   amount: number,
@@ -308,6 +327,7 @@ export const startDirtyWork = async (
   const market = await mexcClient.loadMarkets();
   tickSize = market[pair]?.precision.price ?? TICK;
   console.log(`${pair} tickSize: ${tickSize}`);
+  await initialize(pair);
 
   const interval = 1000 * 6;
   setInterval(async () => dirtyWork(pair, amount, thresholdRate), interval);

@@ -14,7 +14,7 @@ describe('PnLService', () => {
   beforeEach(() => {
     mockInventoryService = {
       getInventory: vi.fn(),
-    } as any;
+    } as unknown as InventoryService;
     pnlService = new PnLService(mockInventoryService);
     vi.clearAllMocks();
   });

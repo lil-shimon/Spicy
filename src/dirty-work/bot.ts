@@ -315,7 +315,6 @@ const initialize = async (symbol: string) => {
   ];
   await Promise.all(promises);
   pnlService.initialize(bestBid, token, stable);
-  console.log('initialize', bestBid, token, stable);
 };
 
 export const startDirtyWork = async (

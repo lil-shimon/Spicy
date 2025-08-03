@@ -1,4 +1,4 @@
-import { kucoin } from 'ccxt';
+import { kucoin, kucoinfutures } from 'ccxt';
 import 'dotenv/config';
 
 const apiKey = process.env.KUCOIN_API_KEY;
@@ -15,6 +15,12 @@ if (!apiKey || !secret || !passphrase) {
 }
 
 export const kucoinClient = new kucoin({
+  apiKey,
+  secret,
+  password: passphrase,
+});
+
+export const kucoinFuturesClient = new kucoinfutures({
   apiKey,
   secret,
   password: passphrase,

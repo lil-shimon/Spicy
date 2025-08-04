@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Order } from 'ccxt';
-import { OrderService } from './services/order-service';
+import { OrderService } from './order-service';
 
 describe('OrderService', () => {
   let orderService: OrderService;

@@ -1,12 +1,18 @@
 import WebSocket from 'ws';
 
 type Props = {
+  pair: string;
   onUpdate: (bestBid: number, bestAsk: number) => void;
   onError: (error: Error, exchange?: string) => void;
   onClose: (exchange?: string) => void;
 };
 
-export const connectKucoin = async ({ onUpdate, onError, onClose }: Props) => {
+export const connectKucoin = async ({
+  pair,
+  onUpdate,
+  onError,
+  onClose,
+}: Props) => {
   const response = await fetch('https://api.kucoin.com/api/v1/bullet-public', {
     method: 'POST',
     headers: {
@@ -20,7 +26,7 @@ export const connectKucoin = async ({ onUpdate, onError, onClose }: Props) => {
 
   const msg = {
     type: 'subscribe',
-    topic: '/market/ticker:BTC-USDT',
+    topic: `/market/ticker:${pair}`,
   };
 
   ws.on('open', () => {
@@ -44,6 +50,7 @@ export const connectKucoin = async ({ onUpdate, onError, onClose }: Props) => {
 };
 
 connectKucoin({
+  pair: 'BTC-USDT',
   onUpdate: (bestBid, bestAsk) => {
     console.log('Kucoin', bestBid, bestAsk);
   },

@@ -8,7 +8,7 @@ import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
-import { OrderService } from './order-service';
+import { OrderService } from './services/order-service';
 import { InventoryService } from './services/inventory-service';
 import { PnLService } from './services/pnl-service';
 import { calculateSpreadRate } from './spread';

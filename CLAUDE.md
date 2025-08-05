@@ -118,3 +118,67 @@ pm2 start dist/index.js --name spicy
 # ログの確認
 pm2 logs spicy
 ```
+
+## ブランチ戦略とGit操作
+
+### ブランチ命名規則
+
+最近のPRパターンから学んだブランチ命名規則：
+
+- `feat/spicy-{issue番号}-{機能名}` - 新機能追加
+- `refactor/spicy-{issue番号}-{内容}` - リファクタリング
+- `docs/{内容}` - ドキュメント更新
+
+例：
+
+- `feat/spicy-55-futures-maker-fees`
+- `refactor/spicy-50-pnl-service`
+- `docs/add-ccxt-documentation`
+
+### 開発フロー
+
+```bash
+# 1. 最新のmainブランチを取得
+git checkout main && git pull origin main
+
+# 2. 新しいブランチを作成
+git checkout -b feat/spicy-{issue番号}-{機能名}
+
+# 3. 開発・テスト
+pnpm test
+pnpm lint
+pnpm tsc --noEmit
+
+# 4. コミット（分割して作成）
+git add src/constants/constant.ts
+git commit -m "feat(constants): add MAKER_FEES_FUTURES for KuCoin futures trading"
+
+git add src/core/maker-fee/maker-fee.ts
+git commit -m "feat(core): add getMakerFeeFutures utility function"
+
+git add src/core/maker-fee/maker-fee.spec.ts
+git commit -m "test(core): add tests for getMakerFeeFutures function"
+
+# 5. リモートにプッシュ
+git push -u origin {ブランチ名}
+
+# 6. PR作成
+gh pr create --title "feat: {機能概要}" --body "..."
+```
+
+### コミットメッセージフォーマット
+
+```
+{type}({scope}): {subject}
+
+- {詳細1}
+- {詳細2}
+```
+
+type例：
+
+- `feat`: 新機能
+- `refactor`: リファクタリング
+- `test`: テスト追加
+- `docs`: ドキュメント
+- `chore`: その他の変更

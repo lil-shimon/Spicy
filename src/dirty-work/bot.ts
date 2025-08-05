@@ -9,7 +9,7 @@ import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
 import { createOrderService } from './services/order-service';
-import { InventoryService } from './services/inventory-service';
+import { createInventoryService } from './services/inventory-service';
 import { PnLService } from './services/pnl-service';
 import { calculateSpreadRate } from './spread';
 
@@ -18,7 +18,7 @@ const TICK = 0.0001;
 
 let tickSize = TICK;
 const orderService = createOrderService();
-const inventoryService = new InventoryService();
+const inventoryService = createInventoryService();
 const pnlService = new PnLService(inventoryService);
 /**
  * 注文が約定せずキャンセルした回数。

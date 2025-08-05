@@ -1,23 +1,23 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Order } from 'ccxt';
-import { OrderService } from './order-service';
+import { createOrderService } from './order-service';
 
-describe('OrderService', () => {
-  let orderService: OrderService;
+describe('createOrderService', () => {
+  let orderService: ReturnType<typeof createOrderService>;
 
   beforeEach(() => {
-    orderService = new OrderService();
+    orderService = createOrderService();
   });
 
   describe('updateOrderStatus', () => {
     it('should update ordered status to true', () => {
       orderService.updateOrderStatus(true);
-      expect(orderService.ordered).toBe(true);
+      expect(orderService.getOrdered()).toBe(true);
     });
 
     it('should update ordered status to false', () => {
       orderService.updateOrderStatus(false);
-      expect(orderService.ordered).toBe(false);
+      expect(orderService.getOrdered()).toBe(false);
     });
   });
 
@@ -30,8 +30,8 @@ describe('OrderService', () => {
 
       orderService.addOrder(mockOrders);
 
-      expect(orderService.orders.length).toBe(2);
-      expect(orderService.orders).toEqual(mockOrders);
+      expect(orderService.getOrders().length).toBe(2);
+      expect(orderService.getOrders()).toEqual(mockOrders);
     });
 
     it('should append to existing orders', () => {
@@ -41,9 +41,9 @@ describe('OrderService', () => {
       orderService.addOrder([firstOrder]);
       orderService.addOrder([secondOrder]);
 
-      expect(orderService.orders.length).toBe(2);
-      expect(orderService.orders[0]).toEqual(firstOrder);
-      expect(orderService.orders[1]).toEqual(secondOrder);
+      expect(orderService.getOrders().length).toBe(2);
+      expect(orderService.getOrders()[0]).toEqual(firstOrder);
+      expect(orderService.getOrders()[1]).toEqual(secondOrder);
     });
   });
 
@@ -58,9 +58,9 @@ describe('OrderService', () => {
 
       orderService.removeOrder('order2');
 
-      expect(orderService.orders.length).toBe(2);
+      expect(orderService.getOrders().length).toBe(2);
       expect(
-        orderService.orders.find((o) => o.id === 'order2')
+        orderService.getOrders().find((o) => o.id === 'order2')
       ).toBeUndefined();
     });
 
@@ -70,7 +70,27 @@ describe('OrderService', () => {
 
       orderService.removeOrder('non-existent');
 
-      expect(orderService.orders.length).toBe(1);
+      expect(orderService.getOrders().length).toBe(1);
+    });
+  });
+
+  describe('getOrderIdBySide', () => {
+    it('should return order id by side', () => {
+      const mockOrders = [
+        { id: 'order1', side: 'buy' },
+        { id: 'order2', side: 'sell' },
+      ] as Order[];
+      orderService.addOrder(mockOrders);
+
+      expect(orderService.getOrderIdBySide('buy')).toBe('order1');
+      expect(orderService.getOrderIdBySide('sell')).toBe('order2');
+    });
+
+    it('should return undefined when no order with specified side exists', () => {
+      const mockOrder = { id: 'order1', side: 'buy' } as Order;
+      orderService.addOrder([mockOrder]);
+
+      expect(orderService.getOrderIdBySide('sell')).toBeUndefined();
     });
   });
 });

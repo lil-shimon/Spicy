@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PnLService } from './pnl-service';
-import { type InventoryService } from './inventory-service';
+import type { InventoryService } from './inventory-service';
 
 // Mock the InventoryService
 vi.mock('./inventory-service', () => ({

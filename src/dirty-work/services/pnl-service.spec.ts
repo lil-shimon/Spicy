@@ -23,7 +23,6 @@ describe('PnLService', () => {
     it('should initialize with zero values', () => {
       expect(pnlService.getPnl()).toBe(0);
       expect(pnlService.getInitialUSDT()).toBe(0);
-      expect(pnlService.getCurrentPrice()).toBe(0);
     });
   });
 
@@ -238,17 +237,6 @@ describe('PnLService', () => {
       pnlService.initialize(40000, 'BTC', 'USDT');
 
       expect(pnlService.getInitialUSDT()).toBe(22000); // 2000 + (0.5 * 40000)
-    });
-  });
-
-  describe('getCurrentPrice', () => {
-    it('should return initial price of 0', () => {
-      expect(pnlService.getCurrentPrice()).toBe(0);
-    });
-
-    it('should return updated price after updateCurrentPrice', () => {
-      pnlService.updateCurrentPrice(42000);
-      expect(pnlService.getCurrentPrice()).toBe(42000);
     });
   });
 });

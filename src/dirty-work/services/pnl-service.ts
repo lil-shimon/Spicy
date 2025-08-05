@@ -26,6 +26,5 @@ export const createPnLService = (inventoryService: InventoryService) => {
 
     getPnl: () => pnl,
     getInitialUSDT: () => initialUSDT,
-    getCurrentPrice: () => currentPrice,
   };
 };

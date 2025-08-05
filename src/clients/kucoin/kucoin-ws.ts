@@ -38,7 +38,10 @@ export const connectKucoin = async ({
 
   const msg = {
     type: 'subscribe',
-    topic: `/market/ticker:${pair}`,
+    topic:
+      marketType === 'futures'
+        ? `/contractMarket/tickerV2:${pair}`
+        : `/market/ticker:${pair}`,
   };
 
   ws.on('open', () => {
@@ -62,9 +65,6 @@ export const connectKucoin = async ({
 
   ws.on('message', (data) => {
     const message = JSON.parse(data.toString());
-
-    // デバッグ用：実際のメッセージ構造をログ出力
-    console.log(`${marketType} Message:`, JSON.stringify(message, null, 2));
 
     let bestBid, bestAsk;
 

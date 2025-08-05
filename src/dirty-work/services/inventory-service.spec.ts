@@ -45,10 +45,10 @@ describe('InventoryService', () => {
 
   describe('updateInventory', () => {
     it('should update inventory from MEXC balance', async () => {
-      const mockBalance: Balances = {
+      const mockBalance = {
         BTC: { total: 2.5 },
         ETH: { total: 15.0 },
-      } as Balances;
+      } as unknown as Balances;
       mockFetchMexcBalance.mockResolvedValue(mockBalance);
 
       await inventoryService.updateInventory('BTC');
@@ -58,9 +58,9 @@ describe('InventoryService', () => {
     });
 
     it('should handle symbol not found in balance', async () => {
-      const mockBalance: Balances = {
+      const mockBalance = {
         ETH: { total: 15.0 },
-      } as Balances;
+      } as unknown as Balances;
       mockFetchMexcBalance.mockResolvedValue(mockBalance);
 
       await inventoryService.updateInventory('BTC');

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { PnLService } from './pnl-service';
+import { createPnLService } from './pnl-service';
 import type { InventoryService } from './inventory-service';
 
 // Mock the InventoryService
@@ -8,20 +8,19 @@ vi.mock('./inventory-service', () => ({
 }));
 
 describe('PnLService', () => {
-  let pnlService: PnLService;
+  let pnlService: ReturnType<typeof createPnLService>;
   let mockInventoryService: InventoryService;
 
   beforeEach(() => {
     mockInventoryService = {
       getInventory: vi.fn(),
     } as unknown as InventoryService;
-    pnlService = new PnLService(mockInventoryService);
+    pnlService = createPnLService(mockInventoryService);
     vi.clearAllMocks();
   });
 
-  describe('constructor', () => {
-    it('should initialize with InventoryService dependency', () => {
-      expect(pnlService).toBeInstanceOf(PnLService);
+  describe('createPnLService', () => {
+    it('should initialize with zero values', () => {
       expect(pnlService.getPnl()).toBe(0);
       expect(pnlService.getInitialUSDT()).toBe(0);
     });
@@ -36,8 +35,8 @@ describe('PnLService', () => {
 
       pnlService.initialize(50000, 'BTC', 'USDT');
 
-      expect(mockInventoryService.getInventory).toHaveBeenCalledWith('BTC');
       expect(mockInventoryService.getInventory).toHaveBeenCalledWith('USDT');
+      expect(mockInventoryService.getInventory).toHaveBeenCalledWith('BTC');
       expect(pnlService.getInitialUSDT()).toBe(100100); // 100 + (2 * 50000)
       expect(consoleSpy).toHaveBeenCalledWith('initialize', 100100);
 
@@ -171,7 +170,7 @@ describe('PnLService', () => {
         .mockReturnValueOnce(0) // token balance
         .mockReturnValueOnce(1000); // stable balance
 
-      pnlService.updatePnl('BTC/USDT', 'USDT/USDT');
+      pnlService.updatePnl('BTC', 'USDT');
 
       expect(pnlService.getPnl()).toBe(-50000); // (0 * 55000) + 1000 - 51000
     });

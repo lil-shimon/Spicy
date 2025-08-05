@@ -1,4 +1,4 @@
-import { type InventoryService } from './inventory-service';
+import type { InventoryService } from './inventory-service';
 
 export class PnLService {
   private pnl = 0;

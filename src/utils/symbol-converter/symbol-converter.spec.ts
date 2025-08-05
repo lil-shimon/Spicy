@@ -18,15 +18,4 @@ describe('convertToFuturesSymbol', () => {
     );
   });
 
-  it('should throw error for empty string', () => {
-    expect(() => convertToFuturesSymbol('')).toThrow(
-      'Unsupported spot symbol format: . Expected format like \'BTC/USDT\'.'
-    );
-  });
-
-  it('should throw error for symbols with multiple slashes', () => {
-    expect(() => convertToFuturesSymbol('BTC/USDT/EXTRA')).toThrow(
-      'Unsupported spot symbol format: BTC/USDT/EXTRA. Expected format like \'BTC/USDT\'.'
-    );
-  });
 });

@@ -1,27 +1,23 @@
-import { connectCoinw } from '../clients/coinw/coinw-ws';
+import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { calculateSpreadRate } from '../dirty-work/spread';
-import { Asks, Bids } from './type';
 
-const handleUpdate = (asks: Asks, bids: Bids) => {
-  if (!bids || !asks) return;
-  const bestBid = parseFloat(bids[0].p);
-  const bestAsk = parseFloat(asks[0].p);
+const handleUpdate = (bestBid: number, bestAsk: number) => {
+  if (!bestBid || !bestAsk) return;
 
   const spreadRate = calculateSpreadRate(bestBid, bestAsk);
-  console.log('spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
+  console.log('KuCoin Futures - spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
 };
 
 const startDrama = () => {
-  connectCoinw({
-    biz: 'futures',
-    type: 'depth',
-    pairCode: 'PUMP',
+  connectKucoin({
+    pair: 'XBTUSDTM',
+    marketType: 'futures',
     onUpdate: handleUpdate,
     onError: (error) => {
-      console.error('error', error);
+      console.error('KuCoin futures error', error);
     },
     onClose: () => {
-      console.log('close');
+      console.log('KuCoin futures closed');
     },
   });
 };

@@ -1,20 +1,24 @@
 import { fetchMexcBalance } from '../../clients';
 
-export class InventoryService {
-  private inventory: Record<string, number> = {};
+export type InventoryService = ReturnType<typeof createInventoryService>;
 
-  addInventory = (symbol: string, amount: number) => {
-    this.inventory[symbol] = amount;
-  };
+export const createInventoryService = () => {
+  let inventory: Record<string, number> = {};
 
-  updateInventory = async (symbol: string) => {
-    const balance = await fetchMexcBalance();
-    const inventory = balance[symbol]?.total;
-    this.addInventory(symbol, inventory ?? 0);
-  };
+  return {
+    addInventory: (symbol: string, amount: number) => {
+      inventory = { ...inventory, [symbol]: amount };
+    },
 
-  getInventory = (pair: string) => {
-    const symbol = pair.split('/')[0];
-    return this.inventory[symbol] ?? 0;
+    updateInventory: async (symbol: string) => {
+      const balance = await fetchMexcBalance();
+      const inventoryAmount = balance[symbol]?.total;
+      inventory = { ...inventory, [symbol]: inventoryAmount ?? 0 };
+    },
+
+    getInventory: (pair: string) => {
+      const symbol = pair.split('/')[0];
+      return inventory[symbol] ?? 0;
+    },
   };
-}
+};

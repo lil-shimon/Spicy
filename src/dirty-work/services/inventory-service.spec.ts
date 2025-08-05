@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { InventoryService } from './inventory-service';
+import type { Balances } from 'ccxt';
+import {
+  createInventoryService,
+  type InventoryService,
+} from './inventory-service';
 import { fetchMexcBalance } from '../../clients';
 
 // Mock the fetchMexcBalance function
@@ -12,7 +16,7 @@ describe('InventoryService', () => {
   const mockFetchMexcBalance = vi.mocked(fetchMexcBalance);
 
   beforeEach(() => {
-    inventoryService = new InventoryService();
+    inventoryService = createInventoryService();
     vi.clearAllMocks();
   });
 
@@ -41,10 +45,10 @@ describe('InventoryService', () => {
 
   describe('updateInventory', () => {
     it('should update inventory from MEXC balance', async () => {
-      const mockBalance = {
+      const mockBalance: Balances = {
         BTC: { total: 2.5 },
         ETH: { total: 15.0 },
-      };
+      } as Balances;
       mockFetchMexcBalance.mockResolvedValue(mockBalance);
 
       await inventoryService.updateInventory('BTC');
@@ -54,9 +58,9 @@ describe('InventoryService', () => {
     });
 
     it('should handle symbol not found in balance', async () => {
-      const mockBalance = {
+      const mockBalance: Balances = {
         ETH: { total: 15.0 },
-      };
+      } as Balances;
       mockFetchMexcBalance.mockResolvedValue(mockBalance);
 
       await inventoryService.updateInventory('BTC');
@@ -65,9 +69,9 @@ describe('InventoryService', () => {
     });
 
     it('should handle symbol with undefined total', async () => {
-      const mockBalance = {
+      const mockBalance: Balances = {
         BTC: { total: undefined },
-      };
+      } as unknown as Balances;
       mockFetchMexcBalance.mockResolvedValue(mockBalance);
 
       await inventoryService.updateInventory('BTC');
@@ -84,7 +88,7 @@ describe('InventoryService', () => {
     });
 
     it('should handle empty balance response', async () => {
-      mockFetchMexcBalance.mockResolvedValue({});
+      mockFetchMexcBalance.mockResolvedValue({} as Balances);
 
       await inventoryService.updateInventory('BTC');
 

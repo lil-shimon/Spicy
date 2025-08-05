@@ -21,6 +21,12 @@ export const TAKER_FEES = {
   [EXCHANGES.kucoin]: 0.1,
 } as const;
 
+export const MAKER_FEES_FUTURES = {
+  // https://www.kucoin.com/ja/vip/privilege
+  // 先物取引のメイカー手数料
+  [EXCHANGES.kucoin]: 0.02, // 0.02% for futures maker
+} as const;
+
 export const PAIRS = {
   // ADA_USDT: "ADA/USDT",
   XO_USDT: 'XO/USDT',

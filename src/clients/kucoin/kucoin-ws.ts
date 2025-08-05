@@ -8,6 +8,48 @@ type Props = {
   onClose: (exchange?: string) => void;
 };
 
+/**
+ * KuCoin WebSocket接続を確立してリアルタイム価格データを取得します
+ *
+ * @param props - 接続設定
+ * @param props.pair - 取引ペア (例: 'BTC-USDT' for spot, 'XBTUSDTM' for futures)
+ * @param props.marketType - マーケットタイプ ('spot' または 'futures')
+ * @param props.onUpdate - 価格更新時のコールバック関数
+ * @param props.onError - エラー発生時のコールバック関数
+ * @param props.onClose - 接続終了時のコールバック関数
+ *
+ * @example
+ * // Spot取引の例
+ * connectKucoin({
+ *   pair: 'BTC-USDT',
+ *   marketType: 'spot',
+ *   onUpdate: (bestBid, bestAsk) => {
+ *     console.log('Kucoin Spot', bestBid, bestAsk);
+ *   },
+ *   onError: (error) => {
+ *     console.error('Spot error', error);
+ *   },
+ *   onClose: () => {
+ *     console.log('Spot close');
+ *   },
+ * });
+ *
+ * @example
+ * // Futures取引の例
+ * connectKucoin({
+ *   pair: 'XBTUSDTM',
+ *   marketType: 'futures',
+ *   onUpdate: (bestBid, bestAsk) => {
+ *     console.log('Kucoin Futures', bestBid, bestAsk);
+ *   },
+ *   onError: (error) => {
+ *     console.error('Futures error', error);
+ *   },
+ *   onClose: () => {
+ *     console.log('Futures close');
+ *   },
+ * });
+ */
 export const connectKucoin = async ({
   pair,
   marketType = 'spot',
@@ -93,33 +135,3 @@ export const connectKucoin = async ({
     onClose('Kucoin');
   });
 };
-
-// Spot example
-connectKucoin({
-  pair: 'BTC-USDT',
-  marketType: 'spot',
-  onUpdate: (bestBid, bestAsk) => {
-    console.log('Kucoin Spot', bestBid, bestAsk);
-  },
-  onError: (error) => {
-    console.error('Spot error', error);
-  },
-  onClose: () => {
-    console.log('Spot close');
-  },
-});
-
-// Futures example
-connectKucoin({
-  pair: 'XBTUSDTM',
-  marketType: 'futures',
-  onUpdate: (bestBid, bestAsk) => {
-    console.log('Kucoin Futures', bestBid, bestAsk);
-  },
-  onError: (error) => {
-    console.error('Futures error', error);
-  },
-  onClose: () => {
-    console.log('Futures close');
-  },
-});

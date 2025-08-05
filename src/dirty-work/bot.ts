@@ -8,7 +8,7 @@ import { Pair } from '../constants';
 import { writePnlCSV } from './csv';
 import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
-import { OrderService } from './services/order-service';
+import { createOrderService } from './services/order-service';
 import { InventoryService } from './services/inventory-service';
 import { PnLService } from './services/pnl-service';
 import { calculateSpreadRate } from './spread';
@@ -17,7 +17,7 @@ const spreadThreshold = 0.1; // スプレッドの閾値を設定
 const TICK = 0.0001;
 
 let tickSize = TICK;
-const orderService = new OrderService();
+const orderService = createOrderService();
 const inventoryService = new InventoryService();
 const pnlService = new PnLService(inventoryService);
 /**
@@ -208,11 +208,11 @@ const handleEnableOrder = async (
     orderService.removeOrder(sellOrderId);
   }
 
-  if (orderService.orders.length !== 0) {
+  if (orderService.getOrders().length !== 0) {
     console.log(
       'なんらかのエラーで注文が残っています。なので全てキャンセルします。'
     );
-    const cancelPromises = orderService.orders.map((o) => {
+    const cancelPromises = orderService.getOrders().map((o) => {
       return cancelMexcOrder(o.id, symbol);
     });
     const response = await Promise.all(cancelPromises);
@@ -261,7 +261,7 @@ const handleUpdate = async (
     return;
   }
 
-  if (orderService.ordered) {
+  if (orderService.getOrdered()) {
     console.log('注文済みなので、何もしません', symbol);
     return;
   }
@@ -283,7 +283,7 @@ const dirtyWork = async (
 ) => {
   let response;
   // 注文が約定していない場合は、Orderbookを取得しない
-  if (!orderService.ordered) {
+  if (!orderService.getOrdered()) {
     response = await fetchMexcOrderbook(symbol as Pair);
   }
 

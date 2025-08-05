@@ -1,25 +1,30 @@
 import { Order } from 'ccxt';
 
-export class OrderService {
-  public ordered: boolean = false;
-  public orders: Order[] = [];
+export const createOrderService = () => {
+  let ordered = false;
+  let orders: Order[] = [];
 
-  updateOrderStatus = (status: boolean) => {
-    this.ordered = status;
-  };
+  return {
+    updateOrderStatus: (status: boolean) => {
+      ordered = status;
+    },
 
-  addOrder = (orders: Order[]) => {
-    this.orders.push(...orders);
-    console.log('addOrder', this.orders.length);
-  };
+    addOrder: (newOrders: Order[]) => {
+      orders = [...orders, ...newOrders];
+      console.log('addOrder', orders.length);
+    },
 
-  removeOrder = (id: string) => {
-    this.orders = this.orders.filter((o) => o.id !== id);
-    console.log('removeOrder', this.orders.length);
-  };
+    removeOrder: (id: string) => {
+      orders = orders.filter((o) => o.id !== id);
+      console.log('removeOrder', orders.length);
+    },
 
-  getOrderIdBySide = (side: 'buy' | 'sell') => {
-    const order = this.orders.find((o) => o.side === side);
-    return order?.id;
+    getOrderIdBySide: (side: 'buy' | 'sell') => {
+      const order = orders.find((o) => o.side === side);
+      return order?.id;
+    },
+
+    getOrdered: () => ordered,
+    getOrders: () => orders,
   };
-}
+};

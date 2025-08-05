@@ -1,10 +1,12 @@
-# Spicy - 仮想通貨アービトラージボット
+# Spicy - 仮想通貨アービトラージ＆マーケットメイキングボット
 
-TypeScriptで構築された高度な仮想通貨アービトラージボットです。複数の取引所間の価格差を監視し、収益性の高い取引機会を特定、通知、そして実際の取引実行も可能です。
+TypeScriptで構築された高度な仮想通貨取引ボットです。複数の取引所間の価格差を利用したアービトラージ戦略と、先物市場でのマーケットメイキング戦略をサポートします。
 
 ## 機能
 
-- 複数取引所（Bybit、MEXC）のリアルタイム価格監視
+### アービトラージ機能（dirty-work）
+
+- 複数取引所（Bybit、MEXC、KuCoin）のリアルタイム価格監視
 - オーダーブック深度分析によるスリッページ計算
 - テイカー手数料を考慮した利益計算
 - Discord Webhook通知システム
@@ -13,15 +15,32 @@ TypeScriptで構築された高度な仮想通貨アービトラージボット�
 - 取引ペアの活動状況をCSVでログ記録
 - 継続的な価格監視（30秒間隔）
 
+### マーケットメイキング機能（drama）- 開発中
+
+- KuCoin先物市場でのマーケットメイキング
+- WebSocketによるリアルタイム価格監視
+- メイカー手数料（0.02%）を考慮した収益性判断
+- 両側注文（買い・売り同時）の自動管理
+- ポジション管理と注文タイムアウト機能
+
 ## 監視対象
 
-- **取引ペア**: XO/USDT、SOL/USDT、PUMP/USDT、ZRO/USDT、TNSR/USDT、FET/USDT、PYTH/USDT
-- **アクティブ取引所**: Bybit、MEXC
-- **実装済み（無効）**: Binance、KuCoin
+### アービトラージ（現物）
+
+- **取引ペア**: XO/USDT、SOL/USDT、PUMP/USDT
+- **アクティブ取引所**: Bybit、MEXC、KuCoin
+- **実装済み（無効）**: Binance
 - **最小利益閾値**: 0.5%
-- **取引手数料**:
+- **テイカー手数料**:
   - Bybit: 0.1%
   - MEXC: 0.05%
+  - KuCoin: 0.1%
+
+### マーケットメイキング（先物）
+
+- **対応取引所**: KuCoin Futures
+- **メイカー手数料**: 0.02%
+- **最小スプレッド**: 0.04%（往復手数料）
 
 ## セットアップ
 
@@ -52,6 +71,7 @@ cp .env.example .env
 ```env
 # Discord通知（必須）
 DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+DISCORD_ORDER_WEBHOOK_URL=your_order_webhook_url_here  # 注文通知用（オプション）
 
 # 取引所APIキー（取引実行機能を使う場合）
 BINANCE_API_KEY=your_binance_api_key
@@ -60,6 +80,9 @@ BYBIT_API_KEY=your_bybit_api_key
 BYBIT_SECRET_KEY=your_bybit_secret_key
 MEXC_API_KEY=your_mexc_api_key
 MEXC_SECRET_KEY=your_mexc_secret_key
+KUCOIN_API_KEY=your_kucoin_api_key
+KUCOIN_SECRET=your_kucoin_secret
+KUCOIN_PASSPHRASE=your_kucoin_passphrase
 
 # 機能フラグ
 FEATURE_FLAG_ENABLE_ORDER=false  # 自動取引を有効にする場合はtrue
@@ -70,8 +93,11 @@ FEATURE_FLAG_ENABLE_ORDER=false  # 自動取引を有効にする場合はtrue
 ### ボットの実行
 
 ```bash
-# メインボットの開始
+# アービトラージボット（dirty-work）の開始
 pnpm dev
+
+# マーケットメイキングボット（drama）の開始
+pnpm drama
 
 # デモモードの実行
 pnpm demo
@@ -122,18 +148,34 @@ pnpm restart:api
 
 ```
 src/
-├── index.ts                          # ボットのエントリーポイント
+├── index.ts                          # アービトラージボットのエントリーポイント
 ├── server.ts                         # APIサーバーのエントリーポイント
 ├── bot.ts                            # メインボットオーケストレーション
+├── dirty-work/                       # アービトラージ機能
+│   ├── bot.ts                        # MM戦略のメインロジック
+│   ├── services/                     # ビジネスロジックサービス（関数型）
+│   │   ├── order-service.ts          # 注文管理
+│   │   ├── inventory-service.ts      # 在庫管理
+│   │   └── pnl-service.ts            # 損益計算
+│   └── logics/                       # 取引ロジック
+│       ├── get-prices.ts
+│       └── status.ts
+├── drama/                            # マーケットメイキング機能（開発中）
+│   ├── bot.ts                        # 先物MMのメインロジック
+│   ├── market-maker-profit.ts        # 収益性判断
+│   ├── position-manager.ts           # ポジション管理
+│   ├── dual-order-manager.ts         # 両側注文管理
+│   └── notification-manager.ts       # Discord通知
 ├── clients/                          # 取引所API クライアント
 │   ├── binance/                      # Binance統合（無効）
-│   │   └── binance-client.ts
 │   ├── bybit/                        # Bybit統合
 │   │   ├── bybit-client.ts
 │   │   ├── fetch-orderbook.ts
 │   │   └── fetch-balance.ts
-│   ├── kucoin/                       # KuCoin統合（無効）
-│   │   └── kucoin-client.ts
+│   ├── kucoin/                       # KuCoin統合
+│   │   ├── kucoin-client.ts          # 現物・先物クライアント
+│   │   ├── kucoin-ws.ts              # WebSocket（現物・先物対応）
+│   │   └── fetch-kucoin.ts
 │   ├── mexc/                         # MEXC統合
 │   │   ├── mexc-client.ts
 │   │   ├── fetch-orderbook.ts
@@ -142,26 +184,20 @@ src/
 │   └── discord/                      # Discord通知
 │       └── post-message.ts
 ├── constants/                        # 設定定数
-│   └── constant.ts                   # すべての定数（取引所、手数料、ペアなど）
+│   └── constant.ts                   # 定数（TAKER_FEES、MAKER_FEES_FUTURES等）
 ├── core/                             # コア計算ロジック
 │   ├── profit-rate/                  # 利益率計算
 │   ├── spread/                       # スプレッド計算
-│   └── taker-fee/                    # 手数料計算
+│   ├── taker-fee/                    # テイカー手数料計算
+│   └── maker-fee/                    # メイカー手数料計算
 ├── logic/                            # ビジネスロジック
-│   ├── check-arbitrage-opportunities/  # 利益機会フィルタリング
-│   │   └── check-arbitrage-opportunities.ts
-│   ├── fetch-price/                  # 価格取得オーケストレーション
-│   │   └── fetch-price.ts
-│   ├── fetch-price-by-pair/          # ペア別価格取得
-│   │   └── fetch-price-by-pair.ts
-│   └── slippage/                     # スリッページ計算
-│       ├── buy-slippage.ts
-│       └── sell-slippage.ts
+│   ├── check-arbitrage-opportunities/
+│   ├── fetch-price/
+│   ├── fetch-price-by-pair/
+│   └── slippage/
 └── utils/                            # ユーティリティ関数
-    ├── pair-to-symbol/               # ペアフォーマット変換
-    └── update-count/                 # カウント追跡とCSVログ出力
-        ├── update-count.ts
-        └── update-count-v2.ts
+    ├── pair-to-symbol/
+    └── update-count/
 ```
 
 ## 動作フロー
@@ -179,11 +215,15 @@ src/
 ## 技術スタック
 
 - **言語**: TypeScript
-- **ランタイム**: Node.js
+- **ランタイム**: Node.js (v20+)
 - **取引所API**: ccxt
+- **WebSocket**: ws
 - **テスト**: Vitest
 - **リンター**: ESLint
+- **フォーマッター**: Prettier
+- **プロセス管理**: PM2
 - **パッケージマネージャー**: pnpm（package.jsonで強制）
+- **アーキテクチャ**: 関数型プログラミング（クロージャーパターン）
 
 ## 取引実行機能
 
@@ -201,6 +241,23 @@ src/
 - 市場の急激な変動により大きな損失が発生する可能性があります
 - 作者は投資による損失について一切の責任を負いません
 - 必ず少額でテストを行い、動作を十分理解してから使用してください
+
+## 開発ガイドライン
+
+### ブランチ戦略
+
+- `feat/spicy-{issue番号}-{機能名}` - 新機能追加
+- `refactor/spicy-{issue番号}-{内容}` - リファクタリング
+- `docs/{内容}` - ドキュメント更新
+
+### コーディング規約
+
+- **関数型プログラミング**: クラスは使用せず、クロージャーパターンを使用
+- **エクスポート形式**: `createXxxService`、`createXxxManager`の形式
+- **非同期処理**: async/await を使用
+- **エラーハンドリング**: try-catch でラップ
+
+詳細は[CLAUDE.md](./CLAUDE.md)を参照してください。
 
 ## ライセンス
 

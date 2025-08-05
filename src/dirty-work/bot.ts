@@ -10,7 +10,7 @@ import { getPrices } from './logics/get-prices';
 import { handleStatus } from './logics/status';
 import { createOrderService } from './services/order-service';
 import { createInventoryService } from './services/inventory-service';
-import { PnLService } from './services/pnl-service';
+import { createPnLService } from './services/pnl-service';
 import { calculateSpreadRate } from './spread';
 
 const spreadThreshold = 0.1; // スプレッドの閾値を設定
@@ -19,7 +19,7 @@ const TICK = 0.0001;
 let tickSize = TICK;
 const orderService = createOrderService();
 const inventoryService = createInventoryService();
-const pnlService = new PnLService(inventoryService);
+const pnlService = createPnLService(inventoryService);
 /**
  * 注文が約定せずキャンセルした回数。
  * 2回キャンセルしたら注文をできないようにする

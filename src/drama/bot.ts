@@ -31,7 +31,6 @@ const handlePriceUpdate = async (
   futuresSymbol: string,
   spotSymbol: string
 ) => {
-  // 既存のバリデーション
   const isValidNumber = Number.isFinite(bestBid) && Number.isFinite(bestAsk);
   const isPositivePrice = bestBid > 0 && bestAsk > 0;
   const isValidInput = isValidNumber && isPositivePrice;

@@ -1,9 +1,10 @@
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
+import WebSocket from 'ws';
 
 // WebSocket接続を保持する変数
-let wsConnection: any = null;
+let wsConnection: WebSocket | null = null;
 
 // クリーンアップ関数
 const cleanup = () => {

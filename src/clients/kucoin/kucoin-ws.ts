@@ -56,7 +56,7 @@ export const connectKucoin = async ({
   onUpdate,
   onError,
   onClose,
-}: Props) => {
+}: Props): Promise<WebSocket> => {
   const tokenEndpoint =
     marketType === 'futures'
       ? 'https://api-futures.kucoin.com/api/v1/bullet-public'

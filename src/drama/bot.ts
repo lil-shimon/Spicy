@@ -2,6 +2,9 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
 import { calculateMarketMakerProfit } from './market-maker-profit';
+import { hasOpenPosition } from './position-manager';
+import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
+import { roundDown, roundUp } from './round';
 import WebSocket from 'ws';
 
 // WebSocket接続を保持する変数
@@ -16,13 +19,22 @@ const cleanup = () => {
   }
 };
 
-const handleUpdate = (bestBid: number, bestAsk: number) => {
-  // 入力値のバリデーション条件を分離して定義
+// 取引パラメータ
+const SPOT_SYMBOL = 'PUMP/USDT';
+const AMOUNT = 2; // 契約数
+const TICK_SIZE = 0.0001; // KuCoin先物のtickSize（要確認）
+const HALF_SPREAD = 0.00005; // 0.005%（dirty-workと同じ）
+
+const handlePriceUpdate = async (
+  bestBid: number,
+  bestAsk: number,
+  futuresSymbol: string,
+  spotSymbol: string
+) => {
   const isValidNumber = Number.isFinite(bestBid) && Number.isFinite(bestAsk);
   const isPositivePrice = bestBid > 0 && bestAsk > 0;
   const isValidInput = isValidNumber && isPositivePrice;
 
-  // 無効な入力の場合は警告を出力して早期リターン
   if (!isValidInput) {
     console.warn('Invalid price data received:', { bestBid, bestAsk });
     return;
@@ -47,8 +59,47 @@ const handleUpdate = (bestBid: number, bestAsk: number) => {
       '✅ Profitable opportunity detected! Net profit:',
       `${profitAnalysis.netProfit.toFixed(4)}%`
     );
-    // TODO: Task5で実装した注文作成ロジックを呼び出す
-    // createKucoinFuturesOrder(...)
+
+    try {
+      // ポジション確認
+      const hasPosition = await hasOpenPosition(futuresSymbol);
+
+      if (hasPosition) {
+        console.log('⏸️ Position exists, skipping new orders');
+        return;
+      }
+
+      // 価格計算（dirty-workロジック）
+      const mid = (bestBid + bestAsk) / 2;
+      const buyPrice = roundDown(mid * (1 - HALF_SPREAD), TICK_SIZE);
+      const sellPrice = roundUp(mid * (1 + HALF_SPREAD), TICK_SIZE);
+
+      console.log('📈 Placing orders:', {
+        symbol: futuresSymbol,
+        buyPrice: buyPrice.toFixed(6),
+        sellPrice: sellPrice.toFixed(6),
+        amount: AMOUNT,
+      });
+
+      // 両側同時注文
+      const orders = await Promise.all([
+        createKucoinFuturesOrder(spotSymbol, 'buy', AMOUNT, buyPrice),
+        createKucoinFuturesOrder(spotSymbol, 'sell', AMOUNT, sellPrice),
+      ]);
+
+      console.log(
+        '✅ Orders placed successfully:',
+        orders.map((o) => ({
+          id: o.id,
+          side: o.side,
+          price: o.price,
+          amount: o.amount,
+        }))
+      );
+    } catch (error) {
+      console.error('❌ Error in position check or order creation:', error);
+      // エラー時は注文を実行しない
+    }
   } else {
     console.log('❌ Not profitable. Waiting for better spread...');
   }
@@ -56,13 +107,13 @@ const handleUpdate = (bestBid: number, bestAsk: number) => {
 
 const startDrama = async () => {
   try {
-    const spotSymbol = 'PUMP/USDT';
-    const futuresSymbol = convertToFuturesSymbol(spotSymbol);
+    const futuresSymbol = convertToFuturesSymbol(SPOT_SYMBOL);
 
     wsConnection = await connectKucoin({
       pair: futuresSymbol,
       marketType: 'futures',
-      onUpdate: handleUpdate,
+      onUpdate: (bestBid: number, bestAsk: number) =>
+        handlePriceUpdate(bestBid, bestAsk, futuresSymbol, SPOT_SYMBOL),
       onError: (error) => {
         console.error('KuCoin Futures error:', error.message);
         // エラー内容を適切にサニタイズ
@@ -73,6 +124,12 @@ const startDrama = async () => {
     });
 
     console.log('Drama bot started successfully');
+    console.log('Configuration:', {
+      symbol: futuresSymbol,
+      amount: AMOUNT,
+      tickSize: TICK_SIZE,
+      halfSpread: `${HALF_SPREAD * 100}%`,
+    });
   } catch (error) {
     console.error('Failed to start drama bot:', (error as Error).message);
     cleanup();

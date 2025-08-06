@@ -42,14 +42,19 @@ jobs:
           
           # Direct prompt for automated review (no @claude mention needed)
           direct_prompt: |
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
+            このプルリクエストを日本語でレビューしてください。
             
-            Be constructive and helpful in your feedback.
+            以下の観点で詳細なフィードバックを提供してください：
+            - コード品質とベストプラクティスの遵守
+            - 潜在的なバグや実行時エラーの可能性
+            - パフォーマンスの最適化機会
+            - セキュリティ上の脆弱性や懸念
+            - テストカバレッジと品質
+            - TypeScriptの型安全性（該当する場合）
+            - エラーハンドリングの適切性
+            
+            フィードバックは建設的で実装可能な提案を含めてください。
+            重要度（高/中/低）を明示してください。
 
           # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
           # use_sticky_comment: true

@@ -65,37 +65,38 @@ const handlePriceUpdate = async (
       // ポジション確認
       const hasPosition = await hasOpenPosition(futuresSymbol);
 
-      if (!hasPosition) {
-        // 価格計算（dirty-workロジック）
-        const mid = (bestBid + bestAsk) / 2;
-        const buyPrice = roundDown(mid * (1 - HALF_SPREAD), TICK_SIZE);
-        const sellPrice = roundUp(mid * (1 + HALF_SPREAD), TICK_SIZE);
-
-        console.log('📈 Placing orders:', {
-          symbol: futuresSymbol,
-          buyPrice: buyPrice.toFixed(6),
-          sellPrice: sellPrice.toFixed(6),
-          amount: AMOUNT,
-        });
-
-        // 両側同時注文
-        const orders = await Promise.all([
-          createKucoinFuturesOrder(spotSymbol, 'buy', AMOUNT, buyPrice),
-          createKucoinFuturesOrder(spotSymbol, 'sell', AMOUNT, sellPrice),
-        ]);
-
-        console.log(
-          '✅ Orders placed successfully:',
-          orders.map((o) => ({
-            id: o.id,
-            side: o.side,
-            price: o.price,
-            amount: o.amount,
-          }))
-        );
-      } else {
+      if (hasPosition) {
         console.log('⏸️ Position exists, skipping new orders');
+        return;
       }
+
+      // 価格計算（dirty-workロジック）
+      const mid = (bestBid + bestAsk) / 2;
+      const buyPrice = roundDown(mid * (1 - HALF_SPREAD), TICK_SIZE);
+      const sellPrice = roundUp(mid * (1 + HALF_SPREAD), TICK_SIZE);
+
+      console.log('📈 Placing orders:', {
+        symbol: futuresSymbol,
+        buyPrice: buyPrice.toFixed(6),
+        sellPrice: sellPrice.toFixed(6),
+        amount: AMOUNT,
+      });
+
+      // 両側同時注文
+      const orders = await Promise.all([
+        createKucoinFuturesOrder(spotSymbol, 'buy', AMOUNT, buyPrice),
+        createKucoinFuturesOrder(spotSymbol, 'sell', AMOUNT, sellPrice),
+      ]);
+
+      console.log(
+        '✅ Orders placed successfully:',
+        orders.map((o) => ({
+          id: o.id,
+          side: o.side,
+          price: o.price,
+          amount: o.amount,
+        }))
+      );
     } catch (error) {
       console.error('❌ Error in position check or order creation:', error);
       // エラー時は注文を実行しない

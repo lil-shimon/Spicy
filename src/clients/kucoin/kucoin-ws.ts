@@ -134,4 +134,6 @@ export const connectKucoin = async ({
   ws.on('close', () => {
     onClose('Kucoin');
   });
+
+  return ws;
 };

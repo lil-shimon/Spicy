@@ -1,0 +1,67 @@
+
+> spicy@1.0.0 demo /Users/shimonlil/study/spicy
+> tsx src/demo.ts
+
+=== Testing fetchPositions for PUMPUSDTM ===
+Timestamp: 2025-08-06T13:19:07.033Z
+
+Fetching positions for symbol: PUMPUSDTM
+
+=== Raw Response ===
+Positions: []
+
+=== No Positions ===
+No positions found for PUMPUSDTM
+Response is empty array: []
+Array length: 0
+
+=== Position Check Logic ===
+Has position? false
+
+=== Test Complete for PUMPUSDTM ===
+Timestamp: 2025-08-06T13:19:07.261Z
+
+============================================================
+
+=== Testing fetchPositions for SOLUSDTM ===
+Timestamp: 2025-08-06T13:19:07.261Z
+
+Fetching positions for symbol: SOLUSDTM
+
+=== Raw Response ===
+Positions: []
+
+=== No Positions ===
+No positions found for SOLUSDTM
+Response is empty array: []
+Array length: 0
+
+=== Position Check Logic ===
+Has position? false
+
+=== Test Complete for SOLUSDTM ===
+Timestamp: 2025-08-06T13:19:07.634Z
+
+============================================================
+
+=== Testing fetchPositions for XBTUSDTM ===
+Timestamp: 2025-08-06T13:19:07.634Z
+
+Fetching positions for symbol: XBTUSDTM
+
+=== Raw Response ===
+Positions: []
+
+=== No Positions ===
+No positions found for XBTUSDTM
+Response is empty array: []
+Array length: 0
+
+=== Position Check Logic ===
+Has position? false
+
+=== Test Complete for XBTUSDTM ===
+Timestamp: 2025-08-06T13:19:08.009Z
+
+============================================================
+

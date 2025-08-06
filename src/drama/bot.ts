@@ -3,6 +3,17 @@ import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
 
 const handleUpdate = (bestBid: number, bestAsk: number) => {
+  // 入力値のバリデーション条件を分離して定義
+  const isValidNumber = Number.isFinite(bestBid) && Number.isFinite(bestAsk);
+  const isPositivePrice = bestBid > 0 && bestAsk > 0;
+  const isValidInput = isValidNumber && isPositivePrice;
+
+  // 無効な入力の場合は警告を出力して早期リターン
+  if (!isValidInput) {
+    console.warn('Invalid price data received:', { bestBid, bestAsk });
+    return;
+  }
+
   const spreadRate = calculateSpreadRate(bestBid, bestAsk);
   console.log('spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
 

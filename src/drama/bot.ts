@@ -1,6 +1,7 @@
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
+import { calculateMarketMakerProfit } from './market-maker-profit';
 import WebSocket from 'ws';
 
 // WebSocket接続を保持する変数
@@ -30,11 +31,27 @@ const handleUpdate = (bestBid: number, bestAsk: number) => {
   const spreadRate = calculateSpreadRate(bestBid, bestAsk);
   console.log('spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
 
-  // TODO: Issue #61 - マーケットメイカー収益性判断ロジックを追加
-  // - 往復手数料（メイカー手数料 0.02% × 2）を考慮した実質利益計算
-  // - ファンディングレート（FR）の手数料も考慮する必要あり
-  // - 最小利益閾値（例: 0.01%）での収益性判断
-  // 参考: calculateMarketMakerProfit関数の実装（src/drama/market-maker-profit.ts）
+  // マーケットメイカー収益性判断
+  const profitAnalysis = calculateMarketMakerProfit(bestBid, bestAsk);
+
+  console.log('Market Maker Profit Analysis:', {
+    spreadRate: `${profitAnalysis.spreadRate.toFixed(4)}%`,
+    roundTripFee: `${profitAnalysis.roundTripFee.toFixed(4)}%`,
+    netProfit: `${profitAnalysis.netProfit.toFixed(4)}%`,
+    isProfitable: profitAnalysis.isProfitable,
+  });
+
+  // 収益性がある場合のみ取引ロジックを実行
+  if (profitAnalysis.isProfitable) {
+    console.log(
+      '✅ Profitable opportunity detected! Net profit:',
+      `${profitAnalysis.netProfit.toFixed(4)}%`
+    );
+    // TODO: Task5で実装した注文作成ロジックを呼び出す
+    // createKucoinFuturesOrder(...)
+  } else {
+    console.log('❌ Not profitable. Waiting for better spread...');
+  }
 };
 
 const startDrama = async () => {

@@ -96,10 +96,118 @@ describe('createKucoinFuturesOrder', () => {
     ).rejects.toThrow('Insufficient balance');
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'KuCoin futures order creation failed:',
+      'KuCoin先物注文の作成に失敗しました:',
       mockError
     );
 
     consoleSpy.mockRestore();
+  });
+
+  describe('パラメータバリデーション', () => {
+    it('注文量が0の場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 0, 100)
+      ).rejects.toThrow('注文量は0より大きい値である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('注文量が負の値の場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', -10, 100)
+      ).rejects.toThrow('注文量は0より大きい値である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('価格が0の場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, 0)
+      ).rejects.toThrow('価格は0より大きい値である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('価格が負の値の場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, -100)
+      ).rejects.toThrow('価格は0より大きい値である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('レバレッジが1未満の場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, 100, 0)
+      ).rejects.toThrow('レバレッジは1から20の間である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('レバレッジが20を超える場合エラーをスローする', async () => {
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, 100, 21)
+      ).rejects.toThrow('レバレッジは1から20の間である必要があります');
+
+      expect(kucoinFuturesClient.createOrder).not.toHaveBeenCalled();
+    });
+
+    it('境界値テスト：レバレッジ1は有効', async () => {
+      const mockOrder = {
+        id: 'order-789',
+        symbol: 'SOLUSDTM',
+        side: 'buy',
+        type: 'limit',
+        amount: 10,
+        price: 100,
+        status: 'open',
+      };
+
+      vi.mocked(kucoinFuturesClient.createOrder).mockResolvedValue(
+        mockOrder as Order
+      );
+
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, 100, 1)
+      ).resolves.toEqual(mockOrder);
+
+      expect(kucoinFuturesClient.createOrder).toHaveBeenCalledWith(
+        'SOLUSDTM',
+        'limit',
+        'buy',
+        10,
+        100,
+        { leverage: 1 }
+      );
+    });
+
+    it('境界値テスト：レバレッジ20は有効', async () => {
+      const mockOrder = {
+        id: 'order-999',
+        symbol: 'SOLUSDTM',
+        side: 'buy',
+        type: 'limit',
+        amount: 10,
+        price: 100,
+        status: 'open',
+      };
+
+      vi.mocked(kucoinFuturesClient.createOrder).mockResolvedValue(
+        mockOrder as Order
+      );
+
+      await expect(
+        createKucoinFuturesOrder('SOL/USDT', 'buy', 10, 100, 20)
+      ).resolves.toEqual(mockOrder);
+
+      expect(kucoinFuturesClient.createOrder).toHaveBeenCalledWith(
+        'SOLUSDTM',
+        'limit',
+        'buy',
+        10,
+        100,
+        { leverage: 20 }
+      );
+    });
   });
 });

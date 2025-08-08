@@ -4,6 +4,7 @@ import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-convert
 import { calculateMarketMakerProfit } from './market-maker-profit';
 import { hasOpenPosition } from './position-manager';
 import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
+import { fetchKucoinFuturesOrder, cancelKucoinFuturesOrder } from '../clients';
 import { roundDown, roundUp } from './round';
 import WebSocket from 'ws';
 
@@ -96,6 +97,63 @@ const handlePriceUpdate = async (
           amount: o.amount,
         }))
       );
+
+      // 注文監視ループ（dirty-work/bot.ts:122-234を参考）
+      const TIMEOUT_MS = 1000 * 10; // 10秒
+      const tStart = Date.now();
+
+      let buyOrderClosed = false;
+      let sellOrderClosed = false;
+      const [buyOrder, sellOrder] = orders;
+
+      console.log('👀 Starting order monitoring (10s timeout)...');
+
+      // 2秒ごとに注文状態をチェック
+      while (Date.now() - tStart < TIMEOUT_MS) {
+        // 並列で注文状態を取得
+        const [buyOrderStatus, sellOrderStatus] = await Promise.all([
+          fetchKucoinFuturesOrder(buyOrder.id, spotSymbol),
+          fetchKucoinFuturesOrder(sellOrder.id, spotSymbol),
+        ]);
+
+        // 買い注文が約定
+        if (buyOrderStatus?.status === 'closed' && !buyOrderClosed) {
+          buyOrderClosed = true;
+          console.log('✅ Buy order filled at:', buyOrderStatus.price);
+        }
+
+        // 売り注文が約定
+        if (sellOrderStatus?.status === 'closed' && !sellOrderClosed) {
+          sellOrderClosed = true;
+          console.log('✅ Sell order filled at:', sellOrderStatus.price);
+        }
+
+        // 両方約定したら終了
+        if (buyOrderClosed && sellOrderClosed) {
+          console.log('✅ Both orders filled, position closed');
+          break;
+        }
+
+        // 2秒待機
+        await new Promise((resolve) => setTimeout(resolve, 2_000));
+      }
+
+      // タイムアウト処理：未約定注文をキャンセル
+      if (!buyOrderClosed && buyOrder.id) {
+        const result = await cancelKucoinFuturesOrder(buyOrder.id, spotSymbol);
+        if (result) {
+          console.log('⏱️ Buy order cancelled after timeout:', buyOrder.id);
+        }
+      }
+
+      if (!sellOrderClosed && sellOrder.id) {
+        const result = await cancelKucoinFuturesOrder(sellOrder.id, spotSymbol);
+        if (result) {
+          console.log('⏱️ Sell order cancelled after timeout:', sellOrder.id);
+        }
+      }
+
+      console.log('📊 Order monitoring completed');
     } catch (error) {
       console.error('❌ Error in position check or order creation:', error);
       // エラー時は注文を実行しない

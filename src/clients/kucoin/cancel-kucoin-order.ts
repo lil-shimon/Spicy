@@ -19,9 +19,9 @@ export const cancelKucoinFuturesOrder = async (
     return response;
   } catch (error) {
     console.error('KuCoin先物注文のキャンセルに失敗しました:', error);
-    await postOrderMessage(
+    postOrderMessage(
       `KuCoin先物注文をキャンセルできませんでした: ${orderId} ${symbol} ${JSON.stringify(error)}`
     );
-    return null;
+    return undefined;
   }
 };

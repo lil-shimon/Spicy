@@ -12,7 +12,12 @@ export const fetchKucoinFuturesOrder = async (
   try {
     const futuresSymbol = convertToFuturesSymbol(symbol);
     const order = await kucoinFuturesClient.fetchOrder(orderId, futuresSymbol);
-    return order as Order;
+
+    if (!order) {
+      throw new Error(`Order not found: ${orderId}`);
+    }
+
+    return order;
   } catch (error) {
     console.error('KuCoin先物注文の取得に失敗しました:', error);
     throw error;

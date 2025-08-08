@@ -1,5 +1,6 @@
 import { kucoinFuturesClient } from './kucoin-client';
 import { convertToFuturesSymbol } from '../../utils/symbol-converter/symbol-converter';
+import { postOrderMessage } from '../discord/post-message';
 import type { Order } from 'ccxt';
 
 /**
@@ -8,18 +9,16 @@ import type { Order } from 'ccxt';
 export const fetchKucoinFuturesOrder = async (
   orderId: string,
   symbol: string
-): Promise<Order> => {
+): Promise<Order | undefined> => {
   try {
     const futuresSymbol = convertToFuturesSymbol(symbol);
     const order = await kucoinFuturesClient.fetchOrder(orderId, futuresSymbol);
-
-    if (!order) {
-      throw new Error(`Order not found: ${orderId}`);
-    }
-
     return order;
   } catch (error) {
     console.error('KuCoin先物注文の取得に失敗しました:', error);
-    throw error;
+    await postOrderMessage(
+      `KuCoin先物注文の取得に失敗しました: ${JSON.stringify(error)}`
+    );
+    return undefined;
   }
 };

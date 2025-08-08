@@ -8,3 +8,4 @@ export { fetchKucoin } from './kucoin/fetch-kucoin';
 export { createBybitOrder } from './bybit/create-bybit-order';
 export { createMexcOrder } from './mexc/create-mexc-order';
 export { createKucoinFuturesOrder } from './kucoin/create-kucoin-futures-order';
+export { fetchKucoinFuturesOrder } from './kucoin/fetch-kucoin-order';

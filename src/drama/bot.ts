@@ -5,6 +5,7 @@ import { calculateMarketMakerProfit } from './market-maker-profit';
 import { hasOpenPosition } from './position-manager';
 import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
 import { fetchKucoinFuturesOrder, cancelKucoinFuturesOrder } from '../clients';
+import { postMMMessage } from '../clients/discord/post-message';
 import { roundDown, roundUp } from './round';
 import WebSocket from 'ws';
 
@@ -98,6 +99,14 @@ const handlePriceUpdate = async (
         }))
       );
 
+      // Discord通知：注文作成
+      await postMMMessage(
+        `📋 [Drama] KuCoin先物注文作成\n` +
+          `買い: ${buyPrice.toFixed(4)} USDT × ${AMOUNT}契約\n` +
+          `売り: ${sellPrice.toFixed(4)} USDT × ${AMOUNT}契約\n` +
+          `スプレッド: ${(((sellPrice - buyPrice) / buyPrice) * 100).toFixed(3)}%`
+      );
+
       // 注文監視ループ（dirty-work/bot.ts:122-234を参考）
       const TIMEOUT_MS = 1000 * 10; // 10秒
       const tStart = Date.now();
@@ -120,17 +129,34 @@ const handlePriceUpdate = async (
         if (buyOrderStatus?.status === 'closed' && !buyOrderClosed) {
           buyOrderClosed = true;
           console.log('✅ Buy order filled at:', buyOrderStatus.price);
+          // Discord通知：買い注文約定
+          await postMMMessage(
+            `🟢 [Drama] 買い注文約定\n` +
+              `価格: ${buyOrderStatus.price} USDT × ${AMOUNT}契約`
+          );
         }
 
         // 売り注文が約定
         if (sellOrderStatus?.status === 'closed' && !sellOrderClosed) {
           sellOrderClosed = true;
           console.log('✅ Sell order filled at:', sellOrderStatus.price);
+          // Discord通知：売り注文約定
+          await postMMMessage(
+            `🔴 [Drama] 売り注文約定\n` +
+              `価格: ${sellOrderStatus.price} USDT × ${AMOUNT}契約`
+          );
         }
 
         // 両方約定したら終了
         if (buyOrderClosed && sellOrderClosed) {
           console.log('✅ Both orders filled, position closed');
+          const duration = (Date.now() - tStart) / 1000; // 秒
+          // Discord通知：ラウンドトリップ完了
+          await postMMMessage(
+            `✅ [Drama] ラウンドトリップ完了\n` +
+              `所要時間: ${duration.toFixed(1)}秒\n` +
+              `買い: ${buyOrderStatus?.price} → 売り: ${sellOrderStatus?.price}`
+          );
           break;
         }
 
@@ -143,6 +169,12 @@ const handlePriceUpdate = async (
         const result = await cancelKucoinFuturesOrder(buyOrder.id, spotSymbol);
         if (result) {
           console.log('⏱️ Buy order cancelled after timeout:', buyOrder.id);
+          // Discord通知：買い注文キャンセル
+          await postMMMessage(
+            `⏱️ [Drama] 買い注文キャンセル\n` +
+              `理由: 10秒タイムアウト\n` +
+              `注文ID: ${buyOrder.id}`
+          );
         }
       }
 
@@ -150,12 +182,36 @@ const handlePriceUpdate = async (
         const result = await cancelKucoinFuturesOrder(sellOrder.id, spotSymbol);
         if (result) {
           console.log('⏱️ Sell order cancelled after timeout:', sellOrder.id);
+          // Discord通知：売り注文キャンセル
+          await postMMMessage(
+            `⏱️ [Drama] 売り注文キャンセル\n` +
+              `理由: 10秒タイムアウト\n` +
+              `注文ID: ${sellOrder.id}`
+          );
         }
       }
 
       console.log('📊 Order monitoring completed');
+
+      // 片側のみ約定した場合の警告
+      if (
+        (buyOrderClosed && !sellOrderClosed) ||
+        (!buyOrderClosed && sellOrderClosed)
+      ) {
+        await postMMMessage(
+          `⚠️ [Drama] 片側ポジション残存\n` +
+            `買い: ${buyOrderClosed ? '約定済み' : '未約定'}\n` +
+            `売り: ${sellOrderClosed ? '約定済み' : '未約定'}`
+        );
+      }
     } catch (error) {
       console.error('❌ Error in position check or order creation:', error);
+      // Discord通知：エラー
+      await postMMMessage(
+        `⚠️ [Drama] エラー発生\n` +
+          `場所: 注文作成・ポジション確認\n` +
+          `エラー: ${error instanceof Error ? error.message : String(error)}`
+      );
       // エラー時は注文を実行しない
     }
   } else {

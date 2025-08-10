@@ -23,9 +23,8 @@ const cleanup = () => {
 
 // 取引パラメータ
 const SPOT_SYMBOL = 'PUMP/USDT';
-const AMOUNT = 2; // 契約数
+const AMOUNT = 1; // 契約数
 const TICK_SIZE = 0.0001; // KuCoin先物のtickSize（要確認）
-const HALF_SPREAD = 0.00005; // 0.005%（dirty-workと同じ）
 
 const handlePriceUpdate = async (
   bestBid: number,
@@ -48,13 +47,6 @@ const handlePriceUpdate = async (
   // マーケットメイカー収益性判断
   const profitAnalysis = calculateMarketMakerProfit(bestBid, bestAsk);
 
-  console.log('Market Maker Profit Analysis:', {
-    spreadRate: `${profitAnalysis.spreadRate.toFixed(4)}%`,
-    roundTripFee: `${profitAnalysis.roundTripFee.toFixed(4)}%`,
-    netProfit: `${profitAnalysis.netProfit.toFixed(4)}%`,
-    isProfitable: profitAnalysis.isProfitable,
-  });
-
   // 収益性がある場合のみ取引ロジックを実行
   if (profitAnalysis.isProfitable) {
     console.log(
@@ -71,10 +63,9 @@ const handlePriceUpdate = async (
         return;
       }
 
-      // 価格計算（dirty-workロジック）
-      const mid = (bestBid + bestAsk) / 2;
-      const buyPrice = roundDown(mid * (1 - HALF_SPREAD), TICK_SIZE);
-      const sellPrice = roundUp(mid * (1 + HALF_SPREAD), TICK_SIZE);
+      // 価格計算（bestBid/bestAskベース）
+      const buyPrice = roundDown(bestBid - TICK_SIZE, TICK_SIZE);
+      const sellPrice = roundUp(bestAsk + TICK_SIZE, TICK_SIZE);
 
       console.log('📈 Placing orders:', {
         symbol: futuresSymbol,
@@ -242,7 +233,7 @@ const startDrama = async () => {
       symbol: futuresSymbol,
       amount: AMOUNT,
       tickSize: TICK_SIZE,
-      halfSpread: `${HALF_SPREAD * 100}%`,
+      priceStrategy: 'bestBid-1tick / bestAsk+1tick',
     });
   } catch (error) {
     console.error('Failed to start drama bot:', (error as Error).message);

@@ -12,6 +12,9 @@ import WebSocket from 'ws';
 // WebSocket接続を保持する変数
 let wsConnection: WebSocket | null = null;
 
+// 注文処理中フラグ（重複実行防止）
+let isOrderActive = false;
+
 // クリーンアップ関数
 const cleanup = () => {
   if (wsConnection) {
@@ -32,6 +35,12 @@ const handlePriceUpdate = async (
   futuresSymbol: string,
   spotSymbol: string
 ) => {
+  // 既に注文処理中の場合はスキップ
+  if (isOrderActive) {
+    console.log('⏳ Order processing in progress, skipping...');
+    return;
+  }
+
   const isValidNumber = Number.isFinite(bestBid) && Number.isFinite(bestAsk);
   const isPositivePrice = bestBid > 0 && bestAsk > 0;
   const isValidInput = isValidNumber && isPositivePrice;
@@ -55,11 +64,15 @@ const handlePriceUpdate = async (
     );
 
     try {
+      // フラグを立てて重複実行を防ぐ
+      isOrderActive = true;
+
       // ポジション確認
       const hasPosition = await hasOpenPosition(futuresSymbol);
 
       if (hasPosition) {
         console.log('⏸️ Position exists, skipping new orders');
+        isOrderActive = false; // returnする前にフラグを解除
         return;
       }
 
@@ -204,6 +217,9 @@ const handlePriceUpdate = async (
           `エラー: ${error instanceof Error ? error.message : String(error)}`
       );
       // エラー時は注文を実行しない
+    } finally {
+      // 処理完了後は必ずフラグを解除
+      isOrderActive = false;
     }
   } else {
     console.log('❌ Not profitable. Waiting for better spread...');

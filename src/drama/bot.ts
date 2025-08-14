@@ -6,7 +6,7 @@ import { hasOpenPosition } from './position-manager';
 import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
 import { fetchKucoinFuturesOrder, cancelKucoinFuturesOrder } from '../clients';
 import { postMMMessage } from '../clients/discord/post-message';
-import { roundDown, roundUp } from './round';
+import { roundDown, roundUp } from '../utils/round/round';
 import WebSocket from 'ws';
 
 // WebSocket接続を保持する変数

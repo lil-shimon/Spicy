@@ -14,6 +14,16 @@ const calcMinRequiredTickSize = (
   return Math.ceil((2 * feeRate * price) / tickSize);
 };
 
+/**
+ * 現在のスプレッドが往復Maker手数料をカバーして利益が出るか判定
+ * currentTicks > w_min の場合に利益が出る
+ *
+ * @param feeRate 片道の手数料率（%）
+ * @param bestBid 最良買い注文価格
+ * @param bestAsk 最良売り注文価格
+ * @param tickSize ティックサイズ
+ * @returns 利益が出る場合true、出ない場合false
+ */
 export const hasProfit = (
   feeRate: number,
   bestBid: number,

@@ -23,6 +23,5 @@ export const hasProfit = (
   const mid = (bestBid + bestAsk) / 2;
   const wMin = calcMinRequiredTickSize(feeRate, mid, tickSize);
   const currentTicks = (bestAsk - bestBid) / tickSize;
-  console.log(`currentTicks: ${currentTicks}, wMin: ${wMin}`);
   return currentTicks > wMin;
 };

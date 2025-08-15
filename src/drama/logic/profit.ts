@@ -30,6 +30,12 @@ export const hasProfit = (
   bestAsk: number,
   tickSize: number
 ) => {
+  if (feeRate < 0 || bestBid <= 0 || bestAsk <= 0 || tickSize <= 0) {
+    throw new Error('All parameters must be positive numbers');
+  }
+  if (isNaN(feeRate) || isNaN(bestBid) || isNaN(bestAsk) || isNaN(tickSize)) {
+    throw new Error('Input parameters must be valid numbers');
+  }
   const mid = (bestBid + bestAsk) / 2;
   const wMin = calcMinRequiredTickSize(feeRate, mid, tickSize);
   const currentTicks = (bestAsk - bestBid) / tickSize;

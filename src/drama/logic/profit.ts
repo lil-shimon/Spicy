@@ -1,0 +1,28 @@
+/**
+ * 往復Maker手数料をカバーするのに必要な最小tick数を計算
+ * w_min = ⌈(2 * f_eff * P) / τ⌉
+ *
+ * @param feeRate 片道の手数料率（%）
+ * @param price 現在の価格 (midを想定)
+ * @param tickSize ティックサイズ
+ */
+const calcMinRequiredTickSize = (
+  feeRate: number,
+  price: number,
+  tickSize: number
+) => {
+  return Math.ceil((2 * feeRate * price) / tickSize);
+};
+
+export const hasProfit = (
+  feeRate: number,
+  bestBid: number,
+  bestAsk: number,
+  tickSize: number
+) => {
+  const mid = (bestBid + bestAsk) / 2;
+  const wMin = calcMinRequiredTickSize(feeRate, mid, tickSize);
+  const currentTicks = (bestAsk - bestBid) / tickSize;
+  console.log(`currentTicks: ${currentTicks}, wMin: ${wMin}`);
+  return currentTicks > wMin;
+};

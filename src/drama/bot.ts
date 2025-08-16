@@ -8,6 +8,7 @@ import { roundDown, roundUp } from '../utils/round/round';
 import WebSocket from 'ws';
 import { hasProfit } from './logic/profit';
 import { getMakerFeeFutures } from '../core/maker-fee/maker-fee';
+import { EXCHANGES } from '../constants';
 
 // WebSocket接続を保持する変数
 let wsConnection: WebSocket | null = null;
@@ -42,7 +43,7 @@ const handlePriceUpdate = async (
   }
 
   // マーケットメイカー収益性判断
-  const feeRate = getMakerFeeFutures('kucoin');
+  const feeRate = getMakerFeeFutures(EXCHANGES.kucoin);
   const isProfitable = hasProfit(feeRate, bestBid, bestAsk, TICK_SIZE);
 
   // 収益性がある場合のみ取引ロジックを実行

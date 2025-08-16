@@ -24,7 +24,7 @@ export const TAKER_FEES = {
 export const MAKER_FEES_FUTURES = {
   // https://www.kucoin.com/ja/vip/privilege
   // 先物取引のメイカー手数料
-  [EXCHANGES.kucoin]: 0.02, // 0.02% for futures maker
+  [EXCHANGES.kucoin]: 0.0002, // 0.02% for futures maker
 } as const;
 
 export const PAIRS = {

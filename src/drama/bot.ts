@@ -1,13 +1,14 @@
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
-import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
-import { calculateMarketMakerProfit } from './market-maker-profit';
 import { hasOpenPosition } from './position-manager';
 import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
 import { fetchKucoinFuturesOrder, cancelKucoinFuturesOrder } from '../clients';
 import { postMMMessage } from '../clients/discord/post-message';
 import { roundDown, roundUp } from '../utils/round/round';
 import WebSocket from 'ws';
+import { hasProfit } from './logic/profit';
+import { getMakerFeeFutures } from '../core/maker-fee/maker-fee';
+import { EXCHANGES } from '../constants';
 
 // WebSocket接続を保持する変数
 let wsConnection: WebSocket | null = null;
@@ -24,7 +25,7 @@ const cleanup = () => {
 // 取引パラメータ
 const SPOT_SYMBOL = 'PUMP/USDT';
 const AMOUNT = 1; // 契約数
-const TICK_SIZE = 0.0001; // KuCoin先物のtickSize（要確認）
+const TICK_SIZE = 0.000001; // KuCoin先物のtickSize
 
 const handlePriceUpdate = async (
   bestBid: number,
@@ -41,19 +42,12 @@ const handlePriceUpdate = async (
     return;
   }
 
-  const spreadRate = calculateSpreadRate(bestBid, bestAsk);
-  console.log('spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
-
   // マーケットメイカー収益性判断
-  const profitAnalysis = calculateMarketMakerProfit(bestBid, bestAsk);
+  const feeRate = getMakerFeeFutures(EXCHANGES.kucoin);
+  const isProfitable = hasProfit(feeRate, bestBid, bestAsk, TICK_SIZE);
 
   // 収益性がある場合のみ取引ロジックを実行
-  if (profitAnalysis.isProfitable) {
-    console.log(
-      '✅ Profitable opportunity detected! Net profit:',
-      `${profitAnalysis.netProfit.toFixed(4)}%`
-    );
-
+  if (isProfitable) {
     try {
       // ポジション確認
       const hasPosition = await hasOpenPosition(futuresSymbol);

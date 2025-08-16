@@ -1,12 +1,13 @@
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
-import { calculateMarketMakerProfit } from './market-maker-profit';
 import { hasOpenPosition } from './position-manager';
 import { createKucoinFuturesOrder } from '../clients/kucoin/create-kucoin-futures-order';
 import { fetchKucoinFuturesOrder, cancelKucoinFuturesOrder } from '../clients';
 import { postMMMessage } from '../clients/discord/post-message';
 import { roundDown, roundUp } from '../utils/round/round';
 import WebSocket from 'ws';
+import { hasProfit } from './logic/profit';
+import { getMakerFeeFutures } from '../core/maker-fee/maker-fee';
 
 // WebSocket接続を保持する変数
 let wsConnection: WebSocket | null = null;
@@ -41,15 +42,11 @@ const handlePriceUpdate = async (
   }
 
   // マーケットメイカー収益性判断
-  const profitAnalysis = calculateMarketMakerProfit(bestBid, bestAsk);
+  const feeRate = getMakerFeeFutures('kucoin');
+  const isProfitable = hasProfit(feeRate, bestBid, bestAsk, TICK_SIZE);
 
   // 収益性がある場合のみ取引ロジックを実行
-  if (profitAnalysis.isProfitable) {
-    console.log(
-      '✅ Profitable opportunity detected! Net profit:',
-      `${profitAnalysis.netProfit.toFixed(4)}%`
-    );
-
+  if (isProfitable) {
     try {
       // ポジション確認
       const hasPosition = await hasOpenPosition(futuresSymbol);

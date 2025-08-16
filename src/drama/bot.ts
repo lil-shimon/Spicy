@@ -1,5 +1,4 @@
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
-import { calculateSpreadRate } from '../dirty-work/spread';
 import { convertToFuturesSymbol } from '../utils/symbol-converter/symbol-converter';
 import { calculateMarketMakerProfit } from './market-maker-profit';
 import { hasOpenPosition } from './position-manager';
@@ -40,9 +39,6 @@ const handlePriceUpdate = async (
     console.warn('Invalid price data received:', { bestBid, bestAsk });
     return;
   }
-
-  const spreadRate = calculateSpreadRate(bestBid, bestAsk);
-  console.log('spreadRate', spreadRate, 'bestBid', bestBid, 'bestAsk', bestAsk);
 
   // マーケットメイカー収益性判断
   const profitAnalysis = calculateMarketMakerProfit(bestBid, bestAsk);

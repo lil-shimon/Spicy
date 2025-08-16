@@ -23,7 +23,7 @@ const cleanup = () => {
 // 取引パラメータ
 const SPOT_SYMBOL = 'PUMP/USDT';
 const AMOUNT = 1; // 契約数
-const TICK_SIZE = 0.0001; // KuCoin先物のtickSize（要確認）
+const TICK_SIZE = 0.000001; // KuCoin先物のtickSize
 
 const handlePriceUpdate = async (
   bestBid: number,

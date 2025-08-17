@@ -1,17 +1,21 @@
 import { gmoWebSocketClient } from '../clients/gmo/gmo-ws';
+import { PriceRepository } from '../repositories/price.repository';
 
 type PriceServiceParams = {
   symbol: string;
 };
 
-export const PriceService = () => {
-  const handleUpdate = (bid: number, ask: number) => {
-    console.log(`Price update: bid=${bid}, ask=${ask}`);
-  };
+const priceRepository = PriceRepository();
 
+export const PriceService = () => {
   const start = (params: PriceServiceParams) => {
     const { symbol } = params;
-    gmoWebSocketClient({ symbol, onUpdate: handleUpdate });
+    gmoWebSocketClient({
+      symbol,
+      onUpdate: (bid, ask) => {
+        priceRepository.updatePrice(symbol, 'gmo', bid, ask);
+      },
+    });
   };
 
   return { start };

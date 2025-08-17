@@ -18,12 +18,10 @@ const generateSubscribeMessage = ({ symbol, channel }: Message) => {
 };
 
 ws.on('open', () => {
-  console.log('GMO WebSocket connected');
   const message = generateSubscribeMessage({
     symbol: 'BTC',
     channel: 'ticker',
   });
-  console.log('Sending message:', message);
   ws.send(message);
 });
 

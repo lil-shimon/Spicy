@@ -3,6 +3,7 @@ settings.local.json
 .env
 dist
 src/demo.ts
+src/clients/mexc/websocket-proto
 pair-counts.json
 data
 .serena

@@ -5,7 +5,7 @@ const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
 
 type GmoWebSocketClientParams = {
   symbol: string;
-  onUpdate: (bid: number, ask: number) => {};
+  onUpdate: (bid: number, ask: number) => void;
 };
 
 export const gmoWebSocketClient = (params: GmoWebSocketClientParams) => {

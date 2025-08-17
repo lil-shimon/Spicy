@@ -4,15 +4,16 @@ import { generateSubscribeMessage } from './generate-subscribe-message';
 const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
 
 type GmoWebSocketClientParams = {
+  symbol: string;
   onUpdate: (bid: number, ask: number) => {};
 };
 
 export const gmoWebSocketClient = (params: GmoWebSocketClientParams) => {
-  const { onUpdate } = params;
+  const { symbol, onUpdate } = params;
 
   ws.on('open', () => {
     const message = generateSubscribeMessage({
-      symbol: 'BTC',
+      symbol,
       channel: 'ticker',
     });
     ws.send(message);

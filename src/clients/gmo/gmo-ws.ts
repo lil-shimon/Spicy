@@ -2,8 +2,17 @@ import WebSocket from 'ws';
 
 const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
 
+/**
+ * Websocket subscribe message type
+ */
 type Message = {
+  /**
+   * Websocket channel name (e.g. ticker)
+   */
   channel: string;
+  /**
+   * Websocket symbol (e.g. BTC)
+   */
   symbol: string;
 };
 

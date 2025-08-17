@@ -2,6 +2,32 @@ import WebSocket from 'ws';
 
 const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
 
+type Message = {
+  channel: string;
+  symbol: string;
+};
+
+const generateSubscribeMessage = ({ symbol, channel }: Message) => {
+  const message = {
+    command: 'subscribe',
+    channel: channel,
+    symbol: symbol,
+  };
+
+  return JSON.stringify(message);
+};
+
 ws.on('open', () => {
   console.log('GMO WebSocket connected');
+  const message = generateSubscribeMessage({
+    symbol: 'BTC',
+    channel: 'ticker',
+  });
+  console.log('Sending message:', message);
+  ws.send(message);
+});
+
+ws.on('message', (data) => {
+  const message = JSON.parse(data.toString('utf-8'));
+  console.log('GMO WebSocket message received:', message);
 });

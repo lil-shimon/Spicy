@@ -20,3 +20,11 @@ ws.on('message', (data) => {
   console.log('bid: ', bid);
   console.log('ask: ', ask);
 });
+
+ws.on('error', (error) => {
+  console.error('GMO WebSocket error:', error);
+});
+
+ws.on('close', () => {
+  console.log('GMO WebSocket connection closed');
+});

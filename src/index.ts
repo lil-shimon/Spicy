@@ -1,8 +1,10 @@
-import { startBot, startUsdcArb } from './bot';
+import { ArbitrageController } from './controllers/arbitrage.controller';
+
+const arbitrageController = ArbitrageController();
 
 const main = async () => {
-  startBot();
-  startUsdcArb();
+  const symbol = 'SOL';
+  arbitrageController.start({ symbol });
 };
 
 main();

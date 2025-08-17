@@ -1,0 +1,24 @@
+import { describe, expect, it } from 'vitest';
+import { PriceRepository } from './price.repository';
+
+describe('PriceRepository', () => {
+  it('should update price correctly', () => {
+    const repository = PriceRepository();
+    repository.updatePrice('BTC', 'binance', 50000, 51000);
+    expect(repository.price.get('BTC::binance')).toEqual({
+      bid: 50000,
+      ask: 51000,
+    });
+
+    repository.updatePrice('ETH', 'binance', 3000, 3100);
+    expect(repository.price.get('ETH::binance')).toEqual({
+      bid: 3000,
+      ask: 3100,
+    });
+    expect(repository.price.get('BTC::binance')).toEqual({
+      bid: 50000,
+      ask: 51000,
+    });
+    expect(repository.price).toHaveLength(2);
+  });
+});

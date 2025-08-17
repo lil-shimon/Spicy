@@ -36,5 +36,10 @@ ws.on('open', () => {
 
 ws.on('message', (data) => {
   const message = JSON.parse(data.toString('utf-8'));
+  const bid = message.bid;
+  const ask = message.ask;
+
   console.log('GMO WebSocket message received:', message);
+  console.log('bid: ', bid);
+  console.log('ask: ', ask);
 });

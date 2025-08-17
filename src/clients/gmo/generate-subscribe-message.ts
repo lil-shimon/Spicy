@@ -15,8 +15,8 @@ type Message = {
 export const generateSubscribeMessage = ({ symbol, channel }: Message) => {
   const message = {
     command: 'subscribe',
-    channel: channel,
-    symbol: symbol,
+    channel,
+    symbol,
   };
 
   return JSON.stringify(message);

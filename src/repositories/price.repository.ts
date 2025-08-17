@@ -17,8 +17,13 @@ export const PriceRepository = () => {
     price.set(key, { bid, ask });
   };
 
+  const getPrice = (symbol: string, exchange: string) => {
+    const key = `${symbol}::${exchange}`;
+    return price.get(key);
+  };
+
   return {
-    price,
     updatePrice,
+    getPrice,
   };
 };

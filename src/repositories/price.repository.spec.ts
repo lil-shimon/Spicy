@@ -20,4 +20,9 @@ describe('PriceRepository', () => {
       ask: 51000,
     });
   });
+
+  it('should return undefined for non-existent prices', () => {
+    const repository = PriceRepository();
+    expect(repository.getPrice('LTC', 'binance')).toBeUndefined();
+  });
 });

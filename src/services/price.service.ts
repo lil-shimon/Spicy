@@ -18,5 +18,5 @@ export const PriceService = () => {
     });
   };
 
-  return { start };
+  return { start } as const;
 };

@@ -25,5 +25,5 @@ export const PriceRepository = () => {
   return {
     updatePrice,
     getPrice,
-  };
+  } as const;
 };

@@ -2,7 +2,7 @@ import { fetchPrices } from './logic';
 import { postMessage, postOrderMessage } from './clients';
 import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
-import { updateCountV2 } from './utils';
+import { updateCount } from './utils';
 import { mexcClient } from './clients/mexc/mexc-client';
 import { createOrders } from './logic/order/order';
 import 'dotenv/config';
@@ -53,7 +53,7 @@ const execute = async () => {
   await postMessage(discordMessage);
 
   arbitrageOpportunities.forEach((p) => {
-    updateCountV2(p);
+    updateCount(p);
   });
 };
 

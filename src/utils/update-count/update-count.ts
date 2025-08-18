@@ -3,13 +3,13 @@ import path from 'path';
 import { FetchPriceResult } from '../../logic/fetch-price/fetch-price';
 
 const dirName = path.resolve(process.cwd(), 'data');
-const filePathV2 = path.join(dirName, 'arb-logs.jsonl');
+const filePath = path.join(dirName, 'arb-logs.jsonl');
 
 /**
  * アビトラ機会をJSONに保存
  * @param {FetchPriceResult} data
  */
-export const updateCountV2 = (data: FetchPriceResult) => {
+export const updateCount = (data: FetchPriceResult) => {
   if (!fs.existsSync(dirName)) {
     fs.mkdirSync(dirName, { recursive: true });
   }
@@ -31,6 +31,6 @@ export const updateCountV2 = (data: FetchPriceResult) => {
     timestamp: jstIso,
   };
 
-  fs.appendFileSync(filePathV2, JSON.stringify(entry) + '\n', 'utf8');
+  fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
   console.log(`ペア ${data.pair}のログを追記しました`);
 };

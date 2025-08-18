@@ -1,1 +1,1 @@
-export { updateCount, updateCountV2 } from './update-count/update-count';
+export { updateCountV2 } from './update-count/update-count';

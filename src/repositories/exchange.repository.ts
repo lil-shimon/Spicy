@@ -1,5 +1,5 @@
 export const ExchangeRepository = () => {
-  let exchangeRate: number = 0;
+  let exchangeRate: number | null = null;
 
   const updateExchangeRate = (rate: number) => {
     exchangeRate = rate;

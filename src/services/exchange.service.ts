@@ -13,6 +13,7 @@ export const ExchangeService = () => {
    * @param params.interval - Parameters for interval. default: 1min.
    */
   const start = (params: ExchangeServiceParams) => {
+    func();
     const interval = params.interval || 1000 * 60 * 1;
 
     setInterval(func, interval);

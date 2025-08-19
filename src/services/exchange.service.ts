@@ -28,6 +28,10 @@ export const ExchangeService = () => {
       bid: response?.bid,
       ask: response?.ask,
     });
+    console.log(
+      '為替レートが更新されました。',
+      exchangeRepository.getExchangeRate()
+    );
   };
 
   return { start } as const;

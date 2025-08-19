@@ -8,6 +8,8 @@ type ExchangeServiceParams = {
 };
 
 export const ExchangeService = () => {
+  let intervalId: NodeJS.Timeout | null = null;
+
   /**
    * Start the exchange rate updates.
    * @param params.interval - Parameters for interval. default: 1min.
@@ -16,7 +18,11 @@ export const ExchangeService = () => {
     func();
     const interval = params.interval || 1000 * 60 * 1;
 
-    setInterval(func, interval);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(func, interval);
   };
 
   const func = async () => {

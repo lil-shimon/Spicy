@@ -1,3 +1,4 @@
+import { fetchJpyUsd } from '../clients/gmo/gmo';
 import { ExchangeRepository } from '../repositories/exchange.repository';
 
 const exchangeRepository = ExchangeRepository();
@@ -18,7 +19,15 @@ export const ExchangeService = () => {
   };
 
   const func = async () => {
-    // some async operation
+    const response = await fetchJpyUsd();
+    if (!response) {
+      console.log('為替レートの取得に失敗しました。');
+      return;
+    }
+    exchangeRepository.updateExchangeRate({
+      bid: response?.bid,
+      ask: response?.ask,
+    });
   };
 
   return { start } as const;

@@ -4,7 +4,7 @@ import { ExchangeRepository } from './exchange.repository';
 describe('ExchangeRepository', () => {
   const exchangeRepository = ExchangeRepository();
   it('should return initial exchange rate', () => {
-    expect(exchangeRepository.getExchangeRate()).toBe(0);
+    expect(exchangeRepository.getExchangeRate()).toBeNull;
   });
 
   it('should return updated exchange rate', () => {

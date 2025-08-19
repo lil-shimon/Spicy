@@ -14,10 +14,11 @@ export const ExchangeService = () => {
   const start = (params: ExchangeServiceParams) => {
     const interval = params.interval || 1000 * 60 * 1;
 
-    setInterval(() => {
-      // api call
-      // update exchange rate.
-    }, interval);
+    setInterval(func, interval);
+  };
+
+  const func = async () => {
+    // some async operation
   };
 
   return { start } as const;

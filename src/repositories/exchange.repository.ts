@@ -1,8 +1,13 @@
-export const ExchangeRepository = () => {
-  let exchangeRate: number | null = null;
+type ExchangeRate = {
+  bid: number;
+  ask: number;
+};
 
-  const updateExchangeRate = (rate: number) => {
-    exchangeRate = rate;
+export const ExchangeRepository = () => {
+  let exchangeRate: ExchangeRate | null = null;
+
+  const updateExchangeRate = (newExchangeRate: ExchangeRate) => {
+    exchangeRate = newExchangeRate;
   };
 
   const getExchangeRate = () => {

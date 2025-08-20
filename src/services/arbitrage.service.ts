@@ -1,3 +1,4 @@
+import { ExchangeRepository } from './../repositories/exchange.repository';
 type Exchange = {
   ask: number;
   bid: number;
@@ -11,6 +12,8 @@ type CheckParams = {
   exchangeA: Exchange;
   exchangeB: Exchange;
 };
+
+const exchangeRepository = ExchangeRepository();
 
 export const ArbitrageService = () => {
   const check = (params: CheckParams) => {

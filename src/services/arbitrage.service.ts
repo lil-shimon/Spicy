@@ -16,6 +16,12 @@ export const ArbitrageService = () => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
+    const shouldConversion =
+      exchangeA.needsConversion || exchangeB.needsConversion;
+
+    if (shouldConversion) {
+    }
+
     // 指値でMMっぽくする時の比較
     const aToB = compare({ buyPrice: exchangeA.bid, sellPrice: exchangeB.ask });
     const bToA = compare({ buyPrice: exchangeB.bid, sellPrice: exchangeA.ask });

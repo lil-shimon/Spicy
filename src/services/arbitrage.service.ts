@@ -1,11 +1,21 @@
+type Exchange = {
+  ask: number;
+  bid: number;
+  /**
+   * 為替レートでの変換が必要かどうか
+   */
+  needsConversion?: boolean;
+};
+
 type CheckParams = {
-  exchangeA: { ask: number; bid: number };
-  exchangeB: { ask: number; bid: number };
+  exchangeA: Exchange;
+  exchangeB: Exchange;
 };
 
 export const ArbitrageService = () => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
+
     // 指値でMMっぽくする時の比較
     const aToB = compare({ buyPrice: exchangeA.bid, sellPrice: exchangeB.ask });
     const bToA = compare({ buyPrice: exchangeB.bid, sellPrice: exchangeA.ask });

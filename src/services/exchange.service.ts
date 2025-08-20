@@ -41,5 +41,20 @@ export const ExchangeService = () => {
     );
   };
 
-  return { start } as const;
+  const toJpy = (price: { ask: number; bid: number }) => {
+    const exchangeRate = exchangeRepository.getExchangeRate();
+    if (!exchangeRate) {
+      return;
+    }
+
+    const bidToJpy = price.bid * exchangeRate.ask;
+    const askToJpy = price.ask * exchangeRate.bid;
+
+    return {
+      bid: bidToJpy,
+      ask: askToJpy,
+    };
+  };
+
+  return { start, toJpy } as const;
 };

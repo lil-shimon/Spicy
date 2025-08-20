@@ -8,5 +8,15 @@ export const ArbitrageService = () => {
     const { exchangeA, exchangeB } = params;
   };
 
+  const compare = ({
+    buyPrice,
+    sellPrice,
+  }: {
+    buyPrice: number;
+    sellPrice: number;
+  }) => {
+    return sellPrice - buyPrice;
+  };
+
   return { check } as const;
 };

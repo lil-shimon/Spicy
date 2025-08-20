@@ -20,21 +20,20 @@ export const ArbitrageService = () => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
-    const shouldConversion =
-      exchangeA.needsConversion || exchangeB.needsConversion;
+    const a = exchangeA.needsConversion
+      ? exchangeService.toJpy(exchangeA)
+      : exchangeA;
+    const b = exchangeB.needsConversion
+      ? exchangeService.toJpy(exchangeB)
+      : exchangeB;
 
-    if (shouldConversion) {
-      if (exchangeA.needsConversion) {
-        exchangeService.toJpy(exchangeA);
-      }
-      if (exchangeB.needsConversion) {
-        exchangeService.toJpy(exchangeB);
-      }
+    if (!a || !b) {
+      return;
     }
 
     // 指値でMMっぽくする時の比較
-    const aToB = compare({ buyPrice: exchangeA.bid, sellPrice: exchangeB.ask });
-    const bToA = compare({ buyPrice: exchangeB.bid, sellPrice: exchangeA.ask });
+    const aToB = compare({ buyPrice: a.bid, sellPrice: b.ask });
+    const bToA = compare({ buyPrice: b.bid, sellPrice: a.ask });
 
     return {
       aToB,

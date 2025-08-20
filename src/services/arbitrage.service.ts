@@ -24,6 +24,12 @@ export const ArbitrageService = () => {
       exchangeA.needsConversion || exchangeB.needsConversion;
 
     if (shouldConversion) {
+      if (exchangeA.needsConversion) {
+        exchangeService.toJpy(exchangeA);
+      }
+      if (exchangeB.needsConversion) {
+        exchangeService.toJpy(exchangeB);
+      }
     }
 
     // 指値でMMっぽくする時の比較

@@ -3,8 +3,6 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
 
-// TODO: ArbitrageServiceを依存性として受け取る
-// - ファクトリーのパラメータに追加
 type PriceServiceStartParams = {
   symbol: string;
 };

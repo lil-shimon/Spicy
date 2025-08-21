@@ -1,6 +1,7 @@
 import { gmoWebSocketClient } from '../clients/gmo/gmo-ws';
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
+import { ArbitrageService } from './arbitrage.service';
 
 // TODO: ArbitrageServiceを依存性として受け取る
 // - ファクトリーのパラメータに追加
@@ -9,6 +10,7 @@ type PriceServiceParams = {
 };
 
 const priceRepository = PriceRepository();
+const arbitrageService = ArbitrageService();
 
 export const PriceService = () => {
   const start = async (params: PriceServiceParams) => {

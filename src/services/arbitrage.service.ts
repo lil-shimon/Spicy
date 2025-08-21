@@ -1,5 +1,8 @@
 import { ExchangeService } from './exchange.service';
 
+// TODO: PriceRepositoryを依存性注入で受け取る
+// - コンストラクタまたはファクトリーのパラメータとして追加
+
 type Exchange = {
   ask: number;
   bid: number;
@@ -17,6 +20,13 @@ type CheckParams = {
 const exchangeService = ExchangeService();
 
 export const ArbitrageService = () => {
+  // TODO: checkBySymbolメソッドを新規追加
+  // - 引数: symbol (string)
+  // - priceRepository.getPrice(symbol, 'gmo')で価格取得
+  // - priceRepository.getPrice(symbol, 'kucoin')で価格取得
+  // - 両方の価格が存在する場合のみcheck()を呼び出し
+  // - GMOはneedsConversion: true、KuCoinはfalse
+
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 

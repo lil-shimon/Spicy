@@ -5,7 +5,7 @@ import { ArbitrageService } from './arbitrage.service';
 
 // TODO: ArbitrageServiceを依存性として受け取る
 // - ファクトリーのパラメータに追加
-type PriceServiceParams = {
+type PriceServiceStartParams = {
   symbol: string;
 };
 
@@ -26,7 +26,7 @@ export const PriceService = () => {
     }
   };
 
-  const start = async (params: PriceServiceParams) => {
+  const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([
       gmoWebSocketClient({

@@ -15,10 +15,12 @@ export const PriceRepository = () => {
   ): boolean => {
     const key = `${symbol}::${exchange}`;
     const currentPrice = price.get(key);
+
     if (currentPrice?.bid !== bid || currentPrice?.ask !== ask) {
       price.set(key, { bid, ask });
       return true;
     }
+
     return false;
   };
 

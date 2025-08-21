@@ -17,6 +17,23 @@ describe('PriceRepository', () => {
         const update = repository.updatePrice('BTC', 'binance', 52000, 53000);
         expect(update).toBe(true);
       });
+
+      it('should return true when bid is same', () => {
+        const repository = PriceRepository();
+        const result = repository.updatePrice('BTC', 'binance', 50000, 51000);
+        expect(result).toBe(true);
+        const update = repository.updatePrice('BTC', 'binance', 50000, 52000);
+        expect(update).toBe(true);
+      });
+
+      it('should return true when ask is same', () => {
+        const repository = PriceRepository();
+        const result = repository.updatePrice('BTC', 'binance', 50000, 52000);
+        expect(result).toBe(true);
+        const update = repository.updatePrice('BTC', 'binance', 51000, 52000);
+        expect(update).toBe(true);
+      });
+
       it('should return false when price was not changed', () => {
         const repository = PriceRepository();
         const result = repository.updatePrice('BTC', 'binance', 50000, 51000);

@@ -9,10 +9,14 @@ type PriceServiceStartParams = {
   symbol: string;
 };
 
-const priceRepository = PriceRepository();
-const arbitrageService = ArbitrageService();
+type PriceServiceParams = {
+  priceRepository: ReturnType<typeof PriceRepository>;
+  arbitrageService: ReturnType<typeof ArbitrageService>;
+};
 
-export const PriceService = () => {
+export const PriceService = (params: PriceServiceParams) => {
+  const { priceRepository, arbitrageService } = params;
+
   const handleUpdate = (
     symbol: string,
     exchange: string,

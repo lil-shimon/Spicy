@@ -1,20 +1,20 @@
 import { fetchJpyUsd } from '../clients/gmo/gmo';
-import { ExchangeRepository } from '../repositories/exchange.repository';
+import { ExchangeRateRepository } from '../repositories/exchange-rate.repository';
 
-const exchangeRepository = ExchangeRepository();
+const exchangeRateRepository = ExchangeRateRepository();
 
-type ExchangeServiceParams = {
+type ExchangeRateServiceParams = {
   interval?: number;
 };
 
-export const ExchangeService = () => {
+export const ExchangeRateService = () => {
   let intervalId: NodeJS.Timeout | null = null;
 
   /**
    * Start the exchange rate updates.
    * @param params.interval - Parameters for interval. default: 1min.
    */
-  const start = (params: ExchangeServiceParams) => {
+  const start = (params: ExchangeRateServiceParams) => {
     func();
     const interval = params.interval || 1000 * 60 * 1;
 
@@ -31,18 +31,18 @@ export const ExchangeService = () => {
       console.log('為替レートの取得に失敗しました。');
       return;
     }
-    exchangeRepository.updateExchangeRate({
+    exchangeRateRepository.updateExchangeRate({
       bid: response?.bid,
       ask: response?.ask,
     });
     console.log(
       '為替レートが更新されました。',
-      exchangeRepository.getExchangeRate()
+      exchangeRateRepository.getExchangeRate()
     );
   };
 
   const toJpy = (price: { ask: number; bid: number }) => {
-    const exchangeRate = exchangeRepository.getExchangeRate();
+    const exchangeRate = exchangeRateRepository.getExchangeRate();
     if (!exchangeRate) {
       return;
     }

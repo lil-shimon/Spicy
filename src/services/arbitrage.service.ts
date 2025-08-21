@@ -1,3 +1,4 @@
+import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
 // TODO: PriceRepositoryを依存性注入で受け取る
@@ -18,14 +19,32 @@ type CheckParams = {
 };
 
 const exchangeRateService = ExchangeRateService();
+const priceRepository = PriceRepository();
 
 export const ArbitrageService = () => {
-  // TODO: checkBySymbolメソッドを新規追加
-  // - 引数: symbol (string)
-  // - priceRepository.getPrice(symbol, 'gmo')で価格取得
-  // - priceRepository.getPrice(symbol, 'kucoin')で価格取得
-  // - 両方の価格が存在する場合のみcheck()を呼び出し
-  // - GMOはneedsConversion: true、KuCoinはfalse
+  const checkBySymbol = (symbol: string) => {
+    const gmoPrice = priceRepository.getPrice(symbol, 'gmo');
+    const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');
+
+    if (!gmoPrice || !kucoinPrice) {
+      console.log('価格情報がないのでチェックをスキップします');
+      return;
+    }
+
+    const gmo = {
+      ask: gmoPrice.ask,
+      bid: gmoPrice.bid,
+      needsConversion: false,
+    };
+
+    const kucoin = {
+      ask: kucoinPrice.ask,
+      bid: kucoinPrice.bid,
+      needsConversion: true,
+    };
+
+    return check({ exchangeA: gmo, exchangeB: kucoin });
+  };
 
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
@@ -62,5 +81,5 @@ export const ArbitrageService = () => {
     return sellPrice - buyPrice;
   };
 
-  return { check } as const;
+  return { checkBySymbol } as const;
 };

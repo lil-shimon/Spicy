@@ -1,3 +1,5 @@
+import { PriceRepository } from '../repositories/price.repository';
+import { ArbitrageService } from '../services/arbitrage.service';
 import { ExchangeRateService } from '../services/exchange-rate.service';
 import { PriceService } from '../services/price.service';
 
@@ -6,8 +8,10 @@ import { PriceService } from '../services/price.service';
 // - ArbitrageService({ priceRepository })でサービス作成
 // - PriceService({ arbitrageService })でサービス作成
 // - 各サービスのstart()を呼び出し
+const priceRepository = PriceRepository();
+const arbitrageService = ArbitrageService();
 
-const priceService = PriceService();
+const priceService = PriceService({ priceRepository, arbitrageService });
 const exchangeRateService = ExchangeRateService();
 
 type ArbitrageControllerParams = {

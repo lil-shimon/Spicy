@@ -22,13 +22,6 @@ const exchangeRateService = ExchangeRateService();
 const priceRepository = PriceRepository();
 
 export const ArbitrageService = () => {
-  // TODO: checkBySymbolメソッドを新規追加
-  // - 引数: symbol (string)
-  // - priceRepository.getPrice(symbol, 'gmo')で価格取得
-  // - priceRepository.getPrice(symbol, 'kucoin')で価格取得
-  // - 両方の価格が存在する場合のみcheck()を呼び出し
-  // - GMOはneedsConversion: true、KuCoinはfalse
-
   const checkBySymbol = (symbol: string) => {
     const gmoPrice = priceRepository.getPrice(symbol, 'gmo');
     const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');

@@ -81,5 +81,5 @@ export const ArbitrageService = () => {
     return sellPrice - buyPrice;
   };
 
-  return { check, checkBySymbol } as const;
+  return { checkBySymbol } as const;
 };

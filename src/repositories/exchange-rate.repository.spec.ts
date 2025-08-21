@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ExchangeRepository } from './exchange.repository';
+import { ExchangeRateRepository } from './exchange-rate.repository';
 
-describe('ExchangeRepository', () => {
-  const exchangeRepository = ExchangeRepository();
+describe('ExchangeRateRepository', () => {
+  const exchangeRateRepository = ExchangeRateRepository();
   it('should return initial exchange rate', () => {
-    expect(exchangeRepository.getExchangeRate()).toBeNull();
+    expect(exchangeRateRepository.getExchangeRate()).toBeNull();
   });
 
   it('should return updated exchange rate', () => {
@@ -12,10 +12,10 @@ describe('ExchangeRepository', () => {
       bid: 1,
       ask: 2,
     };
-    exchangeRepository.updateExchangeRate(mockExchangeRate);
-    expect(exchangeRepository.getExchangeRate()).toEqual(mockExchangeRate);
-    exchangeRepository.updateExchangeRate({ bid: 2.0, ask: 3.0 });
-    expect(exchangeRepository.getExchangeRate()).toEqual({
+    exchangeRateRepository.updateExchangeRate(mockExchangeRate);
+    expect(exchangeRateRepository.getExchangeRate()).toEqual(mockExchangeRate);
+    exchangeRateRepository.updateExchangeRate({ bid: 2.0, ask: 3.0 });
+    expect(exchangeRateRepository.getExchangeRate()).toEqual({
       bid: 2.0,
       ask: 3.0,
     });

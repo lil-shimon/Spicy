@@ -22,7 +22,12 @@ export const PriceService = () => {
           // TODO: GMO WebSocketのonUpdateコールバック内
           // - updatePriceの戻り値をhasChangedに格納
           // - if (hasChanged) でcheckBySymbol(symbol)を呼び出し
-          priceRepository.updatePrice(symbol, 'gmo', bid, ask);
+          const hasChanged = priceRepository.updatePrice(
+            symbol,
+            'gmo',
+            bid,
+            ask
+          );
         },
       }),
       connectKucoin({
@@ -31,7 +36,12 @@ export const PriceService = () => {
           // TODO: KuCoin WebSocketのonUpdateコールバック内
           // - 同様にupdatePriceの戻り値をチェック
           // - 価格変更時のみcheckBySymbol(symbol)を呼び出し
-          priceRepository.updatePrice(symbol, 'kucoin', bid, ask);
+          const hasChanged = priceRepository.updatePrice(
+            symbol,
+            'kucoin',
+            bid,
+            ask
+          );
         },
         onError: (error) => {
           console.error('Kucoin error', error);

@@ -37,6 +37,20 @@ export const ArbitrageService = () => {
       console.log('価格情報がないのでチェックをスキップします');
       return;
     }
+
+    const gmo = {
+      ask: gmoPrice.ask,
+      bid: gmoPrice.bid,
+      needsConversion: false,
+    };
+
+    const kucoin = {
+      ask: kucoinPrice.ask,
+      bid: kucoinPrice.bid,
+      needsConversion: true,
+    };
+
+    return check({ exchangeA: gmo, exchangeB: kucoin });
   };
 
   const check = (params: CheckParams) => {

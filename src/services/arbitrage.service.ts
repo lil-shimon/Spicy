@@ -20,6 +20,7 @@ export const ArbitrageService = () => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
+    // TODO: 手数料計算
     const a = exchangeA.needsConversion
       ? exchangeService.toJpy(exchangeA)
       : exchangeA;

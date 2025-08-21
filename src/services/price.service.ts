@@ -3,13 +3,13 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
 
-type PriceServiceStartParams = {
-  symbol: string;
-};
-
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
   arbitrageService: ReturnType<typeof ArbitrageService>;
+};
+
+type PriceServiceStartParams = {
+  symbol: string;
 };
 
 export const PriceService = (params: PriceServiceParams) => {

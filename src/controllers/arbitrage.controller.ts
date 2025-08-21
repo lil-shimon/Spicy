@@ -1,4 +1,4 @@
-import { ExchangeService } from '../services/exchange.service';
+import { ExchangeRateService } from '../services/exchange-rate.service';
 import { PriceService } from '../services/price.service';
 
 // TODO: 依存性の整理
@@ -8,7 +8,7 @@ import { PriceService } from '../services/price.service';
 // - 各サービスのstart()を呼び出し
 
 const priceService = PriceService();
-const exchangeService = ExchangeService();
+const exchangeRateService = ExchangeRateService();
 
 type ArbitrageControllerParams = {
   symbol: string;
@@ -17,7 +17,7 @@ type ArbitrageControllerParams = {
 export const ArbitrageController = () => {
   const start = (params: ArbitrageControllerParams) => {
     const { symbol } = params;
-    exchangeService.start({});
+    exchangeRateService.start({});
     priceService.start({ symbol });
   };
 

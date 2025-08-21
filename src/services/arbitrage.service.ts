@@ -1,4 +1,4 @@
-import { ExchangeService } from './exchange.service';
+import { ExchangeRateService } from './exchange-rate.service';
 
 // TODO: PriceRepositoryを依存性注入で受け取る
 // - コンストラクタまたはファクトリーのパラメータとして追加
@@ -17,7 +17,7 @@ type CheckParams = {
   exchangeB: Exchange;
 };
 
-const exchangeService = ExchangeService();
+const exchangeRateService = ExchangeRateService();
 
 export const ArbitrageService = () => {
   // TODO: checkBySymbolメソッドを新規追加
@@ -32,10 +32,10 @@ export const ArbitrageService = () => {
 
     // TODO: 手数料計算
     const a = exchangeA.needsConversion
-      ? exchangeService.toJpy(exchangeA)
+      ? exchangeRateService.toJpy(exchangeA)
       : exchangeA;
     const b = exchangeB.needsConversion
-      ? exchangeService.toJpy(exchangeB)
+      ? exchangeRateService.toJpy(exchangeB)
       : exchangeB;
 
     if (!a || !b) {

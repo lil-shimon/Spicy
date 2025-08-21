@@ -4,7 +4,11 @@ import { PriceRepository } from './price.repository';
 describe('PriceRepository', () => {
   describe('updatePrice', () => {
     describe('return value', () => {
-      it.todo('should return true when the first time');
+      it('should return true when the first time', () => {
+        const repository = PriceRepository();
+        const result = repository.updatePrice('BTC', 'binance', 50000, 51000);
+        expect(result).toBe(true);
+      });
       it.todo('should return true when price was changed');
       it.todo('should return false when price was not changed');
     });

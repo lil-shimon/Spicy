@@ -1,3 +1,4 @@
+import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
 // TODO: PriceRepositoryを依存性注入で受け取る
@@ -18,6 +19,7 @@ type CheckParams = {
 };
 
 const exchangeRateService = ExchangeRateService();
+const priceRepository = PriceRepository();
 
 export const ArbitrageService = () => {
   // TODO: checkBySymbolメソッドを新規追加
@@ -28,7 +30,13 @@ export const ArbitrageService = () => {
   // - GMOはneedsConversion: true、KuCoinはfalse
 
   const checkBySymbol = (symbol: string) => {
-    // TODO
+    const gmoPrice = priceRepository.getPrice(symbol, 'gmo');
+    const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');
+
+    if (!gmoPrice || !kucoinPrice) {
+      console.log('価格情報がないのでチェックをスキップします');
+      return;
+    }
   };
 
   const check = (params: CheckParams) => {

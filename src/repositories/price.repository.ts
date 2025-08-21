@@ -8,7 +8,7 @@ export const PriceRepository = () => {
   const price = new Map<string, Book>();
 
   // TODO: updatePriceメソッドを改修
-  // - 戻り値をboolean型に変更（価格が変更されたかを返す）
+  // - 価格が変更されたかを返す
   // - 現在の価格と新しい価格を比較
   // - 変更があった場合のみMapを更新してtrueを返す
   const updatePrice = (
@@ -16,9 +16,11 @@ export const PriceRepository = () => {
     exchange: string,
     bid: number,
     ask: number
-  ) => {
+  ): boolean => {
     const key = `${symbol}::${exchange}`;
     price.set(key, { bid, ask });
+
+    return true;
   };
 
   const getPrice = (symbol: string, exchange: string) => {

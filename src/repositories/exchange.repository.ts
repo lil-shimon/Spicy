@@ -3,6 +3,7 @@ type ExchangeRate = {
   ask: number;
 };
 
+// TODO: rename from ExchangeRepository. (exchangeRateRepository?)
 export const ExchangeRepository = () => {
   let exchangeRate: ExchangeRate | null = null;
 

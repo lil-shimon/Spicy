@@ -9,7 +9,14 @@ describe('PriceRepository', () => {
         const result = repository.updatePrice('BTC', 'binance', 50000, 51000);
         expect(result).toBe(true);
       });
-      it.todo('should return true when price was changed');
+
+      it('should return true when price was changed', () => {
+        const repository = PriceRepository();
+        const result = repository.updatePrice('BTC', 'binance', 50000, 51000);
+        expect(result).toBe(true);
+        const update = repository.updatePrice('BTC', 'binance', 52000, 53000);
+        expect(update).toBe(true);
+      });
       it.todo('should return false when price was not changed');
     });
     it('should update price correctly', () => {

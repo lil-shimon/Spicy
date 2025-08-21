@@ -27,6 +27,10 @@ export const ArbitrageService = () => {
   // - 両方の価格が存在する場合のみcheck()を呼び出し
   // - GMOはneedsConversion: true、KuCoinはfalse
 
+  const checkBySymbol = (symbol: string) => {
+    // TODO
+  };
+
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
@@ -62,5 +66,5 @@ export const ArbitrageService = () => {
     return sellPrice - buyPrice;
   };
 
-  return { check } as const;
+  return { check, checkBySymbol } as const;
 };

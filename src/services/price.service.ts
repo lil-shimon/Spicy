@@ -1,35 +1,46 @@
 import { gmoWebSocketClient } from '../clients/gmo/gmo-ws';
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
+import { ArbitrageService } from './arbitrage.service';
 
-// TODO: ArbitrageServiceを依存性として受け取る
-// - ファクトリーのパラメータに追加
 type PriceServiceParams = {
+  priceRepository: ReturnType<typeof PriceRepository>;
+  arbitrageService: ReturnType<typeof ArbitrageService>;
+};
+
+type PriceServiceStartParams = {
   symbol: string;
 };
 
-const priceRepository = PriceRepository();
+export const PriceService = (params: PriceServiceParams) => {
+  const { priceRepository, arbitrageService } = params;
 
-export const PriceService = () => {
-  const start = async (params: PriceServiceParams) => {
+  const handleUpdate = (
+    symbol: string,
+    exchange: string,
+    ask: number,
+    bid: number
+  ) => {
+    const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
+
+    if (hasChanged) {
+      arbitrageService.checkBySymbol(symbol);
+    }
+  };
+
+  const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([
       gmoWebSocketClient({
         symbol,
         onUpdate: (bid, ask) => {
-          // TODO: GMO WebSocketのonUpdateコールバック内
-          // - updatePriceの戻り値をhasChangedに格納
-          // - if (hasChanged) でcheckBySymbol(symbol)を呼び出し
-          priceRepository.updatePrice(symbol, 'gmo', bid, ask);
+          handleUpdate(symbol, 'gmo', ask, bid);
         },
       }),
       connectKucoin({
         pair: `${symbol}-USDT`,
         onUpdate: (bid, ask) => {
-          // TODO: KuCoin WebSocketのonUpdateコールバック内
-          // - 同様にupdatePriceの戻り値をチェック
-          // - 価格変更時のみcheckBySymbol(symbol)を呼び出し
-          priceRepository.updatePrice(symbol, 'kucoin', bid, ask);
+          handleUpdate(symbol, 'kucoin', ask, bid);
         },
         onError: (error) => {
           console.error('Kucoin error', error);

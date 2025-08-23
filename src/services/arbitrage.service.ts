@@ -1,3 +1,4 @@
+import { ExchangeRateRepository } from '../repositories/exchange-rate.repository';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
@@ -18,7 +19,8 @@ type CheckParams = {
   exchangeB: Exchange;
 };
 
-const exchangeRateService = ExchangeRateService();
+const exchangeRateRepository = ExchangeRateRepository();
+const exchangeRateService = ExchangeRateService({ exchangeRateRepository });
 const priceRepository = PriceRepository();
 
 export const ArbitrageService = () => {

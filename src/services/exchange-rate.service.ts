@@ -1,20 +1,23 @@
 import { fetchJpyUsd } from '../clients/gmo/gmo';
 import { ExchangeRateRepository } from '../repositories/exchange-rate.repository';
 
-const exchangeRateRepository = ExchangeRateRepository();
-
 type ExchangeRateServiceParams = {
+  exchangeRateRepository: ReturnType<typeof ExchangeRateRepository>;
+};
+
+type ExchangeRateServiceStartParams = {
   interval?: number;
 };
 
-export const ExchangeRateService = () => {
+export const ExchangeRateService = (params: ExchangeRateServiceParams) => {
+  const { exchangeRateRepository } = params;
   let intervalId: NodeJS.Timeout | null = null;
 
   /**
    * Start the exchange rate updates.
    * @param params.interval - Parameters for interval. default: 1min.
    */
-  const start = (params: ExchangeRateServiceParams) => {
+  const start = (params: ExchangeRateServiceStartParams) => {
     func();
     const interval = params.interval || 1000 * 60 * 1;
 

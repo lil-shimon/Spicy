@@ -11,7 +11,8 @@ type ExchangeRateServiceStartParams = {
   interval?: number;
 };
 
-export const ExchangeRateService = () => {
+export const ExchangeRateService = (params: ExchangeRateServiceParams) => {
+  const { exchangeRateRepository } = params;
   let intervalId: NodeJS.Timeout | null = null;
 
   /**

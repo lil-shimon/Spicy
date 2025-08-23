@@ -18,7 +18,7 @@ const server = http.createServer((req, res) => {
           try {
             logs.push(JSON.parse(line));
           } catch (err) {
-            console.log(`Failed to parse log: ${line}`, err);
+            console.error(`Failed to parse log: ${line}`, err);
           }
         }
         res.writeHead(200, { 'Content-Type': 'application/json' });

@@ -3,7 +3,7 @@ import { ExchangeRateRepository } from '../repositories/exchange-rate.repository
 
 const exchangeRateRepository = ExchangeRateRepository();
 
-type ExchangeRateServiceParams = {
+type ExchangeRateServiceStartParams = {
   interval?: number;
 };
 
@@ -14,7 +14,7 @@ export const ExchangeRateService = () => {
    * Start the exchange rate updates.
    * @param params.interval - Parameters for interval. default: 1min.
    */
-  const start = (params: ExchangeRateServiceParams) => {
+  const start = (params: ExchangeRateServiceStartParams) => {
     func();
     const interval = params.interval || 1000 * 60 * 1;
 

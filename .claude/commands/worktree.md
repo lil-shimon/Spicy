@@ -7,11 +7,14 @@ argument-hint: <worktree-name>
 
 ## 実行内容
 
-1. **ワークツリーの作成**
-   - `../Spicy.worktree/$ARGUMENTS` にワークツリーを作成
-   - 新しいブランチ `$ARGUMENTS` を作成してチェックアウト
+1. **最新コードの取得**
+   - 最新のmainブランチをリモートから取得
 
-2. **開発環境のセットアップ**
+2. **ワークツリーの作成**
+   - `../Spicy.worktree/$ARGUMENTS` にワークツリーを作成
+   - 最新のmainブランチから新しいブランチ `$ARGUMENTS` を作成
+
+3. **開発環境のセットアップ**
    - 依存関係のインストール (pnpm install)
    - 環境ファイル (.env) のコピー
    - .selena ディレクトリのコピー
@@ -21,11 +24,20 @@ argument-hint: <worktree-name>
 以下のコマンドを順番に実行してください：
 
 ```bash
+# 現在のブランチを保存
+CURRENT_BRANCH=$(git branch --show-current)
+echo "📍 現在のブランチ: $CURRENT_BRANCH"
+
+# mainブランチの最新を取得
+echo "📡 最新のmainブランチを取得中..."
+git fetch origin main:main
+
 # ワークツリーディレクトリが存在しない場合は作成
 mkdir -p ../Spicy.worktree
 
-# ワークツリーを作成（新しいブランチを作成）
-git worktree add ../Spicy.worktree/$ARGUMENTS -b $ARGUMENTS main
+# 最新のmainブランチからワークツリーを作成（新しいブランチを作成）
+echo "🌳 ワークツリーを作成中..."
+git worktree add ../Spicy.worktree/$ARGUMENTS -b $ARGUMENTS origin/main
 
 # 作成したワークツリーに移動
 cd ../Spicy.worktree/$ARGUMENTS

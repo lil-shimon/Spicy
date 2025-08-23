@@ -89,20 +89,17 @@ export const connectKucoin = async ({
   ws.on('open', () => {
     ws.send(JSON.stringify(msg));
 
-    // futures固有のping処理（18秒間隔）
-    if (marketType === 'futures') {
-      const pingInterval = setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.ping();
-        } else {
-          clearInterval(pingInterval);
-        }
-      }, 18000);
-
-      ws.on('close', () => {
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping();
+      } else {
         clearInterval(pingInterval);
-      });
-    }
+      }
+    }, 18000);
+
+    ws.on('close', () => {
+      clearInterval(pingInterval);
+    });
   });
 
   ws.on('message', (data) => {

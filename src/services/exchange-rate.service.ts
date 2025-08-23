@@ -3,6 +3,10 @@ import { ExchangeRateRepository } from '../repositories/exchange-rate.repository
 
 const exchangeRateRepository = ExchangeRateRepository();
 
+type ExchangeRateServiceParams = {
+  exchangeRateRepository: ReturnType<typeof ExchangeRateRepository>;
+};
+
 type ExchangeRateServiceStartParams = {
   interval?: number;
 };

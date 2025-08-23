@@ -10,7 +10,7 @@ export const fetchPriceByPair = async (pair: Pair) => {
   try {
     return await fetchPriceByPairPromise(pair);
   } catch (err) {
-    console.log('データ取得に失敗しました:', err);
+    console.error('データ取得に失敗しました:', err);
     return null;
   }
 };
@@ -22,7 +22,7 @@ const wrapWithCatch = async (
   try {
     return await fn();
   } catch (err) {
-    console.log(`${exchange} の価格取得に失敗しました`, err);
+    console.error(`${exchange} の価格取得に失敗しました`, err);
     return {
       bid: 0,
       ask: 0,

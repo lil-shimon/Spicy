@@ -1,184 +1,163 @@
 # CLAUDE.md
 
-このファイルは、このリポジトリでコードを扱う際のClaude Code (claude.ai/code) への指針を提供します。
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## プロジェクト概要
 
-これはTypeScriptで構築された高度な仮想通貨アービトラージボットで、取引所間（Bybit、MEXC）の価格差を監視し、収益性の高い取引機会を特定します。ボットは継続的に実行され、機会が見つかるとDiscord通知を送信し、さらにMEXC取引所での自動注文作成機能も持っています。また、取引ペアの活動状況をCSVファイルにログ記録します。
+TypeScriptで構築された仮想通貨取引ボット。3つの主要モジュールで構成：
+
+1. **アービトラージボット** - 取引所間の価格差を利用した取引
+2. **マーケットメイキング（現物）** - MEXC現物市場での両建て取引
+3. **マーケットメイキング（先物）** - KuCoin先物市場でのメイカー取引
 
 ## 開発コマンド
 
-**重要：このプロジェクトではpnpmのみを使用します（package.jsonで強制されています）**
+**重要：pnpmのみを使用（package.jsonで強制）**
 
 ```bash
-# 依存関係のインストール
-pnpm install
+# 基本コマンド
+pnpm install              # 依存関係インストール
+pnpm build               # TypeScriptビルド
+pnpm test                # テスト実行
+pnpm test path/to/file.spec.ts  # 単一テスト実行
+pnpm lint                # ESLint実行
+pnpm format              # Prettier実行
+pnpm tsc --noEmit        # 型チェックのみ
 
-# メインボットの実行
-pnpm dev
+# ボット実行
+pnpm dev                 # アービトラージボット
+pnpm dirty-work          # マーケットメイキング（現物）
+pnpm drama               # マーケットメイキング（先物）
+pnpm demo                # デモモード
+pnpm api                 # APIサーバー（開発）
 
-# テストの実行
-pnpm test
-
-# リンターの実行
-pnpm lint
-
-# デモスクリプトの実行
-pnpm demo
-
-# TypeScriptのビルド
-pnpm build
-
-# ビルド済みファイルの実行
-pnpm start
-
-# pm2でサーバーとして実行
-pnpm start:server
-
-# pm2ログの確認
-pnpm log:server
-
-# pm2サーバーの再起動
-pnpm restart
+# PM2管理
+pnpm start:server        # PM2でボット起動
+pnpm start:api           # PM2でAPI起動
+pnpm log:server          # ボットログ表示
+pnpm log:api             # APIログ表示
+pnpm restart             # ボット再起動
+pnpm restart:api         # API再起動
 ```
 
-単一のテストファイルを実行するには：
+## アーキテクチャ
+
+### 3つのメインモジュール
+
+#### 1. アービトラージ（src/index.ts, src/bot.ts）
+
+- 30秒間隔で取引所間の価格差を監視
+- Bybit、MEXC、KuCoinのオーダーブックを分析
+- スリッページとテイカー手数料を考慮した利益計算
+- 利益閾値0.5%以上で通知、MEXC自動注文対応
+
+#### 2. マーケットメイキング現物（src/dirty-work/）
+
+- MEXC現物市場での両建て注文
+- 30秒タイムアウトで注文管理
+- インベントリとP&L追跡
+- CSVでの取引記録
+
+#### 3. マーケットメイキング先物（src/drama/）
+
+- KuCoin先物市場でWebSocket価格監視
+- メイカー手数料0.02%での収益性判断
+- ポジション管理とタイムアウト機能
+
+### コーディングパターン
+
+**関数型プログラミング（クロージャーパターン）を採用**
+
+- クラスは使用せず、`createXxxService`、`createXxxManager`形式でエクスポート
+- 例：`src/dirty-work/services/`、`src/drama/position-manager.ts`
+
+### 主要ディレクトリ構造
+
+```
+src/
+├── clients/           # 取引所APIクライアント（ccxtラッパー）
+├── core/              # コア計算ロジック（利益率、手数料）
+├── constants/         # 定数定義（TAKER_FEES、MAKER_FEES_FUTURES等）
+├── logic/             # ビジネスロジック（アービトラージ判定、スリッページ）
+├── dirty-work/        # マーケットメイキング現物
+├── drama/             # マーケットメイキング先物
+└── utils/             # ユーティリティ関数
+```
+
+### 重要ファイル
+
+- `src/constants/constant.ts` - 取引ペア、取引所、手数料定義
+- `src/logic/checkArbitrage.ts` - アービトラージ機会の判定
+- `src/logic/slippage/` - 買い側・売り側スリッページ計算
+- `src/clients/kucoin/kucoin-ws.ts` - WebSocket統合
+
+## 環境変数
+
+`.env`ファイル（`.env.example`参照）：
+
+```env
+# Discord通知
+DISCORD_WEBHOOK_URL=xxx
+DISCORD_WEBHOOK_URL_ORDER=xxx  # 注文通知用
+
+# 取引所API（取引実行時に必要）
+MEXC_API_KEY=xxx
+MEXC_SECRET=xxx
+BYBIT_API_KEY=xxx
+BYBIT_SECRET=xxx
+KUCOIN_API_KEY=xxx
+KUCOIN_SECRET=xxx
+KUCOIN_PASSPHRASE=xxx
+
+# 機能フラグ
+FEATURE_FLAG_ENABLE_ORDER=false  # 自動取引有効化
+```
+
+## テスト戦略
+
+- Vitest使用、`*.spec.ts`パターン
+- 取引所レスポンスはモック化
+- 利益計算とアービトラージロジックに重点
+
+## 本番環境
 
 ```bash
-pnpm test path/to/test.spec.ts
-```
-
-## アーキテクチャと主要コンポーネント
-
-### コアフロー
-
-1. **src/index.ts** - 30秒間隔でボットを初期化するエントリーポイント
-2. **src/bot.ts** - すべての操作を調整するメインボットロジック
-3. **src/logic/checkArbitrage.ts** - 価格差を分析し、利益機会を計算
-4. **src/logic/fetchPrice.ts** - ccxtライブラリを使用して取引所から現在の価格を取得
-
-### 取引所統合
-
-- すべての取引所クライアントは`src/clients/`にあり、ccxtライブラリをラップしています
-- 各取引所はAPI の違いにより、特定のオーダーブック取得ロジックを持っています
-- 取引所手数料は`src/constants/exchangeFees.ts`で設定されています
-
-### 利益計算
-
-- ボットは買い側と売り側の両方のテイカー手数料を考慮します
-- 最小利益閾値は0.5%（定数で設定可能）
-- 利益計算は`src/core/profit-rate/`にあります
-- スリッページ計算は`src/logic/slippage/`にあります（買い側・売り側で分離）
-
-### 理解すべき重要なファイル
-
-- **src/constants/constant.ts** - 取引ペア、取引所、手数料、利益閾値の定義
-- **src/bot.ts** - メインオーケストレーションロジック
-- **src/clients/discord/post-message.ts** - Discord通知システム（.envにwebhook URLが必要）
-- **src/clients/mexc/create-mexc-order.ts** - MEXC自動注文作成機能
-- **src/clients/bybit/fetch-bybit-balance.ts** - Bybit残高取得
-- **src/clients/mexc/fetch-mexc-balance.ts** - MEXC残高取得
-- **src/utils/write-count-to-csv/** - 取引ペア活動状況のCSVログ記録
-
-## 環境設定
-
-`.env`ファイルを作成し、以下を記述：
-
-```
-DISCORD_WEBHOOK_URL=your_webhook_url_here
-```
-
-## テストアプローチ
-
-- ユニットテストはTypeScriptでVitestを使用
-- 一貫したテストのために取引所レスポンスをモック
-- テストファイルは`*.spec.ts`パターンに従う
-- 利益計算とアービトラージロジックのテストに焦点を当てる
-
-## 既知のパターン
-
-- すべての非同期操作はasync/awaitを使用
-- 取引所APIコールはtry-catchブロックでラップされている
-- 価格は取得後、数値（文字列ではない）として処理される
-- ボットはシンプルなインターバルベースのポーリングアプローチを使用（30秒間隔）
-- 取引実行機能はMEXCでのみ実装済み
-- Binance、KuCoinは実装済みだが現在無効化されている
-
-## 本番環境での実行
-
-本番サーバーでの実行には以下のコマンドを使用：
-
-```bash
-# サーバーへのSSH接続
-ssh -i ~/.ssh/spicy.pem bitnami@<ip>
-
-# pm2でサーバーとして起動
+# PM2での運用
 pm2 start dist/index.js --name spicy
-
-# ログの確認
+pm2 start dist/src/server.js --name spicy-api
 pm2 logs spicy
+pm2 status
 ```
 
-## ブランチ戦略とGit操作
+## Git操作
 
-### ブランチ命名規則
+### ブランチ命名
 
-最近のPRパターンから学んだブランチ命名規則：
-
-- `feat/spicy-{issue番号}-{機能名}` - 新機能追加
+- `feat/spicy-{issue番号}-{機能名}` - 新機能
 - `refactor/spicy-{issue番号}-{内容}` - リファクタリング
-- `docs/{内容}` - ドキュメント更新
+- `docs/{内容}` - ドキュメント
 
-例：
-
-- `feat/spicy-55-futures-maker-fees`
-- `refactor/spicy-50-pnl-service`
-- `docs/add-ccxt-documentation`
-
-### 開発フロー
-
-```bash
-# 1. 最新のmainブランチを取得
-git checkout main && git pull origin main
-
-# 2. 新しいブランチを作成
-git checkout -b feat/spicy-{issue番号}-{機能名}
-
-# 3. 開発・テスト
-pnpm test
-pnpm lint
-pnpm tsc --noEmit
-
-# 4. コミット（分割して作成）
-git add src/constants/constant.ts
-git commit -m "feat(constants): add MAKER_FEES_FUTURES for KuCoin futures trading"
-
-git add src/core/maker-fee/maker-fee.ts
-git commit -m "feat(core): add getMakerFeeFutures utility function"
-
-git add src/core/maker-fee/maker-fee.spec.ts
-git commit -m "test(core): add tests for getMakerFeeFutures function"
-
-# 5. リモートにプッシュ
-git push -u origin {ブランチ名}
-
-# 6. PR作成
-gh pr create --title "feat: {機能概要}" --body "..."
-```
-
-### コミットメッセージフォーマット
+### コミットメッセージ
 
 ```
 {type}({scope}): {subject}
-
-- {詳細1}
-- {詳細2}
 ```
-
-type例：
 
 - `feat`: 新機能
 - `refactor`: リファクタリング
 - `test`: テスト追加
-- `docs`: ドキュメント
-- `chore`: その他の変更
+- `fix`: バグ修正
+- `chore`: その他
+
+### 開発フロー
+
+```bash
+git checkout main && git pull origin main
+git checkout -b feat/spicy-123-feature-name
+# 開発・テスト後
+pnpm test && pnpm lint && pnpm tsc --noEmit
+git add -p  # 変更を論理的に分割
+git commit -m "feat(core): add new calculation logic"
+git push -u origin feat/spicy-123-feature-name
+gh pr create
+```

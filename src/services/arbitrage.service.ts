@@ -1,9 +1,10 @@
-import { ExchangeRateRepository } from '../repositories/exchange-rate.repository';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
-// TODO: PriceRepositoryを依存性注入で受け取る
-// - コンストラクタまたはファクトリーのパラメータとして追加
+type ArbitrageServiceParams = {
+  exchangeRateService: ReturnType<typeof ExchangeRateService>;
+  priceRepository: ReturnType<typeof PriceRepository>;
+};
 
 type Exchange = {
   ask: number;
@@ -19,11 +20,9 @@ type CheckParams = {
   exchangeB: Exchange;
 };
 
-const exchangeRateRepository = ExchangeRateRepository();
-const exchangeRateService = ExchangeRateService({ exchangeRateRepository });
-const priceRepository = PriceRepository();
+export const ArbitrageService = (params: ArbitrageServiceParams) => {
+  const { exchangeRateService, priceRepository } = params;
 
-export const ArbitrageService = () => {
   const checkBySymbol = (symbol: string) => {
     const gmoPrice = priceRepository.getPrice(symbol, 'gmo');
     const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');

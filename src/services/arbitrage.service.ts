@@ -91,6 +91,8 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     };
   };
 
+  // TODO: プロジェクト内に同じような関数がありそう
+  // params本当にこれが良いのか？
   const applyFee = (price: { bid: number; ask: number; fee: number }) => {
     return {
       bid: price.bid * (1 + price.fee),

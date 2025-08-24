@@ -57,6 +57,10 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     if (!spread) {
       return;
     }
+
+    if (spread.exchangeAResponse.profit || spread.exchangeBResponse.profit) {
+      // TODO: send message to discord.
+    }
   };
 
   const calculateSpread = (params: CheckParams) => {
@@ -91,13 +95,17 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
 
     console.log('aToB', aToB, 'bToA', bToA);
     const exchangeAResponse = {
-      profit: aToB,
-      exchangeName: exchangeA.exchangeName,
+      spread: aToB,
+      profit: aToB > 0,
+      buy: exchangeA.exchangeName,
+      sell: exchangeB.exchangeName,
     };
 
     const exchangeBResponse = {
-      profit: bToA,
-      exchangeName: exchangeB.exchangeName,
+      spread: bToA,
+      profit: bToA > 0,
+      buy: exchangeB.exchangeName,
+      sell: exchangeA.exchangeName,
     };
 
     return {

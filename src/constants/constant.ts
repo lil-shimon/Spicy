@@ -3,6 +3,7 @@ export const EXCHANGES = {
   MEXC: 'mexc',
   BINANCE: 'binance',
   kucoin: 'kucoin',
+  GMO: 'gmo',
 } as const;
 
 export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];
@@ -20,6 +21,10 @@ export const TAKER_FEES = {
   // https://www.kucoin.com/ja/vip/privilege
   [EXCHANGES.kucoin]: 0.1,
 } as const;
+
+export const MAKER_FEES_SPOT = {
+  [EXCHANGES.MEXC]: 0,
+};
 
 export const MAKER_FEES_FUTURES = {
   // https://www.kucoin.com/ja/vip/privilege

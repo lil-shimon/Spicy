@@ -24,10 +24,6 @@ export const gmoWebSocketClient = (params: GmoWebSocketClientParams) => {
     const bid = message?.bid;
     const ask = message?.ask;
 
-    console.log('GMO WebSocket message received:', message);
-    console.log('bid: ', bid);
-    console.log('ask: ', ask);
-
     if (bid && ask) {
       onUpdate(bid, ask);
     }

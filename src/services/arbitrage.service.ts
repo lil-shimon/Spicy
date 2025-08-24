@@ -28,7 +28,6 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');
 
     if (!gmoPrice || !kucoinPrice) {
-      console.log('価格情報がないのでチェックをスキップします');
       return;
     }
 
@@ -65,6 +64,8 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     // 指値でMMっぽくする時の比較
     const aToB = compare({ buyPrice: a.bid, sellPrice: b.ask });
     const bToA = compare({ buyPrice: b.bid, sellPrice: a.ask });
+
+    console.log('aToB', aToB, 'bToA', bToA);
 
     return {
       aToB,

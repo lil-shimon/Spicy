@@ -53,7 +53,10 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       exchangeName: EXCHANGES.kucoin,
     };
 
-    return calculateSpread({ exchangeA: gmo, exchangeB: kucoin });
+    const spread = calculateSpread({ exchangeA: gmo, exchangeB: kucoin });
+    if (!spread) {
+      return;
+    }
   };
 
   const calculateSpread = (params: CheckParams) => {

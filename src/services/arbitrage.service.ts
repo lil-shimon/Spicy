@@ -59,6 +59,11 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     }
 
     if (spread.exchangeAResponse.profit || spread.exchangeBResponse.profit) {
+      const spreads = [
+        spread.exchangeAResponse,
+        spread.exchangeBResponse,
+      ].filter((s) => s.profit);
+      console.log('spreads', spreads);
       // TODO: send message to discord.
     }
   };

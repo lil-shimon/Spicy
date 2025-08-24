@@ -105,7 +105,6 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const aToB = compare({ buyPrice: aWithFee.bid, sellPrice: bWithFee.ask });
     const bToA = compare({ buyPrice: bWithFee.bid, sellPrice: aWithFee.ask });
 
-    console.log('aToB', aToB, 'bToA', bToA);
     const exchangeAResponse = {
       spread: aToB,
       profit: aToB > 0,
@@ -119,6 +118,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       buy: exchangeB.exchangeName,
       sell: exchangeA.exchangeName,
     };
+    console.table([exchangeAResponse, exchangeBResponse]);
 
     return {
       exchangeAResponse,

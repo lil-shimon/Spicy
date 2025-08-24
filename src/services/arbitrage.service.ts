@@ -1,4 +1,3 @@
-import { ExchangeRateRepository } from '../repositories/exchange-rate.repository';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
@@ -6,7 +5,6 @@ import { ExchangeRateService } from './exchange-rate.service';
 // - コンストラクタまたはファクトリーのパラメータとして追加
 
 type ArbitrageServiceParams = {
-  exchangeRateRepository: ReturnType<typeof ExchangeRateRepository>;
   exchangeRateService: ReturnType<typeof ExchangeRateService>;
   priceRepository: ReturnType<typeof PriceRepository>;
 };
@@ -26,8 +24,7 @@ type CheckParams = {
 };
 
 export const ArbitrageService = (params: ArbitrageServiceParams) => {
-  const { exchangeRateRepository, exchangeRateService, priceRepository } =
-    params;
+  const { exchangeRateService, priceRepository } = params;
 
   const checkBySymbol = (symbol: string) => {
     const gmoPrice = priceRepository.getPrice(symbol, 'gmo');

@@ -16,6 +16,7 @@ type PriceInfo = {
    * 為替レートでの変換が必要かどうか
    */
   needsConversion?: boolean;
+  exchangeName: string;
 };
 
 type CheckParams = {
@@ -40,6 +41,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       bid: gmoPrice.bid,
       makerFee: gmoMakerFee,
       needsConversion: false,
+      exchangeName: EXCHANGES.GMO,
     };
 
     const kucoinMakerFee = getMakerFeeSpot(EXCHANGES.kucoin);
@@ -48,6 +50,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       bid: kucoinPrice.bid,
       makerFee: kucoinMakerFee,
       needsConversion: true,
+      exchangeName: EXCHANGES.kucoin,
     };
 
     return calculateSpread({ exchangeA: gmo, exchangeB: kucoin });

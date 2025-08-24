@@ -25,11 +25,10 @@ type CheckParams = {
   exchangeB: Exchange;
 };
 
-const exchangeRateRepository = ExchangeRateRepository();
-const exchangeRateService = ExchangeRateService({ exchangeRateRepository });
-const priceRepository = PriceRepository();
+export const ArbitrageService = (params: ArbitrageServiceParams) => {
+  const { exchangeRateRepository, exchangeRateService, priceRepository } =
+    params;
 
-export const ArbitrageService = () => {
   const checkBySymbol = (symbol: string) => {
     const gmoPrice = priceRepository.getPrice(symbol, 'gmo');
     const kucoinPrice = priceRepository.getPrice(symbol, 'kucoin');

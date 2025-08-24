@@ -67,15 +67,17 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return;
     }
 
-    const aWithFee = {
-      bid: a.bid * (1 + exchangeA.makerFee),
-      ask: a.ask * (1 - exchangeA.makerFee),
-    };
+    const aWithFee = applyFee({
+      bid: a.bid,
+      ask: a.ask,
+      fee: exchangeA.makerFee,
+    });
 
-    const bWithFee = {
-      bid: b.bid * (1 + exchangeB.makerFee),
-      ask: b.ask * (1 - exchangeB.makerFee),
-    };
+    const bWithFee = applyFee({
+      bid: b.bid,
+      ask: b.ask,
+      fee: exchangeB.makerFee,
+    });
 
     // 指値でMMっぽくする時の比較
     const aToB = compare({ buyPrice: aWithFee.bid, sellPrice: bWithFee.ask });
@@ -86,6 +88,13 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     return {
       aToB,
       bToA,
+    };
+  };
+
+  const applyFee = (price: { bid: number; ask: number; fee: number }) => {
+    return {
+      bid: price.bid * (1 + price.fee),
+      ask: price.ask * (1 - price.fee),
     };
   };
 

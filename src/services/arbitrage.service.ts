@@ -1,3 +1,5 @@
+import { EXCHANGES } from '../constants';
+import { getMakerFeeSpot } from '../core/maker-fee/maker-fee';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
@@ -32,15 +34,19 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return;
     }
 
+    const gmoMakerFee = getMakerFeeSpot(EXCHANGES.GMO);
     const gmo = {
       ask: gmoPrice.ask,
       bid: gmoPrice.bid,
+      makerFee: gmoMakerFee,
       needsConversion: false,
     };
 
+    const kucoinMakerFee = getMakerFeeSpot(EXCHANGES.kucoin);
     const kucoin = {
       ask: kucoinPrice.ask,
       bid: kucoinPrice.bid,
+      makerFee: kucoinMakerFee,
       needsConversion: true,
     };
 

@@ -10,10 +10,13 @@ import { PriceService } from '../services/price.service';
 // - 各サービスのstart()を呼び出し
 const priceRepository = PriceRepository();
 const exchangeRateRepository = ExchangeRateRepository();
-const arbitrageService = ArbitrageService();
 
-const priceService = PriceService({ priceRepository, arbitrageService });
 const exchangeRateService = ExchangeRateService({ exchangeRateRepository });
+const arbitrageService = ArbitrageService({
+  exchangeRateService,
+  priceRepository,
+});
+const priceService = PriceService({ priceRepository, arbitrageService });
 
 type ArbitrageControllerParams = {
   symbol: string;

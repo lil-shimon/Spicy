@@ -34,6 +34,9 @@ export const MAKER_FEES_SPOT = {
     DAI: -0.0001,
     default: -0.0003,
   },
+  // https://www.kucoin.com/ja/vip/privilege
+  // 0.1%
+  [EXCHANGES.kucoin]: 0.001,
 };
 
 export const MAKER_FEES_FUTURES = {

@@ -9,6 +9,7 @@ type ArbitrageServiceParams = {
 type Exchange = {
   ask: number;
   bid: number;
+  makerFee: number;
   /**
    * 為替レートでの変換が必要かどうか
    */

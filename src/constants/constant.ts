@@ -24,6 +24,16 @@ export const TAKER_FEES = {
 
 export const MAKER_FEES_SPOT = {
   [EXCHANGES.MEXC]: 0,
+  // https://coin.z.com/jp/corp/guide/fees/
+  // BTC, ETH, XRP, DAIはMaker Rebateで-0.01
+  // それ以外は-0.03
+  [EXCHANGES.GMO]: {
+    BTC: -0.0001,
+    ETH: -0.0001,
+    XRP: -0.0001,
+    DAI: -0.0001,
+    default: -0.0003,
+  },
 };
 
 export const MAKER_FEES_FUTURES = {

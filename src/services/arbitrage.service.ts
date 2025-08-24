@@ -50,10 +50,10 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       needsConversion: true,
     };
 
-    return check({ exchangeA: gmo, exchangeB: kucoin });
+    return calculateSpread({ exchangeA: gmo, exchangeB: kucoin });
   };
 
-  const check = (params: CheckParams) => {
+  const calculateSpread = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
     const a = exchangeA.needsConversion

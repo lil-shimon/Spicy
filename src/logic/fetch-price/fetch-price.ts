@@ -39,8 +39,12 @@ export const fetchPrices = async () => {
 
     console.log(`===== ${pair} の価格比較 =====`);
 
-    for (const from of exchangeList) {
-      for (const to of exchangeList) {
+    const targetExchanges = exchangeList.filter(
+      (exchange) => exchange !== 'gmo'
+    );
+
+    for (const from of targetExchanges) {
+      for (const to of targetExchanges) {
         if (from === to) {
           // 同じ取引所間の比較はスキップ
           continue;

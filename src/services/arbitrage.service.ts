@@ -6,7 +6,7 @@ type ArbitrageServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
 };
 
-type Exchange = {
+type PriceInfo = {
   ask: number;
   bid: number;
   makerFee: number;
@@ -17,8 +17,8 @@ type Exchange = {
 };
 
 type CheckParams = {
-  exchangeA: Exchange;
-  exchangeB: Exchange;
+  exchangeA: PriceInfo;
+  exchangeB: PriceInfo;
 };
 
 export const ArbitrageService = (params: ArbitrageServiceParams) => {

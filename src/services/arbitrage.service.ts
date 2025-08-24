@@ -65,6 +65,13 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       ].filter((s) => s.profit);
       console.log('spreads', hasProfit);
       // TODO: send message to discord.
+
+      const messages = hasProfit.map((p) => {
+        const message = `アビトラの機会を発見しました! \n 買い：${p.buy} \n 売り：${p.sell} \n スプレッド：${p.spread}`;
+        return message;
+      });
+
+      Promise.all(messages.map((m) => postMessage(m)));
     }
   };
 

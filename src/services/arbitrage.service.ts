@@ -56,7 +56,6 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
-    // TODO: 手数料計算
     const a = exchangeA.needsConversion
       ? exchangeRateService.toJpy(exchangeA)
       : exchangeA;

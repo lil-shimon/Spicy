@@ -66,10 +66,10 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       ].filter((s) => s.profit);
       console.log('spreads', hasProfit);
 
-      const messages = hasProfit.map((p) => {
-        const message = `アビトラの機会を発見しました! \n 買い：${p.buy} \n 売り：${p.sell} \n スプレッド：${p.spread}`;
-        return message;
-      });
+      const messages = hasProfit.map(
+        (p) =>
+          `アビトラの機会を発見しました!\n買い：${p.buy}\n売り：${p.sell}\nスプレッド：${p.spread}`
+      );
 
       Promise.all(messages.map((m) => postMessage(m)));
     }

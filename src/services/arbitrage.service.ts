@@ -1,3 +1,5 @@
+import { EXCHANGES } from '../constants';
+import { getMakerFeeSpot } from '../core/maker-fee/maker-fee';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
@@ -6,9 +8,10 @@ type ArbitrageServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
 };
 
-type Exchange = {
+type PriceInfo = {
   ask: number;
   bid: number;
+  makerFee: number;
   /**
    * 為替レートでの変換が必要かどうか
    */
@@ -16,8 +19,8 @@ type Exchange = {
 };
 
 type CheckParams = {
-  exchangeA: Exchange;
-  exchangeB: Exchange;
+  exchangeA: PriceInfo;
+  exchangeB: PriceInfo;
 };
 
 export const ArbitrageService = (params: ArbitrageServiceParams) => {
@@ -31,15 +34,19 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return;
     }
 
+    const gmoMakerFee = getMakerFeeSpot(EXCHANGES.GMO);
     const gmo = {
       ask: gmoPrice.ask,
       bid: gmoPrice.bid,
+      makerFee: gmoMakerFee,
       needsConversion: false,
     };
 
+    const kucoinMakerFee = getMakerFeeSpot(EXCHANGES.kucoin);
     const kucoin = {
       ask: kucoinPrice.ask,
       bid: kucoinPrice.bid,
+      makerFee: kucoinMakerFee,
       needsConversion: true,
     };
 
@@ -49,7 +56,6 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const check = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
-    // TODO: 手数料計算
     const a = exchangeA.needsConversion
       ? exchangeRateService.toJpy(exchangeA)
       : exchangeA;
@@ -61,15 +67,36 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return;
     }
 
+    const aWithFee = applyFee({
+      bid: a.bid,
+      ask: a.ask,
+      fee: exchangeA.makerFee,
+    });
+
+    const bWithFee = applyFee({
+      bid: b.bid,
+      ask: b.ask,
+      fee: exchangeB.makerFee,
+    });
+
     // 指値でMMっぽくする時の比較
-    const aToB = compare({ buyPrice: a.bid, sellPrice: b.ask });
-    const bToA = compare({ buyPrice: b.bid, sellPrice: a.ask });
+    const aToB = compare({ buyPrice: aWithFee.bid, sellPrice: bWithFee.ask });
+    const bToA = compare({ buyPrice: bWithFee.bid, sellPrice: aWithFee.ask });
 
     console.log('aToB', aToB, 'bToA', bToA);
 
     return {
       aToB,
       bToA,
+    };
+  };
+
+  // TODO: プロジェクト内に同じような関数がありそう
+  // params本当にこれが良いのか？
+  const applyFee = (price: { bid: number; ask: number; fee: number }) => {
+    return {
+      bid: price.bid * (1 + price.fee),
+      ask: price.ask * (1 - price.fee),
     };
   };
 

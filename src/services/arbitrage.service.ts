@@ -1,3 +1,4 @@
+import { postMessage } from '../clients';
 import { EXCHANGES } from '../constants';
 import { getMakerFeeSpot } from '../core/maker-fee/maker-fee';
 import { PriceRepository } from './../repositories/price.repository';

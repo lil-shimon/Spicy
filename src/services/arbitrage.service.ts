@@ -5,6 +5,12 @@ import { ExchangeRateService } from './exchange-rate.service';
 // TODO: PriceRepositoryを依存性注入で受け取る
 // - コンストラクタまたはファクトリーのパラメータとして追加
 
+type ArbitrageServiceParams = {
+  exchangeRateRepository: ReturnType<typeof ExchangeRateRepository>;
+  exchangeRateService: ReturnType<typeof ExchangeRateService>;
+  priceRepository: ReturnType<typeof PriceRepository>;
+};
+
 type Exchange = {
   ask: number;
   bid: number;

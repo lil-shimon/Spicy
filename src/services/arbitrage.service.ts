@@ -1,3 +1,4 @@
+import { postMessage } from '../clients';
 import { EXCHANGES } from '../constants';
 import { getMakerFeeSpot } from '../core/maker-fee/maker-fee';
 import { PriceRepository } from './../repositories/price.repository';
@@ -16,6 +17,7 @@ type PriceInfo = {
    * 為替レートでの変換が必要かどうか
    */
   needsConversion?: boolean;
+  exchangeName: string;
 };
 
 type CheckParams = {
@@ -40,6 +42,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       bid: gmoPrice.bid,
       makerFee: gmoMakerFee,
       needsConversion: false,
+      exchangeName: EXCHANGES.GMO,
     };
 
     const kucoinMakerFee = getMakerFeeSpot(EXCHANGES.kucoin);
@@ -48,12 +51,31 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       bid: kucoinPrice.bid,
       makerFee: kucoinMakerFee,
       needsConversion: true,
+      exchangeName: EXCHANGES.kucoin,
     };
 
-    return check({ exchangeA: gmo, exchangeB: kucoin });
+    const spread = calculateSpread({ exchangeA: gmo, exchangeB: kucoin });
+    if (!spread) {
+      return;
+    }
+
+    if (spread.exchangeAResponse.profit || spread.exchangeBResponse.profit) {
+      const hasProfit = [
+        spread.exchangeAResponse,
+        spread.exchangeBResponse,
+      ].filter((s) => s.profit);
+      console.log('spreads', hasProfit);
+
+      const messages = hasProfit.map(
+        (p) =>
+          `アビトラの機会を発見しました!\n買い：${p.buy}\n売り：${p.sell}\nスプレッド：${p.spread}`
+      );
+
+      Promise.all(messages.map((m) => postMessage(m)));
+    }
   };
 
-  const check = (params: CheckParams) => {
+  const calculateSpread = (params: CheckParams) => {
     const { exchangeA, exchangeB } = params;
 
     const a = exchangeA.needsConversion
@@ -84,10 +106,23 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const bToA = compare({ buyPrice: bWithFee.bid, sellPrice: aWithFee.ask });
 
     console.log('aToB', aToB, 'bToA', bToA);
+    const exchangeAResponse = {
+      spread: aToB,
+      profit: aToB > 0,
+      buy: exchangeA.exchangeName,
+      sell: exchangeB.exchangeName,
+    };
+
+    const exchangeBResponse = {
+      spread: bToA,
+      profit: bToA > 0,
+      buy: exchangeB.exchangeName,
+      sell: exchangeA.exchangeName,
+    };
 
     return {
-      aToB,
-      bToA,
+      exchangeAResponse,
+      exchangeBResponse,
     };
   };
 

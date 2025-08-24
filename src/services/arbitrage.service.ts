@@ -109,9 +109,11 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       spread: aToB,
       profit: aToB > 0,
       buy: exchangeA.exchangeName,
-      buyPrice: aWithFee.bid,
+      buyPrice: a.bid,
+      buyPriceFee: aWithFee.bid - a.bid,
       sell: exchangeB.exchangeName,
       sellPrice: bWithFee.ask,
+      sellPriceFee: b.ask - bWithFee.ask,
     };
 
     const exchangeBResponse = {
@@ -119,8 +121,10 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       profit: bToA > 0,
       buy: exchangeB.exchangeName,
       buyPrice: bWithFee.bid,
+      buyPriceFee: bWithFee.bid - b.bid,
       sell: exchangeA.exchangeName,
       sellPrice: aWithFee.ask,
+      sellPriceFee: a.ask - aWithFee.ask,
     };
 
     console.table([exchangeAResponse, exchangeBResponse]);

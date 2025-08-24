@@ -29,19 +29,23 @@ export const ExchangeRateService = (params: ExchangeRateServiceParams) => {
   };
 
   const func = async () => {
-    const response = await fetchJpyUsd();
-    if (!response) {
-      console.log('為替レートの取得に失敗しました。');
-      return;
+    try {
+      const response = await fetchJpyUsd();
+      if (!response) {
+        console.error('為替レートの取得に失敗しました。');
+        return;
+      }
+      exchangeRateRepository.updateExchangeRate({
+        bid: response?.bid,
+        ask: response?.ask,
+      });
+      console.log(
+        '為替レートが更新されました。',
+        exchangeRateRepository.getExchangeRate()
+      );
+    } catch (error) {
+      console.error('為替レート取得エラー:', error);
     }
-    exchangeRateRepository.updateExchangeRate({
-      bid: response?.bid,
-      ask: response?.ask,
-    });
-    console.log(
-      '為替レートが更新されました。',
-      exchangeRateRepository.getExchangeRate()
-    );
   };
 
   const toJpy = (price: { ask: number; bid: number }) => {

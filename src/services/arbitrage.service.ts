@@ -68,7 +68,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
 
       const messages = hasProfit.map(
         (p) =>
-          `アビトラの機会を発見しました!\n買い：${p.buy}\n売り：${p.sell}\nスプレッド：${p.spread}`
+          `アビトラの機会を発見しました!\n買い：${p.buy} ${p.buyPrice}\n売り：${p.sell} ${p.sellPrice}\nスプレッド：${p.spread}`
       );
 
       Promise.all(messages.map((m) => postMessage(m)));
@@ -105,20 +105,25 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const aToB = compare({ buyPrice: aWithFee.bid, sellPrice: bWithFee.ask });
     const bToA = compare({ buyPrice: bWithFee.bid, sellPrice: aWithFee.ask });
 
-    console.log('aToB', aToB, 'bToA', bToA);
     const exchangeAResponse = {
       spread: aToB,
       profit: aToB > 0,
       buy: exchangeA.exchangeName,
+      buyPrice: aWithFee.bid,
       sell: exchangeB.exchangeName,
+      sellPrice: bWithFee.ask,
     };
 
     const exchangeBResponse = {
       spread: bToA,
       profit: bToA > 0,
       buy: exchangeB.exchangeName,
+      buyPrice: bWithFee.bid,
       sell: exchangeA.exchangeName,
+      sellPrice: aWithFee.ask,
     };
+
+    console.table([exchangeAResponse, exchangeBResponse]);
 
     return {
       exchangeAResponse,

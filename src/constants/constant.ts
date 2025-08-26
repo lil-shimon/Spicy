@@ -21,7 +21,7 @@ export const TAKER_FEES = {
   // https://www.kucoin.com/ja/vip/privilege
   [EXCHANGES.kucoin]: 0.1,
   // https://coin.z.com/jp/corp/guide/fees/
-  [EXCHANGES.GMO]: 0.05,
+  [EXCHANGES.GMO]: 0.09,
 } as const;
 
 export const MAKER_FEES_SPOT = {

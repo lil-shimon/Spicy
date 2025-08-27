@@ -129,7 +129,8 @@ export const connectKucoin = async ({
   });
 
   ws.on('close', (code, reason) => {
-    const message = `Kucoin WebSocket closed: ${code} ${reason}`;
+    const reasonText = reason ? reason.toString() : 'No reason provided';
+    const message = `Kucoin WebSocket closed: ${code} ${reasonText}`;
     onClose(message);
   });
 

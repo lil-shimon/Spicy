@@ -31,12 +31,12 @@ export const PriceService = (params: PriceServiceParams) => {
 
   const handleClose = (message: string) => {
     console.log('WebSocketの接続が閉じられました:', message);
-    postMessage('message');
+    postMessage(message);
   };
 
   const handleError = (message: string) => {
     console.error('WebSocketエラー:', message);
-    postMessage('message');
+    postMessage(message);
   };
 
   const start = async (params: PriceServiceStartParams) => {

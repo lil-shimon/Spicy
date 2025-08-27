@@ -5,7 +5,7 @@ type Props = {
   marketType?: 'spot' | 'futures';
   onUpdate: (bestBid: number, bestAsk: number) => void;
   onError: (error: Error, exchange?: string) => void;
-  onClose: (exchange?: string) => void;
+  onClose: (exchange: string) => void;
 };
 
 /**
@@ -128,8 +128,9 @@ export const connectKucoin = async ({
     onError(error, 'Kucoin');
   });
 
-  ws.on('close', () => {
-    onClose('Kucoin');
+  ws.on('close', (code, reason) => {
+    const message = `Kucoin WebSocket closed: ${code} ${reason}`;
+    onClose(message);
   });
 
   return ws;

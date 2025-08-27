@@ -34,6 +34,11 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage('message');
   };
 
+  const handleError = (message: string) => {
+    console.error('WebSocketエラー:', message);
+    postMessage('message');
+  };
+
   const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([
@@ -50,6 +55,8 @@ export const PriceService = (params: PriceServiceParams) => {
         },
         onError: (error) => {
           console.error('Kucoin error', error);
+          const errorMessage = `Kucoin WebSocket error: ${error.message}`;
+          handleError(errorMessage);
         },
         onClose: (message) => {
           handleClose(message);

@@ -29,8 +29,8 @@ type Props = {
  *   onError: (error) => {
  *     console.error('Spot error', error);
  *   },
- *   onClose: () => {
- *     console.log('Spot close');
+ *   onClose: (message) => {
+ *     console.log('Spot close:', message);
  *   },
  * });
  *
@@ -45,8 +45,8 @@ type Props = {
  *   onError: (error) => {
  *     console.error('Futures error', error);
  *   },
- *   onClose: () => {
- *     console.log('Futures close');
+ *   onClose: (message) => {
+ *     console.log('Futures close:', message);
  *   },
  * });
  */

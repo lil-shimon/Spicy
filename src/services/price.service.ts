@@ -2,6 +2,7 @@ import { gmoWebSocketClient } from '../clients/gmo/gmo-ws';
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
+import { postMessage } from '../clients';
 
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
@@ -28,6 +29,16 @@ export const PriceService = (params: PriceServiceParams) => {
     }
   };
 
+  const handleClose = (message: string) => {
+    console.log('WebSocketの接続が閉じられました:', message);
+    postMessage(message);
+  };
+
+  const handleError = (message: string) => {
+    console.error('WebSocketエラー:', message);
+    postMessage(message);
+  };
+
   const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([
@@ -44,9 +55,11 @@ export const PriceService = (params: PriceServiceParams) => {
         },
         onError: (error) => {
           console.error('Kucoin error', error);
+          const errorMessage = `Kucoin WebSocket error: ${error.message}`;
+          handleError(errorMessage);
         },
-        onClose: () => {
-          console.log('Kucoin close');
+        onClose: (message) => {
+          handleClose(message);
         },
       }),
     ]);

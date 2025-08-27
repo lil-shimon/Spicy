@@ -5,7 +5,7 @@ type Props = {
   marketType?: 'spot' | 'futures';
   onUpdate: (bestBid: number, bestAsk: number) => void;
   onError: (error: Error, exchange?: string) => void;
-  onClose: (exchange?: string) => void;
+  onClose: (message: string) => void;
 };
 
 /**
@@ -29,8 +29,8 @@ type Props = {
  *   onError: (error) => {
  *     console.error('Spot error', error);
  *   },
- *   onClose: () => {
- *     console.log('Spot close');
+ *   onClose: (message) => {
+ *     console.log('Spot close:', message);
  *   },
  * });
  *
@@ -45,8 +45,8 @@ type Props = {
  *   onError: (error) => {
  *     console.error('Futures error', error);
  *   },
- *   onClose: () => {
- *     console.log('Futures close');
+ *   onClose: (message) => {
+ *     console.log('Futures close:', message);
  *   },
  * });
  */
@@ -128,8 +128,10 @@ export const connectKucoin = async ({
     onError(error, 'Kucoin');
   });
 
-  ws.on('close', () => {
-    onClose('Kucoin');
+  ws.on('close', (code, reason) => {
+    const reasonText = reason ? reason.toString() : 'No reason provided';
+    const message = `Kucoin WebSocket closed: ${code} ${reasonText}`;
+    onClose(message);
   });
 
   return ws;

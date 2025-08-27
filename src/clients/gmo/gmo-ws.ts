@@ -1,8 +1,6 @@
 import WebSocket from 'ws';
 import { generateSubscribeMessage } from './generate-subscribe-message';
 
-const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
-
 type GmoWebSocketClientParams = {
   symbol: string;
   onUpdate: (bid: number, ask: number) => void;
@@ -10,8 +8,13 @@ type GmoWebSocketClientParams = {
   onClose: (message: string) => void;
 };
 
-export const gmoWebSocketClient = (params: GmoWebSocketClientParams) => {
+export const gmoWebSocketClient = (
+  params: GmoWebSocketClientParams
+): WebSocket => {
   const { symbol, onUpdate, onError, onClose } = params;
+
+  // WebSocketインスタンスを関数内で作成（各呼び出しで独立した接続）
+  const ws = new WebSocket('wss://api.coin.z.com/ws/public/v1');
 
   ws.on('open', () => {
     const message = generateSubscribeMessage({
@@ -40,4 +43,6 @@ export const gmoWebSocketClient = (params: GmoWebSocketClientParams) => {
     const message = `GMO WebSocket closed: ${code} ${reasonText}`;
     onClose(message);
   });
+
+  return ws;
 };

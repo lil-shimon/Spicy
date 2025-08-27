@@ -47,6 +47,14 @@ export const PriceService = (params: PriceServiceParams) => {
         onUpdate: (bid, ask) => {
           handleUpdate(symbol, 'gmo', ask, bid);
         },
+        onError: (error) => {
+          console.error('GMO error', error);
+          const errorMessage = `GMO WebSocket error: ${error.message}`;
+          handleError(errorMessage);
+        },
+        onClose: (message) => {
+          handleClose(message);
+        },
       }),
       connectKucoin({
         pair: `${symbol}-USDT`,

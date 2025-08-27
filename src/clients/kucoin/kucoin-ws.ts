@@ -5,7 +5,7 @@ type Props = {
   marketType?: 'spot' | 'futures';
   onUpdate: (bestBid: number, bestAsk: number) => void;
   onError: (error: Error, exchange?: string) => void;
-  onClose: (exchange: string) => void;
+  onClose: (message: string) => void;
 };
 
 /**

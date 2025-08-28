@@ -21,8 +21,8 @@ pnpm build               # TypeScriptビルド
 pnpm test                # テスト実行
 pnpm test path/to/file.spec.ts  # 単一テスト実行
 pnpm lint                # ESLint実行
+pnpm typecheck           # 型チェック実行
 pnpm format              # Prettier実行
-pnpm tsc --noEmit        # 型チェックのみ
 
 # ボット実行
 pnpm dev                 # アービトラージボット
@@ -155,7 +155,7 @@ pm2 status
 git checkout main && git pull origin main
 git checkout -b feat/spicy-123-feature-name
 # 開発・テスト後
-pnpm test && pnpm lint && pnpm tsc --noEmit
+pnpm test && pnpm lint && pnpm typecheck
 git add -p  # 変更を論理的に分割
 git commit -m "feat(core): add new calculation logic"
 git push -u origin feat/spicy-123-feature-name

@@ -7,6 +7,7 @@
     "dev": "tsx src/index.ts",
     "api": "tsx src/server.ts",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "demo": "tsx src/demo.ts",
     "dirty-work": "tsx src/dirty-work/bot.ts",
     "drama": "tsx src/drama/bot.ts",

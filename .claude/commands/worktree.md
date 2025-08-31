@@ -17,7 +17,7 @@ argument-hint: <worktree-name>
 3. **開発環境のセットアップ**
    - 依存関係のインストール (pnpm install)
    - 環境ファイル (.env) のコピー
-   - .selena ディレクトリのコピー
+   - .serena ディレクトリのコピー
 
 ## 実行手順
 
@@ -48,7 +48,7 @@ pnpm install --prefix "$WORKTREE_PATH"
 
 # 必要なファイルをワークツリーにコピー（現在のディレクトリから）
 cp .env "$WORKTREE_PATH/" 2>/dev/null || echo ".env ファイルが見つかりません（必要に応じて手動で作成してください）"
-cp -r .selena "$WORKTREE_PATH/" 2>/dev/null || echo ".selena ディレクトリが見つかりません（必要に応じて手動でコピーしてください）"
+cp -r .serena "$WORKTREE_PATH/" 2>/dev/null || echo ".serena ディレクトリが見つかりません（必要に応じて手動でコピーしてください）"
 
 # その他の必要なファイル（存在する場合のみコピー）
 cp .env.local "$WORKTREE_PATH/" 2>/dev/null || true

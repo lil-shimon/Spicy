@@ -35,27 +35,31 @@ git fetch origin main:main
 # ワークツリーディレクトリが存在しない場合は作成
 mkdir -p ../Spicy.worktree
 
+# ワークツリーのパスを変数に保存
+WORKTREE_PATH="../Spicy.worktree/$ARGUMENTS"
+
 # 最新のmainブランチからワークツリーを作成（新しいブランチを作成）
 echo "🌳 ワークツリーを作成中..."
-git worktree add ../Spicy.worktree/$ARGUMENTS -b $ARGUMENTS origin/main
+git worktree add "$WORKTREE_PATH" -b $ARGUMENTS origin/main
 
-# 作成したワークツリーに移動
-cd ../Spicy.worktree/$ARGUMENTS
+# 依存関係をインストール（現在のディレクトリから実行）
+echo "📦 依存関係をインストール中..."
+pnpm install --prefix "$WORKTREE_PATH"
 
-# 依存関係をインストール
-pnpm install
-
-# 元のディレクトリから必要なファイルをコピー
-cp ../../spicy/.env . 2>/dev/null || echo ".env ファイルが見つかりません（必要に応じて手動で作成してください）"
-cp -r ../../spicy/.selena . 2>/dev/null || echo ".selena ディレクトリが見つかりません（必要に応じて手動でコピーしてください）"
+# 必要なファイルをワークツリーにコピー（現在のディレクトリから）
+cp .env "$WORKTREE_PATH/" 2>/dev/null || echo ".env ファイルが見つかりません（必要に応じて手動で作成してください）"
+cp -r .selena "$WORKTREE_PATH/" 2>/dev/null || echo ".selena ディレクトリが見つかりません（必要に応じて手動でコピーしてください）"
 
 # その他の必要なファイル（存在する場合のみコピー）
-cp ../../spicy/.env.local . 2>/dev/null || true
-cp -r ../../spicy/.kiro . 2>/dev/null || true
+cp .env.local "$WORKTREE_PATH/" 2>/dev/null || true
+cp -r .kiro "$WORKTREE_PATH/" 2>/dev/null || true
 
 echo "✅ ワークツリー '$ARGUMENTS' のセットアップが完了しました！"
-echo "📁 場所: $(pwd)"
+echo "📁 場所: $(realpath "$WORKTREE_PATH")"
 echo "🌳 ブランチ: $ARGUMENTS"
+echo ""
+echo "💡 ワークツリーで作業を開始するには："
+echo "   cd $WORKTREE_PATH"
 ```
 
 ## 使用例

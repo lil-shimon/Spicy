@@ -52,7 +52,6 @@ cp -r .serena "$WORKTREE_PATH/" 2>/dev/null || echo ".serena ディレクトリ�
 
 # その他の必要なファイル（存在する場合のみコピー）
 cp .env.local "$WORKTREE_PATH/" 2>/dev/null || true
-cp -r .kiro "$WORKTREE_PATH/" 2>/dev/null || true
 
 echo "✅ ワークツリー '$ARGUMENTS' のセットアップが完了しました！"
 echo "📁 場所: $(realpath "$WORKTREE_PATH")"

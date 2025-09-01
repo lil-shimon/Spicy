@@ -73,5 +73,7 @@ export const PriceService = (params: PriceServiceParams) => {
     ]);
   };
 
-  return { start } as const;
+  const triangleArbitrageStart = () => {};
+
+  return { start, triangleArbitrageStart } as const;
 };

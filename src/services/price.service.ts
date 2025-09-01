@@ -73,7 +73,50 @@ export const PriceService = (params: PriceServiceParams) => {
     ]);
   };
 
-  const triangleArbitrageStart = () => {};
+  const triangleArbitrageStart = () => {
+    const btcUsdt = 'BTC-USDT';
+    const dogeBtc = 'DOGE-BTC';
+    const dogeUsdt = 'DOGE-USDT';
+
+    const promises = [
+      connectKucoin({
+        pair: btcUsdt,
+        onUpdate: (bid, ask) => {
+          handleUpdate(btcUsdt, 'kucoin', ask, bid);
+        },
+        onError: (error) => {
+          handleError(error.message);
+        },
+        onClose: (message) => {
+          handleClose(message);
+        },
+      }),
+      connectKucoin({
+        pair: dogeBtc,
+        onUpdate: (bid, ask) => {
+          handleUpdate(dogeBtc, 'kucoin', ask, bid);
+        },
+        onError: (error) => {
+          handleError(error.message);
+        },
+        onClose: (message) => {
+          handleClose(message);
+        },
+      }),
+      connectKucoin({
+        pair: dogeUsdt,
+        onUpdate: (bid, ask) => {
+          handleUpdate(dogeUsdt, 'kucoin', ask, bid);
+        },
+        onError: (error) => {
+          handleError(error.message);
+        },
+        onClose: (message) => {
+          handleClose(message);
+        },
+      }),
+    ];
+  };
 
   return { start, triangleArbitrageStart } as const;
 };

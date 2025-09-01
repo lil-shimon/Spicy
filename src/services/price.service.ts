@@ -73,7 +73,7 @@ export const PriceService = (params: PriceServiceParams) => {
     ]);
   };
 
-  const triangleArbitrageStart = () => {
+  const triangleArbitrageStart = async () => {
     const btcUsdt = 'BTC-USDT';
     const dogeBtc = 'DOGE-BTC';
     const dogeUsdt = 'DOGE-USDT';
@@ -116,6 +116,8 @@ export const PriceService = (params: PriceServiceParams) => {
         },
       }),
     ];
+
+    await Promise.all(promises);
   };
 
   return { start, triangleArbitrageStart } as const;

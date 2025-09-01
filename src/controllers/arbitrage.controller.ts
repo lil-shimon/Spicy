@@ -25,5 +25,9 @@ export const ArbitrageController = () => {
     priceService.start({ symbol });
   };
 
-  return { start } as const;
+  const triangle = () => {
+    priceService.triangleArbitrageStart();
+  };
+
+  return { start, triangle } as const;
 };

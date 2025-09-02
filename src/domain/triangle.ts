@@ -18,6 +18,10 @@ type Params = {
 };
 
 export const calcTriangleArbitrage = (params: Params) => {
-  // TODO: implement
   const { buyBtcPair, buyStablePair, buyTokenPair, takerFee } = params;
+
+  // --- 調整したければここを変える ---
+  const USDT_IN = 1; // 基準入力（1USDTで倍率を見る）
+  const EPSILON = 0.001; // 安全マージン 0.1%（手数料・微スリッページ吸収）
+  // -----------------------------------
 };

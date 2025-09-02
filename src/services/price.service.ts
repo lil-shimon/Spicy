@@ -39,6 +39,7 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
+  // TODO: 削除する
   const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([
@@ -73,5 +74,26 @@ export const PriceService = (params: PriceServiceParams) => {
     ]);
   };
 
-  return { start } as const;
+  const triangleArbitrageStart = async () => {
+    const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
+
+    const promises = PAIRS.map((pair) => {
+      return connectKucoin({
+        pair,
+        onUpdate: (bid, ask) => {
+          handleUpdate(pair, 'kucoin', ask, bid);
+        },
+        onError: (error) => {
+          handleError(error.message);
+        },
+        onClose: (message) => {
+          handleClose(message);
+        },
+      });
+    });
+
+    await Promise.all(promises);
+  };
+
+  return { start, triangleArbitrageStart } as const;
 };

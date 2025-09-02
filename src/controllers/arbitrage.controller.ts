@@ -19,11 +19,16 @@ type ArbitrageControllerParams = {
 };
 
 export const ArbitrageController = () => {
+  // TODO: 削除する
   const start = (params: ArbitrageControllerParams) => {
     const { symbol } = params;
     exchangeRateService.start({});
     priceService.start({ symbol });
   };
 
-  return { start } as const;
+  const triangle = () => {
+    priceService.triangleArbitrageStart();
+  };
+
+  return { start, triangle } as const;
 };

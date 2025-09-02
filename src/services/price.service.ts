@@ -78,12 +78,13 @@ export const PriceService = (params: PriceServiceParams) => {
     const btcUsdt = 'BTC-USDT';
     const dogeBtc = 'DOGE-BTC';
     const dogeUsdt = 'DOGE-USDT';
+    const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
 
-    const promises = [
-      connectKucoin({
-        pair: btcUsdt,
+    const promises = PAIRS.map((pair) => {
+      return connectKucoin({
+        pair,
         onUpdate: (bid, ask) => {
-          handleUpdate(btcUsdt, 'kucoin', ask, bid);
+          handleUpdate(pair, 'kucoin', ask, bid);
         },
         onError: (error) => {
           handleError(error.message);
@@ -91,32 +92,47 @@ export const PriceService = (params: PriceServiceParams) => {
         onClose: (message) => {
           handleClose(message);
         },
-      }),
-      connectKucoin({
-        pair: dogeBtc,
-        onUpdate: (bid, ask) => {
-          handleUpdate(dogeBtc, 'kucoin', ask, bid);
-        },
-        onError: (error) => {
-          handleError(error.message);
-        },
-        onClose: (message) => {
-          handleClose(message);
-        },
-      }),
-      connectKucoin({
-        pair: dogeUsdt,
-        onUpdate: (bid, ask) => {
-          handleUpdate(dogeUsdt, 'kucoin', ask, bid);
-        },
-        onError: (error) => {
-          handleError(error.message);
-        },
-        onClose: (message) => {
-          handleClose(message);
-        },
-      }),
-    ];
+      });
+    });
+
+    // const promises = [
+    //   connectKucoin({
+    //     pair: btcUsdt,
+    //     onUpdate: (bid, ask) => {
+    //       handleUpdate(btcUsdt, 'kucoin', ask, bid);
+    //     },
+    //     onError: (error) => {
+    //       handleError(error.message);
+    //     },
+    //     onClose: (message) => {
+    //       handleClose(message);
+    //     },
+    //   }),
+    //   connectKucoin({
+    //     pair: dogeBtc,
+    //     onUpdate: (bid, ask) => {
+    //       handleUpdate(dogeBtc, 'kucoin', ask, bid);
+    //     },
+    //     onError: (error) => {
+    //       handleError(error.message);
+    //     },
+    //     onClose: (message) => {
+    //       handleClose(message);
+    //     },
+    //   }),
+    //   connectKucoin({
+    //     pair: dogeUsdt,
+    //     onUpdate: (bid, ask) => {
+    //       handleUpdate(dogeUsdt, 'kucoin', ask, bid);
+    //     },
+    //     onError: (error) => {
+    //       handleError(error.message);
+    //     },
+    //     onClose: (message) => {
+    //       handleClose(message);
+    //     },
+    //   }),
+    // ];
 
     await Promise.all(promises);
   };

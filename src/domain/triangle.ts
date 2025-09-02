@@ -14,9 +14,10 @@ type Params = {
     bid: number;
     ask: number;
   };
+  takerFee: number;
 };
 
 export const calcTriangleArbitrage = (params: Params) => {
   // TODO: implement
-  const { buyBtcPair, buyStablePair, buyTokenPair } = params;
+  const { buyBtcPair, buyStablePair, buyTokenPair, takerFee } = params;
 };

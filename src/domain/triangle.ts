@@ -17,11 +17,26 @@ type Params = {
   takerFee: number;
 };
 
-export const calcTriangleArbitrage = (params: Params) => {
+type Result = {
+  ok: boolean;
+};
+
+export const calcTriangleArbitrage = (params: Params): Result => {
   const { buyBtcPair, buyStablePair, buyTokenPair, takerFee } = params;
 
   // --- 調整したければここを変える ---
   const USDT_IN = 1; // 基準入力（1USDTで倍率を見る）
   const EPSILON = 0.001; // 安全マージン 0.1%（手数料・微スリッページ吸収）
   // -----------------------------------
+
+  // --- ガード ---
+  const { ask: p1 } = buyBtcPair;
+  const { ask: p2 } = buyTokenPair;
+  const { bid: p3 } = buyStablePair;
+
+  if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
+    return { ok: false };
+  }
+
+  return { ok: true };
 };

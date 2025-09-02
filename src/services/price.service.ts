@@ -92,45 +92,6 @@ export const PriceService = (params: PriceServiceParams) => {
       });
     });
 
-    // const promises = [
-    //   connectKucoin({
-    //     pair: btcUsdt,
-    //     onUpdate: (bid, ask) => {
-    //       handleUpdate(btcUsdt, 'kucoin', ask, bid);
-    //     },
-    //     onError: (error) => {
-    //       handleError(error.message);
-    //     },
-    //     onClose: (message) => {
-    //       handleClose(message);
-    //     },
-    //   }),
-    //   connectKucoin({
-    //     pair: dogeBtc,
-    //     onUpdate: (bid, ask) => {
-    //       handleUpdate(dogeBtc, 'kucoin', ask, bid);
-    //     },
-    //     onError: (error) => {
-    //       handleError(error.message);
-    //     },
-    //     onClose: (message) => {
-    //       handleClose(message);
-    //     },
-    //   }),
-    //   connectKucoin({
-    //     pair: dogeUsdt,
-    //     onUpdate: (bid, ask) => {
-    //       handleUpdate(dogeUsdt, 'kucoin', ask, bid);
-    //     },
-    //     onError: (error) => {
-    //       handleError(error.message);
-    //     },
-    //     onClose: (message) => {
-    //       handleClose(message);
-    //     },
-    //   }),
-    // ];
-
     await Promise.all(promises);
   };
 

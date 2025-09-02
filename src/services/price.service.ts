@@ -39,6 +39,7 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
+  // TODO: 削除する
   const start = async (params: PriceServiceStartParams) => {
     const { symbol } = params;
     await Promise.all([

@@ -10,7 +10,8 @@ const defaultParams = {
 
 describe('calcTriangleArbitrage', () => {
   describe('ok: false', () => {
-    const falseExpect: Result = { ok: false, roi: -1, usdtOut: 0 };
+    const falseExpect: Result = { ok: false, roi: -1, usdtOut: 0, usdtIn: 1 };
+
     describe('price is zero', () => {
       it('should return false when buyBtcPair ask price is zero', () => {
         const params = {

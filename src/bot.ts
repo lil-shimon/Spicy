@@ -3,7 +3,6 @@ import { postMessage, postOrderMessage } from './clients';
 import { FetchPriceResult } from './logic/fetch-price/fetch-price';
 import { checkArbitrageOpportunities } from './logic/check-arbitrage-opportunities/check-arbitrage-opportunities';
 import { updateCount } from './utils';
-import { mexcClient } from './clients/mexc/mexc-client';
 import { createOrders } from './logic/order/order';
 import 'dotenv/config';
 import { run as runUsdcArb } from './clients/mexc/usdc-usdt';

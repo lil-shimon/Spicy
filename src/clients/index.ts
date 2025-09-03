@@ -1,4 +1,3 @@
-export { fetchBybitBalance } from './bybit/fetch-bybit-balance';
 export { fetchMexcBalance } from './mexc/fetch-mexc-balance';
 export { postMessage, postOrderMessage } from './discord/post-message';
 export { fetchBybit } from './bybit/fetch-bybit';

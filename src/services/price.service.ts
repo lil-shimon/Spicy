@@ -34,10 +34,10 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
-  const start = async () => {
-    const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
+  const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
 
-    const promises = PAIRS.map((pair) => {
+  const start = async ({ pairs = PAIRS }: { pairs?: string[] }) => {
+    const promises = pairs.map((pair) => {
       return connectKucoin({
         pair,
         onUpdate: (bid, ask) => {

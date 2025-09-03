@@ -72,4 +72,17 @@ describe('calcTriangleArbitrage', () => {
       });
     });
   });
+
+  describe('ok: true', () => {
+    const okParams = {
+      ...defaultParams,
+      buyTokenPair: { bid: 1, ask: 2 },
+      buyStablePair: { bid: 3, ask: 1 },
+    };
+
+    it('should return ok is true', () => {
+      const result = calcTriangleArbitrage(okParams);
+      expect(result).toEqual(expect.objectContaining({ ok: true }));
+    });
+  });
 });

@@ -1,5 +1,3 @@
-import { rfc2616 } from 'ccxt/js/src/base/functions';
-
 type Params = {
   // BTC/USDTなどを想定
   buyBtcPair: {

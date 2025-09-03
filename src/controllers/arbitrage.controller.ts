@@ -15,9 +15,9 @@ const arbitrageService = ArbitrageService({
 const priceService = PriceService({ priceRepository, arbitrageService });
 
 export const ArbitrageController = () => {
-  const triangle = () => {
+  const start = () => {
     priceService.triangleArbitrageStart();
   };
 
-  return { triangle } as const;
+  return { start } as const;
 };

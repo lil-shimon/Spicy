@@ -49,6 +49,26 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({ ok: false });
       });
+
+      it('should return false when buyTokenPair ask is negative', () => {
+        const params = {
+          ...defaultParams,
+          buyTokenPair: { bid: 1, ask: -1 },
+        };
+
+        const result = calcTriangleArbitrage(params);
+        expect(result).toEqual({ ok: false });
+      });
+
+      it('should return false when buyStablePair bid is negative', () => {
+        const params = {
+          ...defaultParams,
+          buyStablePair: { bid: -1, ask: 1 },
+        };
+
+        const result = calcTriangleArbitrage(params);
+        expect(result).toEqual({ ok: false });
+      });
     });
   });
 });

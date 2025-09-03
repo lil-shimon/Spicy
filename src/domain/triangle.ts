@@ -1,3 +1,5 @@
+import { rfc2616 } from 'ccxt/js/src/base/functions';
+
 type Params = {
   // BTC/USDTなどを想定
   buyBtcPair: {
@@ -19,6 +21,8 @@ type Params = {
 
 type Result = {
   ok: boolean;
+  usdtOut: number;
+  roi: number;
 };
 
 export const calcTriangleArbitrage = (params: Params): Result => {
@@ -35,12 +39,17 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   const { bid: p3 } = buyStablePair;
 
   if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
-    return { ok: false };
+    return { ok: false, usdtOut: 0, roi: -1 };
   }
 
   const btc = (USDT_IN / p1) * (1 - takerFee);
   const doge = (btc / p2) * (1 - takerFee);
   const usdtOut = doge * p3 * (1 - takerFee);
 
-  return { ok: true };
+  const multiplier = usdtOut / USDT_IN;
+  const roi = multiplier - 1;
+
+  const ok = multiplier > 1 + EPSILON;
+
+  return { ok, usdtOut, roi };
 };

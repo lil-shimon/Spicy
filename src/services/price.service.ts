@@ -34,7 +34,7 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
-  const triangleArbitrageStart = async () => {
+  const start = async () => {
     const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
 
     const promises = PAIRS.map((pair) => {
@@ -55,5 +55,5 @@ export const PriceService = (params: PriceServiceParams) => {
     await Promise.all(promises);
   };
 
-  return { start, triangleArbitrageStart } as const;
+  return { start } as const;
 };

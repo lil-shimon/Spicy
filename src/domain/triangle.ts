@@ -19,7 +19,7 @@ type Params = {
   takerFee: number;
 };
 
-type Result = {
+export type Result = {
   ok: boolean;
   usdtOut: number;
   roi: number;

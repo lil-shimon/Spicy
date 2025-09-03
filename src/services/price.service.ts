@@ -1,4 +1,3 @@
-import { gmoWebSocketClient } from '../clients/gmo/gmo-ws';
 import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
@@ -7,10 +6,6 @@ import { postMessage } from '../clients';
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
   arbitrageService: ReturnType<typeof ArbitrageService>;
-};
-
-type PriceServiceStartParams = {
-  symbol: string;
 };
 
 export const PriceService = (params: PriceServiceParams) => {
@@ -39,45 +34,10 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
-  // TODO: 削除する
-  const start = async (params: PriceServiceStartParams) => {
-    const { symbol } = params;
-    await Promise.all([
-      gmoWebSocketClient({
-        symbol,
-        onUpdate: (bid, ask) => {
-          handleUpdate(symbol, 'gmo', ask, bid);
-        },
-        onError: (error) => {
-          console.error('GMO error', error);
-          const errorMessage = `GMO WebSocket error: ${error.message}`;
-          handleError(errorMessage);
-        },
-        onClose: (message) => {
-          handleClose(message);
-        },
-      }),
-      connectKucoin({
-        pair: `${symbol}-USDT`,
-        onUpdate: (bid, ask) => {
-          handleUpdate(symbol, 'kucoin', ask, bid);
-        },
-        onError: (error) => {
-          console.error('Kucoin error', error);
-          const errorMessage = `Kucoin WebSocket error: ${error.message}`;
-          handleError(errorMessage);
-        },
-        onClose: (message) => {
-          handleClose(message);
-        },
-      }),
-    ]);
-  };
+  const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
 
-  const triangleArbitrageStart = async () => {
-    const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
-
-    const promises = PAIRS.map((pair) => {
+  const start = async ({ pairs = PAIRS }: { pairs?: string[] }) => {
+    const promises = pairs.map((pair) => {
       return connectKucoin({
         pair,
         onUpdate: (bid, ask) => {
@@ -95,5 +55,5 @@ export const PriceService = (params: PriceServiceParams) => {
     await Promise.all(promises);
   };
 
-  return { start, triangleArbitrageStart } as const;
+  return { start } as const;
 };

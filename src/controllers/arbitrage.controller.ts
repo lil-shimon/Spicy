@@ -14,21 +14,10 @@ const arbitrageService = ArbitrageService({
 });
 const priceService = PriceService({ priceRepository, arbitrageService });
 
-type ArbitrageControllerParams = {
-  symbol: string;
-};
-
 export const ArbitrageController = () => {
-  // TODO: 削除する
-  const start = (params: ArbitrageControllerParams) => {
-    const { symbol } = params;
-    exchangeRateService.start({});
-    priceService.start({ symbol });
+  const start = ({ pairs }: { pairs?: string[] }) => {
+    priceService.start({ pairs });
   };
 
-  const triangle = () => {
-    priceService.triangleArbitrageStart();
-  };
-
-  return { start, triangle } as const;
+  return { start } as const;
 };

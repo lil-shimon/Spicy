@@ -38,5 +38,9 @@ export const calcTriangleArbitrage = (params: Params): Result => {
     return { ok: false };
   }
 
+  const btc = (USDT_IN / p1) * (1 - takerFee);
+  const doge = (btc / p2) * (1 - takerFee);
+  const usdtOut = doge * p3 * (1 - takerFee);
+
   return { ok: true };
 };

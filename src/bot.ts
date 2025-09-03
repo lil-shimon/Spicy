@@ -13,7 +13,6 @@ const enableOrder = process.env.FEATURE_FLAG_ENABLE_ORDER === 'true';
 export const startBot = async () => {
   console.log('Bot起動');
 
-  await initExchanges();
   await execute();
   const interval = 1000 * 15; // 15秒ごとに実行
 
@@ -66,11 +65,4 @@ const formatMessageForDiscord = (profit: FetchPriceResult[]): string => {
         }(売り)), 利益率: ${p.profit.toFixed(2)}%`
     )
     .join('\n');
-};
-
-const initExchanges = async () => {
-  console.log('取引所Clientの初期化中...');
-  // TODO: 他の取引所も初期化する
-  await Promise.all([mexcClient.loadMarkets()]);
-  console.log('取引所Clientの初期化完了');
 };

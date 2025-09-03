@@ -19,6 +19,7 @@ type Params = {
 
 export type Result = {
   ok: boolean;
+  usdtIn: number;
   usdtOut: number;
   roi: number;
 };
@@ -37,7 +38,7 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   const { bid: p3 } = buyStablePair;
 
   if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
-    return { ok: false, usdtOut: 0, roi: -1 };
+    return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1 };
   }
 
   const btc = (USDT_IN / p1) * (1 - takerFee);
@@ -49,5 +50,5 @@ export const calcTriangleArbitrage = (params: Params): Result => {
 
   const ok = multiplier > 1 + EPSILON;
 
-  return { ok, usdtOut, roi };
+  return { ok, usdtIn: USDT_IN, usdtOut, roi };
 };

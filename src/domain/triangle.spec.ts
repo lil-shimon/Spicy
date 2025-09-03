@@ -38,5 +38,17 @@ describe('calcTriangleArbitrage', () => {
         expect(result).toEqual({ ok: false });
       });
     });
+
+    describe('price is negative', () => {
+      it('should return false when buyBtcPair ask is negative', () => {
+        const params = {
+          ...defaultParams,
+          buyBtcPair: { bid: 1, ask: -1 },
+        };
+
+        const result = calcTriangleArbitrage(params);
+        expect(result).toEqual({ ok: false });
+      });
+    });
   });
 });

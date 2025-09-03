@@ -8,10 +8,7 @@ description: gitコミットを作成します。
 
 1. 現在のブランチで行った変更を確認する。
 2. ファイルをステージングに追加する。
-3. Conventional Commits フォーマット `type(scope): description` でコミットを作成する。
-   - **Types**: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
-   - **Scopes**: `project.json`の`name`プロパティ (例: `ifrit-feature-auth`) または ディレクトリ名（deps、github、copilot など）
-4. 全てのファイルがコミットされるまで手順 2-3 を繰り返す。
+3. 全てのファイルがコミットされるまで手順 2 を繰り返す。
 
 ## 備考
 

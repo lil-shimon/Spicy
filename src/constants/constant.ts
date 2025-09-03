@@ -42,23 +42,9 @@ export const MAKER_FEES_FUTURES = {
 } as const;
 
 export const PAIRS = {
-  // ADA_USDT: "ADA/USDT",
   XO_USDT: 'XO/USDT',
-  // DOT_USDT: "DOT/USDT",
-  // ADA_USDC: "ADA/USDC",
-  // NOTE: USDCで見たいけど、取引ペアがないので、USDTで代用
-  // DOT_USDC: "DOT/USDC",
-  // XO_USDC: "XO/USDC",
-  // HNT_USDT: 'HNT/USDT', // MEXCのAPIが対応していないため除外
-  // WLD_USDT: "WLD/USDT",
   SOL_USDT: 'SOL/USDT',
   PUMP_USDT: 'PUMP/USDT',
-  // PUMP_USDC: 'PUMP/USDC',
-  // 滅多に取引機会がないので除外
-  // ZRO_USDT: 'ZRO/USDT',
-  // TNSR_USDT: 'TNSR/USDT',
-  // FET_USDT: 'FET/USDT',
-  // PYTH_USDT: 'PYTH/USDT',
 } as const;
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];

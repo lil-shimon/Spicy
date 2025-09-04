@@ -1,4 +1,4 @@
-import { vi, describe, beforeEach } from 'vitest';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
 import { PriceRepository } from '../repositories/price.repository';
 
@@ -20,6 +20,16 @@ describe('ArbitrageService', () => {
 
     mockArbitrageService = ArbitrageService({
       priceRepository: mockPriceRepository,
+    });
+  });
+
+  describe('checkTriangleArbitrage', () => {
+    it('should return ok: false when price data is missing', () => {
+      vi.mocked(mockPriceRepository.getPrice).mockReturnValue(undefined);
+
+      const result = mockArbitrageService.checkTriangleArbitrage();
+
+      expect(result.ok).toBe(false);
     });
   });
 });

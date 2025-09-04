@@ -27,7 +27,7 @@ pnpm format              # Prettier実行
 # ボット実行
 pnpm dev                 # アービトラージボット
 pnpm dirty-work          # マーケットメイキング（現物）
-pnpm drama               # マーケットメイキング（先物）
+
 pnpm demo                # デモモード
 pnpm api                 # APIサーバー（開発）
 
@@ -58,18 +58,12 @@ pnpm restart:api         # API再起動
 - インベントリとP&L追跡
 - CSVでの取引記録
 
-#### 3. マーケットメイキング先物（src/drama/）
-
-- KuCoin先物市場でWebSocket価格監視
-- メイカー手数料0.02%での収益性判断
-- ポジション管理とタイムアウト機能
-
 ### コーディングパターン
 
 **関数型プログラミング（クロージャーパターン）を採用**
 
 - クラスは使用せず、`createXxxService`、`createXxxManager`形式でエクスポート
-- 例：`src/dirty-work/services/`、`src/drama/position-manager.ts`
+- 例：`src/dirty-work/services/`
 
 ### 主要ディレクトリ構造
 
@@ -80,7 +74,7 @@ src/
 ├── constants/         # 定数定義（TAKER_FEES、MAKER_FEES_FUTURES等）
 ├── logic/             # ビジネスロジック（アービトラージ判定、スリッページ）
 ├── dirty-work/        # マーケットメイキング現物
-├── drama/             # マーケットメイキング先物
+
 └── utils/             # ユーティリティ関数
 ```
 

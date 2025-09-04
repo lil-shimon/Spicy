@@ -25,14 +25,6 @@ TypeScriptで構築された高度な仮想通貨取引ボットです。複数�
 - 注文タイムアウト管理（30秒）
 - CSVでの取引データ記録
 
-### マーケットメイキング機能（先物）- drama
-
-- KuCoin先物市場でのマーケットメイキング
-- WebSocketによるリアルタイム価格監視
-- メイカー手数料（0.02%）を考慮した収益性判断
-- 両側注文（買い・売り同時）の自動管理
-- ポジション管理と注文タイムアウト機能
-
 ## 監視対象
 
 ### アービトラージ（現物）
@@ -45,12 +37,6 @@ TypeScriptで構築された高度な仮想通貨取引ボットです。複数�
   - Bybit: 0.1%
   - MEXC: 0.05%
   - KuCoin: 0.1%
-
-### マーケットメイキング（先物）
-
-- **対応取引所**: KuCoin Futures
-- **メイカー手数料**: 0.02%
-- **最小スプレッド**: 0.04%（往復手数料）
 
 ## セットアップ
 
@@ -109,8 +95,7 @@ pnpm dev
 # マーケットメイキング（現物）の開始
 pnpm dirty-work
 
-# マーケットメイキング（先物）の開始
-pnpm drama
+
 
 # デモモードの実行
 pnpm demo
@@ -173,12 +158,7 @@ src/
 │   └── logics/                       # 取引ロジック
 │       ├── get-prices.ts
 │       └── status.ts
-├── drama/                            # マーケットメイキング機能（先物）
-│   ├── bot.ts                        # 先物MMのメインロジック
-│   ├── market-maker-profit.ts        # 収益性判断
-│   ├── position-manager.ts           # ポジション管理
-│   ├── dual-order-manager.ts         # 両側注文管理
-│   └── notification-manager.ts       # Discord通知
+
 ├── clients/                          # 取引所API クライアント
 │   ├── binance/                      # Binance統合（無効）
 │   ├── bybit/                        # Bybit統合

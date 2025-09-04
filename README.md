@@ -95,8 +95,7 @@ pnpm dev
 # マーケットメイキング（現物）の開始
 pnpm dirty-work
 
-# マーケットメイキング（先物）の開始
-pnpm drama
+
 
 # デモモードの実行
 pnpm demo

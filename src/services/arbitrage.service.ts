@@ -154,5 +154,9 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     return sellPrice - buyPrice;
   };
 
+  const checkTrianbleArbitrage = () => {
+    // TODO
+  };
+
   return { checkBySymbol } as const;
 };

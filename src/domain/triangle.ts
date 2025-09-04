@@ -17,11 +17,20 @@ type Params = {
   takerFee: number;
 };
 
+type Detail = {
+  p1ask: number;
+  p2ask: number;
+  p3bid: number;
+  takerFee: number;
+  epsilon: number;
+};
+
 export type Result = {
   ok: boolean;
   usdtIn: number;
   usdtOut: number;
   roi: number;
+  detail: Detail;
 };
 
 export const calcTriangleArbitrage = (params: Params): Result => {
@@ -37,8 +46,16 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   const { ask: p2 } = buyTokenPair;
   const { bid: p3 } = buyStablePair;
 
+  const detail: Detail = {
+    p1ask: p1,
+    p2ask: p2,
+    p3bid: p3,
+    takerFee,
+    epsilon: EPSILON,
+  };
+
   if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
-    return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1 };
+    return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1, detail };
   }
 
   const btc = (USDT_IN / p1) * (1 - takerFee);
@@ -50,5 +67,5 @@ export const calcTriangleArbitrage = (params: Params): Result => {
 
   const ok = multiplier > 1 + EPSILON;
 
-  return { ok, usdtIn: USDT_IN, usdtOut, roi };
+  return { ok, usdtIn: USDT_IN, usdtOut, roi, detail };
 };

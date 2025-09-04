@@ -47,5 +47,5 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     return { ok: true };
   };
 
-  return { checkBySymbol, checkTriangleArbitrage } as const;
+  return { checkTriangleArbitrage } as const;
 };

@@ -151,6 +151,9 @@ export const orderLimit = async (
   }
 };
 
+/**
+ * @deprecated 現状未使用。バッチ/CLIとして実行する場合はエントリーポイントを分離してください。
+ */
 export const run = async () => {
   try {
     const usdcUsdt = await fetchAskBid('USDC/USDT');

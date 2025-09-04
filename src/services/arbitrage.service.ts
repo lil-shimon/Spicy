@@ -1,9 +1,7 @@
 import { calcTriangleArbitrage } from '../domain/triangle';
 import { PriceRepository } from './../repositories/price.repository';
-import { ExchangeRateService } from './exchange-rate.service';
 
 type ArbitrageServiceParams = {
-  exchangeRateService: ReturnType<typeof ExchangeRateService>;
   priceRepository: ReturnType<typeof PriceRepository>;
 };
 

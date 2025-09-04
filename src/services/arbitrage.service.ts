@@ -154,9 +154,22 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     return sellPrice - buyPrice;
   };
 
-  const checkTrianbleArbitrage = () => {
-    // TODO
+  type Return = {
+    ok: boolean;
   };
 
-  return { checkBySymbol } as const;
+  const checkTriangleArbitrage = (): Return => {
+    // TODO propsでsymbolを受け取る
+    const btcUsdt = priceRepository.getPrice('BTC-USDT', 'kucoin');
+    const btcDoge = priceRepository.getPrice('BTC-DOGE', 'kucoin');
+    const dogeUsdt = priceRepository.getPrice('DOGE-USDT', 'kucoin');
+
+    if (!btcUsdt || !btcDoge || !dogeUsdt) {
+      return { ok: false };
+    }
+
+    return { ok: true };
+  };
+
+  return { checkBySymbol, checkTriangleArbitrage } as const;
 };

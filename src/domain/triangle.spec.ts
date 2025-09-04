@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calcTriangleArbitrage } from './triangle';
+import { calcTriangleArbitrage, Result } from './triangle';
 
 const defaultParams = {
   buyBtcPair: { bid: 1, ask: 1 },
@@ -9,7 +9,27 @@ const defaultParams = {
 };
 
 describe('calcTriangleArbitrage', () => {
+  describe('taker fee', () => {
+    it('should return taker fee', () => {
+      const result = calcTriangleArbitrage({ ...defaultParams, takerFee: 0.1 });
+      expect(result.detail.takerFee).toEqual(0.1);
+    });
+  });
   describe('ok: false', () => {
+    const falseExpect: Result = {
+      ok: false,
+      roi: -1,
+      usdtOut: 0,
+      usdtIn: 1,
+      detail: {
+        p1ask: 1,
+        p2ask: 1,
+        p3bid: 1,
+        epsilon: 0.001,
+        takerFee: 0.001,
+      },
+    };
+
     describe('price is zero', () => {
       it('should return false when buyBtcPair ask price is zero', () => {
         const params = {
@@ -17,7 +37,10 @@ describe('calcTriangleArbitrage', () => {
           buyBtcPair: { bid: 1, ask: 0 },
         };
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p1ask: 0 },
+        });
       });
 
       it('should return false when buyTokenPair ask price is zero', () => {
@@ -26,7 +49,10 @@ describe('calcTriangleArbitrage', () => {
           buyTokenPair: { bid: 1, ask: 0 },
         };
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p2ask: 0 },
+        });
       });
 
       it('should return false when buyStablePair bid price is zero', () => {
@@ -35,7 +61,10 @@ describe('calcTriangleArbitrage', () => {
           buyStablePair: { bid: 0, ask: 1 },
         };
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p3bid: 0 },
+        });
       });
     });
 
@@ -47,7 +76,10 @@ describe('calcTriangleArbitrage', () => {
         };
 
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p1ask: -1 },
+        });
       });
 
       it('should return false when buyTokenPair ask is negative', () => {
@@ -57,7 +89,10 @@ describe('calcTriangleArbitrage', () => {
         };
 
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p2ask: -1 },
+        });
       });
 
       it('should return false when buyStablePair bid is negative', () => {
@@ -67,8 +102,24 @@ describe('calcTriangleArbitrage', () => {
         };
 
         const result = calcTriangleArbitrage(params);
-        expect(result).toEqual({ ok: false });
+        expect(result).toEqual({
+          ...falseExpect,
+          detail: { ...falseExpect.detail, p3bid: -1 },
+        });
       });
+    });
+  });
+
+  describe('ok: true', () => {
+    const okParams = {
+      ...defaultParams,
+      buyTokenPair: { bid: 1, ask: 2 },
+      buyStablePair: { bid: 3, ask: 1 },
+    };
+
+    it('should return ok is true', () => {
+      const result = calcTriangleArbitrage(okParams);
+      expect(result).toEqual(expect.objectContaining({ ok: true }));
     });
   });
 });

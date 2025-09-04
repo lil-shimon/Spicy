@@ -1,6 +1,7 @@
 import { postMessage } from '../clients';
 import { EXCHANGES } from '../constants';
 import { getMakerFeeSpot } from '../core/maker-fee/maker-fee';
+import { calcTriangleArbitrage } from '../domain/triangle';
 import { PriceRepository } from './../repositories/price.repository';
 import { ExchangeRateService } from './exchange-rate.service';
 
@@ -165,6 +166,21 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const dogeUsdt = priceRepository.getPrice('DOGE-USDT', 'kucoin');
 
     if (!btcUsdt || !btcDoge || !dogeUsdt) {
+      return { ok: false };
+    }
+
+    // TODO: メソッド化
+    const takerFee = 0.001;
+
+    const result = calcTriangleArbitrage({
+      buyBtcPair: btcUsdt,
+      buyTokenPair: btcDoge,
+      buyStablePair: dogeUsdt,
+      takerFee,
+    });
+
+    if (!result.ok) {
+      console.log('No arbitrage found', result);
       return { ok: false };
     }
 

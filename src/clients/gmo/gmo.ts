@@ -15,6 +15,9 @@ const endPoint = 'https://api.coin.z.com/public';
 const coinEndPoint = 'https://api.coin.z.com/private';
 const path = '/v1/orderbooks?symbol=';
 
+/**
+ * @deprecated 現状未使用。価格取得は他クライアントで代替されている場合があります。
+ */
 export const fetchGmoAskBid = async (symbol: string) => {
   try {
     const url = `${endPoint}${path}${symbol}`;
@@ -79,6 +82,9 @@ const getSign = (
   return sign;
 };
 
+/**
+ * @deprecated 現状未使用。必要になれば認証情報の管理・権限制御を明確化してください。
+ */
 export const fetchGmoBalance = async () => {
   const path = '/v1/account/assets';
   const url = `${coinEndPoint}${path}`;
@@ -104,6 +110,9 @@ export const fetchGmoBalance = async () => {
   return data;
 };
 
+/**
+ * @deprecated 現状未使用。実運用前にリスク管理・最小数量などのバリデーションを必ず実装してください。
+ */
 export const orderGmo = async (
   // 注意: JPYまで含めると先物取引になるので注意(例: SOL_JPY)
   symbol: string,

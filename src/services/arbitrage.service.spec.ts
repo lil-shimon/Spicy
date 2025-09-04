@@ -1,6 +1,7 @@
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
 import { PriceRepository } from '../repositories/price.repository';
+import { calcTriangleArbitrage, Result } from '../domain/triangle';
 
 vi.mock('../domain/triangle', async () => ({
   calcTriangleArbitrage: vi.fn(),
@@ -30,6 +31,18 @@ describe('ArbitrageService', () => {
       const result = mockArbitrageService.checkTriangleArbitrage();
 
       expect(result.ok).toBe(false);
+    });
+
+    it('should return ok: true when arbitrage opportunity exists', () => {
+      vi.mocked(calcTriangleArbitrage).mockReturnValue({ ok: true } as Result);
+      vi.mocked(mockPriceRepository.getPrice).mockReturnValue({
+        bid: 1,
+        ask: 2,
+      });
+
+      const result = mockArbitrageService.checkTriangleArbitrage();
+
+      expect(result.ok).toBe(true);
     });
   });
 });

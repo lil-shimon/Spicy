@@ -162,10 +162,15 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const checkTriangleArbitrage = (): Return => {
     // TODO propsでsymbolを受け取る
     const btcUsdt = priceRepository.getPrice('BTC-USDT', 'kucoin');
-    const btcDoge = priceRepository.getPrice('BTC-DOGE', 'kucoin');
+    const btcDoge = priceRepository.getPrice('DOGE-BTC', 'kucoin');
     const dogeUsdt = priceRepository.getPrice('DOGE-USDT', 'kucoin');
 
     if (!btcUsdt || !btcDoge || !dogeUsdt) {
+      console.log('価格情報が不足しています', {
+        btcUsdt,
+        btcDoge,
+        dogeUsdt,
+      });
       return { ok: false };
     }
 
@@ -180,7 +185,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     });
 
     if (!result.ok) {
-      console.log('No arbitrage found', result);
+      console.log('「なし」 三角アービトラージ 機会確認', result);
       return { ok: false };
     }
 

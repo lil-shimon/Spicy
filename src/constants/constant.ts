@@ -8,8 +8,14 @@ export const EXCHANGES = {
 
 export type Exchange = (typeof EXCHANGES)[keyof typeof EXCHANGES];
 
+/**
+ * @deprecated 現状は未使用。必要になれば `Object.values(EXCHANGES)` から都度生成してください。
+ */
 export const exchangeList = Object.values(EXCHANGES) as Exchange[];
 
+/**
+ * @deprecated 現状は参照されていません。必要になれば使用箇所で直接管理してください。
+ */
 export const TAKER_FEES = {
   // https://www.binance.com/en/fee/schedule
   // BNB(Binance Coin)を使用している場合は、0.075%の手数料が適用される
@@ -49,4 +55,7 @@ export const PAIRS = {
 
 export type Pair = (typeof PAIRS)[keyof typeof PAIRS];
 
+/**
+ * @deprecated 現状の判定ロジックでは未使用。使用時に意図したしきい値か確認してください。
+ */
 export const ARBITRAGE_PROFIT_THRESHOLD = 0.01; // 1%

@@ -8,6 +8,9 @@ type GmoWebSocketClientParams = {
   onClose: (message: string) => void;
 };
 
+/**
+ * @deprecated 現状このWSクライアントは未使用。利用時にエラーハンドリングとreconnect戦略の追加を検討してください。
+ */
 export const gmoWebSocketClient = (
   params: GmoWebSocketClientParams
 ): WebSocket => {

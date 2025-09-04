@@ -9,6 +9,9 @@ import { createMexcOrder, fetchMexcOrder } from './create-mexc-order';
  * @param symbol シンボル
  * @returns 成行注文のレスポンス
  */
+/**
+ * @deprecated 現状未使用。注文状態の整合性確認やリトライ戦略の設計が必要です。
+ */
 export const forceMexcOrderToMarket = async (
   orderId: string,
   symbol: string

@@ -9,6 +9,12 @@ const defaultParams = {
 };
 
 describe('calcTriangleArbitrage', () => {
+  describe('taker fee', () => {
+    it('should return taker fee', () => {
+      const result = calcTriangleArbitrage({ ...defaultParams, takerFee: 0.1 });
+      expect(result.detail.takerFee).toEqual(0.1);
+    });
+  });
   describe('ok: false', () => {
     const falseExpect: Result = {
       ok: false,

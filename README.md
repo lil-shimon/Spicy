@@ -158,12 +158,7 @@ src/
 │   └── logics/                       # 取引ロジック
 │       ├── get-prices.ts
 │       └── status.ts
-├── drama/                            # マーケットメイキング機能（先物）
-│   ├── bot.ts                        # 先物MMのメインロジック
-│   ├── market-maker-profit.ts        # 収益性判断
-│   ├── position-manager.ts           # ポジション管理
-│   ├── dual-order-manager.ts         # 両側注文管理
-│   └── notification-manager.ts       # Discord通知
+
 ├── clients/                          # 取引所API クライアント
 │   ├── binance/                      # Binance統合（無効）
 │   ├── bybit/                        # Bybit統合

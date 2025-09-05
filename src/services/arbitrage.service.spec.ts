@@ -44,7 +44,7 @@ describe('ArbitrageService', () => {
         ask: 2,
       });
 
-      const result = mockArbitrageService.checkTriangleArbitrage();
+      const result = mockArbitrageService.checkTriangleArbitrage(params);
 
       expect(result.ok).toBe(false);
     });
@@ -56,7 +56,7 @@ describe('ArbitrageService', () => {
         ask: 2,
       });
 
-      const result = mockArbitrageService.checkTriangleArbitrage();
+      const result = mockArbitrageService.checkTriangleArbitrage(params);
 
       expect(result.ok).toBe(true);
     });

@@ -24,10 +24,11 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return { ok: false };
     }
 
-    // TODO propsでsymbolを受け取る
-    const btcUsdt = priceRepository.getPrice('BTC-USDT', 'kucoin');
-    const btcDoge = priceRepository.getPrice('DOGE-BTC', 'kucoin');
-    const dogeUsdt = priceRepository.getPrice('DOGE-USDT', 'kucoin');
+    const prices = symbols.map((symbol) =>
+      priceRepository.getPrice(symbol, 'kucoin')
+    );
+
+    const [btcUsdt, btcDoge, dogeUsdt] = prices;
 
     if (!btcUsdt || !btcDoge || !dogeUsdt) {
       console.log('価格情報が不足しています', {

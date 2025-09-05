@@ -8,7 +8,7 @@ vi.mock('../domain/triangle', async () => ({
 }));
 
 const params = {
-  symbols: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'],
+  pairs: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'],
 };
 
 describe('ArbitrageService', () => {
@@ -63,7 +63,7 @@ describe('ArbitrageService', () => {
 
     it('should return ok: false when symbols length is less than 3', () => {
       const result = mockArbitrageService.checkTriangleArbitrage({
-        symbols: ['BTC-USDT', 'DOGE-BTC'],
+        pairs: ['BTC-USDT', 'DOGE-BTC'],
       });
 
       expect(result.ok).toBe(false);
@@ -71,7 +71,7 @@ describe('ArbitrageService', () => {
 
     it('should return ok: false when symbols length is more than 3', () => {
       const result = mockArbitrageService.checkTriangleArbitrage({
-        symbols: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT', 'ETH-USDT'],
+        pairs: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT', 'ETH-USDT'],
       });
 
       expect(result.ok).toBe(false);

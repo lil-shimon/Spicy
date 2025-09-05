@@ -28,13 +28,13 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       priceRepository.getPrice(pair, 'kucoin')
     );
 
-    const [btcUsdt, btcDoge, dogeUsdt] = prices;
+    const [p1, p2, p3] = prices;
 
-    if (!btcUsdt || !btcDoge || !dogeUsdt) {
+    if (!p1 || !p2 || !p3) {
       console.log('価格情報が不足しています', {
-        btcUsdt,
-        btcDoge,
-        dogeUsdt,
+        p1,
+        p2,
+        p3,
       });
       return { ok: false };
     }
@@ -43,9 +43,9 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const takerFee = 0.001;
 
     const result = calcTriangleArbitrage({
-      buyBtcPair: btcUsdt,
-      buyTokenPair: btcDoge,
-      buyStablePair: dogeUsdt,
+      buyBtcPair: p1,
+      buyTokenPair: p2,
+      buyStablePair: p3,
       takerFee,
     });
 

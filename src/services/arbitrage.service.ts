@@ -8,11 +8,22 @@ type ArbitrageServiceParams = {
 export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const { priceRepository } = params;
 
+  type Params = {
+    symbols: string[];
+  };
+
   type Return = {
     ok: boolean;
   };
 
-  const checkTriangleArbitrage = (): Return => {
+  const checkTriangleArbitrage = (params: Params): Return => {
+    const { symbols } = params;
+
+    if (symbols.length !== 3) {
+      console.log('symbolsの数が3ではありません', symbols);
+      return { ok: false };
+    }
+
     // TODO propsでsymbolを受け取る
     const btcUsdt = priceRepository.getPrice('BTC-USDT', 'kucoin');
     const btcDoge = priceRepository.getPrice('DOGE-BTC', 'kucoin');

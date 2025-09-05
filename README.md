@@ -15,16 +15,6 @@ TypeScriptで構築された高度な仮想通貨取引ボットです。複数�
 - 取引ペアの活動状況をCSVでログ記録
 - 継続的な価格監視（30秒間隔）
 
-### マーケットメイキング機能（現物）- dirty-work
-
-- MEXC現物市場でのマーケットメイキング
-- スプレッドベースの取引戦略
-- 両建て注文（買い・売り同時発注）
-- 動的価格設定とティックサイズ調整
-- 損益（P&L）とインベントリ追跡
-- 注文タイムアウト管理（30秒）
-- CSVでの取引データ記録
-
 ## 監視対象
 
 ### アービトラージ（現物）
@@ -92,11 +82,6 @@ FEATURE_FLAG_ENABLE_ORDER=false  # 自動取引を有効にする場合はtrue
 # アービトラージボットの開始
 pnpm dev
 
-# マーケットメイキング（現物）の開始
-pnpm dirty-work
-
-
-
 # デモモードの実行
 pnpm demo
 
@@ -149,16 +134,6 @@ src/
 ├── index.ts                          # アービトラージボットのエントリーポイント
 ├── server.ts                         # APIサーバーのエントリーポイント
 ├── bot.ts                            # アービトラージボットのメインロジック
-├── dirty-work/                       # マーケットメイキング機能（現物）
-│   ├── bot.ts                        # MM戦略のメインロジック
-│   ├── services/                     # ビジネスロジックサービス（関数型）
-│   │   ├── order-service.ts          # 注文管理
-│   │   ├── inventory-service.ts      # 在庫管理
-│   │   └── pnl-service.ts            # 損益計算
-│   └── logics/                       # 取引ロジック
-│       ├── get-prices.ts
-│       └── status.ts
-
 ├── clients/                          # 取引所API クライアント
 │   ├── binance/                      # Binance統合（無効）
 │   ├── bybit/                        # Bybit統合

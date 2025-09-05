@@ -4,11 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-TypeScriptで構築された仮想通貨取引ボット。3つの主要モジュールで構成：
+TypeScriptで構築された仮想通貨取引ボット。2つの主要モジュールで構成：
 
 1. **アービトラージボット** - 取引所間の価格差を利用した取引
-2. **マーケットメイキング（現物）** - MEXC現物市場での両建て取引
-3. **マーケットメイキング（先物）** - KuCoin先物市場でのメイカー取引
+2. **マーケットメイキング（先物）** - KuCoin先物市場でのメイカー取引
 
 ## 開発コマンド
 
@@ -26,8 +25,6 @@ pnpm format              # Prettier実行
 
 # ボット実行
 pnpm dev                 # アービトラージボット
-pnpm dirty-work          # マーケットメイキング（現物）
-
 pnpm demo                # デモモード
 pnpm api                 # APIサーバー（開発）
 
@@ -42,7 +39,7 @@ pnpm restart:api         # API再起動
 
 ## アーキテクチャ
 
-### 3つのメインモジュール
+### 2つのメインモジュール
 
 #### 1. アービトラージ（src/index.ts, src/bot.ts）
 
@@ -51,19 +48,11 @@ pnpm restart:api         # API再起動
 - スリッページとテイカー手数料を考慮した利益計算
 - 利益閾値0.5%以上で通知、MEXC自動注文対応
 
-#### 2. マーケットメイキング現物（src/dirty-work/）
-
-- MEXC現物市場での両建て注文
-- 30秒タイムアウトで注文管理
-- インベントリとP&L追跡
-- CSVでの取引記録
-
 ### コーディングパターン
 
 **関数型プログラミング（クロージャーパターン）を採用**
 
 - クラスは使用せず、`createXxxService`、`createXxxManager`形式でエクスポート
-- 例：`src/dirty-work/services/`
 
 ### 主要ディレクトリ構造
 
@@ -73,8 +62,6 @@ src/
 ├── core/              # コア計算ロジック（利益率、手数料）
 ├── constants/         # 定数定義（TAKER_FEES、MAKER_FEES_FUTURES等）
 ├── logic/             # ビジネスロジック（アービトラージ判定、スリッページ）
-├── dirty-work/        # マーケットメイキング現物
-
 └── utils/             # ユーティリティ関数
 ```
 

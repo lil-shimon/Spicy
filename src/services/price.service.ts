@@ -20,7 +20,7 @@ export const PriceService = (params: PriceServiceParams) => {
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
     if (hasChanged) {
-      arbitrageService.checkBySymbol(symbol);
+      arbitrageService.checkTriangleArbitrage();
     }
   };
 

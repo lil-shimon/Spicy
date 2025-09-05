@@ -60,5 +60,21 @@ describe('ArbitrageService', () => {
 
       expect(result.ok).toBe(true);
     });
+
+    it('should return ok: false when symbols length is less than 3', () => {
+      const result = mockArbitrageService.checkTriangleArbitrage({
+        symbols: ['BTC-USDT', 'DOGE-BTC'],
+      });
+
+      expect(result.ok).toBe(false);
+    });
+
+    it('should return ok: false when symbols length is more than 3', () => {
+      const result = mockArbitrageService.checkTriangleArbitrage({
+        symbols: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT', 'ETH-USDT'],
+      });
+
+      expect(result.ok).toBe(false);
+    });
   });
 });

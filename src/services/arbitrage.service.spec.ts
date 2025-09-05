@@ -7,6 +7,10 @@ vi.mock('../domain/triangle', async () => ({
   calcTriangleArbitrage: vi.fn(),
 }));
 
+const params = {
+  symbols: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'],
+};
+
 describe('ArbitrageService', () => {
   let mockPriceRepository: ReturnType<typeof PriceRepository>;
   let mockArbitrageService: ReturnType<typeof ArbitrageService>;
@@ -28,7 +32,7 @@ describe('ArbitrageService', () => {
     it('should return ok: false when price data is missing', () => {
       vi.mocked(mockPriceRepository.getPrice).mockReturnValue(undefined);
 
-      const result = mockArbitrageService.checkTriangleArbitrage();
+      const result = mockArbitrageService.checkTriangleArbitrage(params);
 
       expect(result.ok).toBe(false);
     });

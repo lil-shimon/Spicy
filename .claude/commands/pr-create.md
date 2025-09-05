@@ -24,7 +24,7 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 
 ## タイトルフォーマット
 
-フォーマットは `type(scope): title` にしてください。
+フォーマットは `type: title` にしてください。
 
 ### Type
 
@@ -41,16 +41,6 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 - ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 - chore: Other changes that don't modify src or test files
 - revert: Reverts a previous commit
-
-### Scope
-
-- feat: 新規機能
-- refactor: コード改善
-- deps: 依存関連
-- github: GitHub 関連
-- copilot: GitHub Copilot 関連
-- husky: Husky 関連
-- vscode: VS Code 関連
 
 ### Title
 

@@ -20,7 +20,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const { pairs } = params;
 
     if (pairs.length !== 3) {
-      console.log('symbolsの数が3ではありません', pairs);
+      console.log('設定してる取引ペアの数が3ではありません', pairs);
       return { ok: false };
     }
 

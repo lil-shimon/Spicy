@@ -9,7 +9,7 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 
 1. 現在のブランチで行った変更を確認する。
 2. `.github/PULL_REQUEST_TEMPLATE.md`を参照し、テンプレートに従い記載する。
-3. GitHub CLI を使い、`lil-shimon/Spicy`リポジトリに Draft でプルリクエストを作成する。
+3. GitHub CLI を使い、`lil-shimon/Spicy`リポジトリに プルリクエストを作成する。
 
 ## 注意事項
 
@@ -44,13 +44,8 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 
 ### Scope
 
-Scopeは通常この二つです
-
-- spicy: アービトラージ関連ファイル
-- dirty-work: mmbot関連ファイル。`dirty-work`ディレクトリ内にある
-
-それ以外の場合はこちらのスコープの中から適切なのを選んでください
-
+- feat: 新規機能
+- refactor: コード改善
 - deps: 依存関連
 - github: GitHub 関連
 - copilot: GitHub Copilot 関連

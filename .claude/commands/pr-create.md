@@ -9,7 +9,7 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 
 1. 現在のブランチで行った変更を確認する。
 2. `.github/PULL_REQUEST_TEMPLATE.md`を参照し、テンプレートに従い記載する。
-3. GitHub CLI を使い、`lil-shimon/Spicy`リポジトリに Draft でプルリクエストを作成する。
+3. GitHub CLI を使い、`lil-shimon/Spicy`リポジトリに プルリクエストを作成する。
 
 ## 注意事項
 
@@ -24,7 +24,7 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 
 ## タイトルフォーマット
 
-フォーマットは `type(scope): title` にしてください。
+フォーマットは `type: title` にしてください。
 
 ### Type
 
@@ -41,21 +41,6 @@ description: 'テンプレートに従い、プルリクエストを作成しま
 - ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 - chore: Other changes that don't modify src or test files
 - revert: Reverts a previous commit
-
-### Scope
-
-Scopeは通常この二つです
-
-- spicy: アービトラージ関連ファイル
-- dirty-work: mmbot関連ファイル。`dirty-work`ディレクトリ内にある
-
-それ以外の場合はこちらのスコープの中から適切なのを選んでください
-
-- deps: 依存関連
-- github: GitHub 関連
-- copilot: GitHub Copilot 関連
-- husky: Husky 関連
-- vscode: VS Code 関連
 
 ### Title
 

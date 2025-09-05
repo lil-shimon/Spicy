@@ -8,21 +8,33 @@ type ArbitrageServiceParams = {
 export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const { priceRepository } = params;
 
+  type Params = {
+    pairs: string[];
+  };
+
   type Return = {
     ok: boolean;
   };
 
-  const checkTriangleArbitrage = (): Return => {
-    // TODO propsでsymbolを受け取る
-    const btcUsdt = priceRepository.getPrice('BTC-USDT', 'kucoin');
-    const btcDoge = priceRepository.getPrice('DOGE-BTC', 'kucoin');
-    const dogeUsdt = priceRepository.getPrice('DOGE-USDT', 'kucoin');
+  const checkTriangleArbitrage = (params: Params): Return => {
+    const { pairs } = params;
 
-    if (!btcUsdt || !btcDoge || !dogeUsdt) {
+    if (pairs.length !== 3) {
+      console.log('設定してる取引ペアの数が3ではありません', pairs);
+      return { ok: false };
+    }
+
+    const prices = pairs.map((pair) =>
+      priceRepository.getPrice(pair, 'kucoin')
+    );
+
+    const [p1, p2, p3] = prices;
+
+    if (!p1 || !p2 || !p3) {
       console.log('価格情報が不足しています', {
-        btcUsdt,
-        btcDoge,
-        dogeUsdt,
+        p1,
+        p2,
+        p3,
       });
       return { ok: false };
     }
@@ -31,9 +43,9 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const takerFee = 0.001;
 
     const result = calcTriangleArbitrage({
-      buyBtcPair: btcUsdt,
-      buyTokenPair: btcDoge,
-      buyStablePair: dogeUsdt,
+      buyBtcPair: p1,
+      buyTokenPair: p2,
+      buyStablePair: p3,
       takerFee,
     });
 

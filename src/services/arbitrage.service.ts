@@ -9,7 +9,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const { priceRepository } = params;
 
   type Params = {
-    symbols: string[];
+    pairs: string[];
   };
 
   type Return = {
@@ -17,15 +17,15 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   };
 
   const checkTriangleArbitrage = (params: Params): Return => {
-    const { symbols } = params;
+    const { pairs } = params;
 
-    if (symbols.length !== 3) {
-      console.log('symbolsの数が3ではありません', symbols);
+    if (pairs.length !== 3) {
+      console.log('symbolsの数が3ではありません', pairs);
       return { ok: false };
     }
 
-    const prices = symbols.map((symbol) =>
-      priceRepository.getPrice(symbol, 'kucoin')
+    const prices = pairs.map((pair) =>
+      priceRepository.getPrice(pair, 'kucoin')
     );
 
     const [btcUsdt, btcDoge, dogeUsdt] = prices;

@@ -24,7 +24,8 @@ export const PriceService = (params: PriceServiceParams) => {
         pairs: PAIRS,
       });
       if (response.ok) {
-        postMessage('三角アビトラのチャンスがありました');
+        const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response.detail)}`;
+        postMessage(message);
       }
     }
   };

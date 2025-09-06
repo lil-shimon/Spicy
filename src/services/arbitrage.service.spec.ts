@@ -6,7 +6,7 @@ import {
   Result,
 } from '../domain/triangle/calc-triangle-arbitrage';
 
-vi.mock('../domain/triangle', async () => ({
+vi.mock('../domain/triangle/calc-triangle-arbitrage', async () => ({
   calcTriangleArbitrage: vi.fn(),
 }));
 

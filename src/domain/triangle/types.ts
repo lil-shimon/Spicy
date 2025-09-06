@@ -32,3 +32,29 @@ export type Result = {
   roi: number;
   detail: Detail;
 };
+
+/**
+ * 三角アービトラージの組み合わせを表す型
+ */
+export type Triangle = {
+  /**
+   * トークン名
+   * e.g. DOGE
+   */
+  name: string;
+  /**
+   * base pair.
+   * e.g. BTC-USDT
+   */
+  base: string;
+  /**
+   * mid pair.
+   * e.g. DOGE-BTC
+   */
+  mid: string;
+  /**
+   * out pair.
+   * e.g. DOGE-USDT
+   */
+  out: string;
+};

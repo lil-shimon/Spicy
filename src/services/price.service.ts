@@ -12,7 +12,7 @@ type PriceServiceParams = {
 export const PriceService = (params: PriceServiceParams) => {
   const { priceRepository, arbitrageService } = params;
 
-  // pari -> 影響を受ける triangle index の逆引き
+  // pair -> 影響を受ける triangle index の逆引き
   const index = new Map<string, number[]>();
   TRIANGLES.forEach((t, i) => {
     [t.base, t.mid, t.out].forEach((pair) => {

@@ -29,52 +29,60 @@ describe('ArbitrageService', () => {
   });
 
   describe('checkTriangleArbitrage', () => {
-    it('should return ok: false when price data is missing', () => {
-      vi.mocked(mockPriceRepository.getPrice).mockReturnValue(undefined);
+    describe('ok: false cases', () => {
+      it('should return ok: false when price data is missing', () => {
+        vi.mocked(mockPriceRepository.getPrice).mockReturnValue(undefined);
 
-      const result = mockArbitrageService.checkTriangleArbitrage(params);
+        const result = mockArbitrageService.checkTriangleArbitrage(params);
 
-      expect(result.ok).toBe(false);
-    });
-
-    it('should return ok: false when no arbitrage opportunity exists', () => {
-      vi.mocked(calcTriangleArbitrage).mockReturnValue({ ok: false } as Result);
-      vi.mocked(mockPriceRepository.getPrice).mockReturnValue({
-        bid: 1,
-        ask: 2,
+        expect(result.ok).toBe(false);
       });
 
-      const result = mockArbitrageService.checkTriangleArbitrage(params);
+      it('should return ok: false when no arbitrage opportunity exists', () => {
+        vi.mocked(calcTriangleArbitrage).mockReturnValue({
+          ok: false,
+        } as Result);
+        vi.mocked(mockPriceRepository.getPrice).mockReturnValue({
+          bid: 1,
+          ask: 2,
+        });
 
-      expect(result.ok).toBe(false);
-    });
+        const result = mockArbitrageService.checkTriangleArbitrage(params);
 
-    it('should return ok: true when arbitrage opportunity exists', () => {
-      vi.mocked(calcTriangleArbitrage).mockReturnValue({ ok: true } as Result);
-      vi.mocked(mockPriceRepository.getPrice).mockReturnValue({
-        bid: 1,
-        ask: 2,
+        expect(result.ok).toBe(false);
       });
 
-      const result = mockArbitrageService.checkTriangleArbitrage(params);
+      it('should return ok: false when symbols length is less than 3', () => {
+        const result = mockArbitrageService.checkTriangleArbitrage({
+          pairs: ['BTC-USDT', 'DOGE-BTC'],
+        });
 
-      expect(result.ok).toBe(true);
-    });
-
-    it('should return ok: false when symbols length is less than 3', () => {
-      const result = mockArbitrageService.checkTriangleArbitrage({
-        pairs: ['BTC-USDT', 'DOGE-BTC'],
+        expect(result.ok).toBe(false);
       });
 
-      expect(result.ok).toBe(false);
+      it('should return ok: false when symbols length is more than 3', () => {
+        const result = mockArbitrageService.checkTriangleArbitrage({
+          pairs: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT', 'ETH-USDT'],
+        });
+
+        expect(result.ok).toBe(false);
+      });
     });
 
-    it('should return ok: false when symbols length is more than 3', () => {
-      const result = mockArbitrageService.checkTriangleArbitrage({
-        pairs: ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT', 'ETH-USDT'],
-      });
+    describe('ok: true cases', () => {
+      it('should return ok: true when arbitrage opportunity exists', () => {
+        vi.mocked(calcTriangleArbitrage).mockReturnValue({
+          ok: true,
+        } as Result);
+        vi.mocked(mockPriceRepository.getPrice).mockReturnValue({
+          bid: 1,
+          ask: 2,
+        });
 
-      expect(result.ok).toBe(false);
+        const result = mockArbitrageService.checkTriangleArbitrage(params);
+
+        expect(result.ok).toBe(true);
+      });
     });
   });
 });

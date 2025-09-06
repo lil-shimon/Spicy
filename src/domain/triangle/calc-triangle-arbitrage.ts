@@ -9,25 +9,25 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   // -----------------------------------
 
   // --- ガード ---
-  const { ask: p1 } = buyBtcPair;
-  const { ask: p2 } = buyTokenPair;
-  const { bid: p3 } = buyStablePair;
+  const { ask: baseAsk } = buyBtcPair;
+  const { ask: midAsk } = buyTokenPair;
+  const { bid: outBid } = buyStablePair;
 
   const detail: Detail = {
-    baseAsk: p1,
-    midAsk: p2,
-    outBid: p3,
+    baseAsk: baseAsk,
+    midAsk: midAsk,
+    outBid: outBid,
     takerFee,
     epsilon: EPSILON,
   };
 
-  if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
+  if (baseAsk <= 0 || midAsk <= 0 || outBid <= 0) {
     return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1, detail };
   }
 
-  const btc = (USDT_IN / p1) * (1 - takerFee);
-  const doge = (btc / p2) * (1 - takerFee);
-  const usdtOut = doge * p3 * (1 - takerFee);
+  const btc = (USDT_IN / baseAsk) * (1 - takerFee);
+  const doge = (btc / midAsk) * (1 - takerFee);
+  const usdtOut = doge * outBid * (1 - takerFee);
 
   const multiplier = usdtOut / USDT_IN;
   const roi = multiplier - 1;

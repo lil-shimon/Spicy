@@ -1,4 +1,4 @@
-import { calcTriangleArbitrage } from '../domain/triangle';
+import { calcTriangleArbitrage } from '../domain/triangle/calc-triangle-arbitrage';
 import { PriceRepository } from './../repositories/price.repository';
 
 type ArbitrageServiceParams = {

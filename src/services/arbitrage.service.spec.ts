@@ -70,7 +70,7 @@ describe('ArbitrageService', () => {
     });
 
     describe('ok: true cases', () => {
-      it('should return ok: true when arbitrage opportunity exists', () => {
+      beforeEach(() => {
         vi.mocked(calcTriangleArbitrage).mockReturnValue({
           ok: true,
         } as Result);
@@ -78,7 +78,8 @@ describe('ArbitrageService', () => {
           bid: 1,
           ask: 2,
         });
-
+      });
+      it('should return ok: true when arbitrage opportunity exists', () => {
         const result = mockArbitrageService.checkTriangleArbitrage(params);
 
         expect(result.ok).toBe(true);

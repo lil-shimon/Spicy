@@ -18,9 +18,9 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     usdtOut?: number;
     roi?: number;
     detail?: {
-      p1ask: number;
-      p2ask: number;
-      p3bid: number;
+      baseAsk: number;
+      midAsk: number;
+      outBid: number;
     };
   };
 

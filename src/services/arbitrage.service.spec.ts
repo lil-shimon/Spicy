@@ -111,9 +111,9 @@ describe('ArbitrageService', () => {
           usdtOut: 1.01,
           roi: 0.01,
           detail: {
-            p1ask: 1,
-            p2ask: 2,
-            p3bid: 3,
+            baseAsk: 1,
+            midAsk: 2,
+            outBid: 3,
             takerFee: 0.001,
             epsilon: 0.001,
           },

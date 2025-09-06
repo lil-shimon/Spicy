@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calcTriangleArbitrage, Result } from './index';
+import { calcTriangleArbitrage, Result } from './calc-triangle-arbitrage';
 
 const defaultParams = {
   buyBtcPair: { bid: 1, ask: 1 },

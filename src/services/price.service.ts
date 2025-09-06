@@ -20,7 +20,13 @@ export const PriceService = (params: PriceServiceParams) => {
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
     if (hasChanged) {
-      arbitrageService.checkTriangleArbitrage({ pairs: PAIRS });
+      const response = arbitrageService.checkTriangleArbitrage({
+        pairs: PAIRS,
+      });
+      if (response.ok) {
+        const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;
+        postMessage(message);
+      }
     }
   };
 

@@ -14,6 +14,14 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
 
   type Return = {
     ok: boolean;
+    usdtIn?: number;
+    usdtOut?: number;
+    roi?: number;
+    detail?: {
+      p1ask: number;
+      p2ask: number;
+      p3bid: number;
+    };
   };
 
   const checkTriangleArbitrage = (params: Params): Return => {
@@ -54,7 +62,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
       return { ok: false };
     }
 
-    return { ok: true };
+    return result;
   };
 
   return { checkTriangleArbitrage } as const;

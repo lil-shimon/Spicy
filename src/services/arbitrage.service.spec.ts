@@ -79,10 +79,22 @@ describe('ArbitrageService', () => {
           ask: 2,
         });
       });
+
       it('should return ok: true when arbitrage opportunity exists', () => {
         const result = mockArbitrageService.checkTriangleArbitrage(params);
 
         expect(result.ok).toBe(true);
+      });
+
+      it('should call calcTriangleArbitrage with correct parameters', () => {
+        mockArbitrageService.checkTriangleArbitrage(params);
+
+        expect(calcTriangleArbitrage).toHaveBeenCalledWith({
+          buyBtcPair: { bid: 1, ask: 2 },
+          buyTokenPair: { bid: 1, ask: 2 },
+          buyStablePair: { bid: 1, ask: 2 },
+          takerFee: 0.001,
+        });
       });
     });
   });

@@ -14,9 +14,9 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   const { bid: p3 } = buyStablePair;
 
   const detail: Detail = {
-    p1ask: p1,
-    p2ask: p2,
-    p3bid: p3,
+    baseAsk: p1,
+    midAsk: p2,
+    outBid: p3,
     takerFee,
     epsilon: EPSILON,
   };

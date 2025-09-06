@@ -18,9 +18,9 @@ export type Params = {
 };
 
 export type Detail = {
-  p1ask: number;
-  p2ask: number;
-  p3bid: number;
+  baseAsk: number;
+  midAsk: number;
+  outBid: number;
   takerFee: number;
   epsilon: number;
 };

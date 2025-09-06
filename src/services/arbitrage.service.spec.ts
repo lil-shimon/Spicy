@@ -99,6 +99,12 @@ describe('ArbitrageService', () => {
           takerFee: 0.001,
         });
       });
+
+      it('should call getPrice three times', () => {
+        mockArbitrageService.checkTriangleArbitrage(params);
+
+        expect(mockPriceRepository.getPrice).toHaveBeenCalledTimes(3);
+      });
     });
   });
 });

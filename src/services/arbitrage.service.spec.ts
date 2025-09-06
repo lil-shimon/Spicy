@@ -105,6 +105,38 @@ describe('ArbitrageService', () => {
 
         expect(mockPriceRepository.getPrice).toHaveBeenCalledTimes(3);
       });
+
+      it('should return price information correctly', () => {
+        vi.mocked(calcTriangleArbitrage).mockReturnValue({
+          ok: true,
+          usdtIn: 1,
+          usdtOut: 1.01,
+          roi: 0.01,
+          detail: {
+            p1ask: 1,
+            p2ask: 2,
+            p3bid: 3,
+            takerFee: 0.001,
+            epsilon: 0.001,
+          },
+        } as Result);
+
+        const result = mockArbitrageService.checkTriangleArbitrage(params);
+
+        expect(result).toEqual({
+          ok: true,
+          usdtIn: 1,
+          usdtOut: 1.01,
+          roi: 0.01,
+          detail: {
+            p1ask: 1,
+            p2ask: 2,
+            p3bid: 3,
+            takerFee: 0.001,
+            epsilon: 0.001,
+          },
+        });
+      });
     });
   });
 });

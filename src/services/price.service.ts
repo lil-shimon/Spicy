@@ -2,6 +2,7 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
 import { postMessage } from '../clients';
+import { TRIANGLES } from '../domain/triangle/constant';
 
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
@@ -10,6 +11,16 @@ type PriceServiceParams = {
 
 export const PriceService = (params: PriceServiceParams) => {
   const { priceRepository, arbitrageService } = params;
+
+  // pari -> 影響を受ける triangle index の逆引き
+  const index = new Map<string, number[]>();
+  TRIANGLES.forEach((t, i) => {
+    [t.base, t.mid, t.out].forEach((pair) => {
+      const arr = index.get(pair) ?? [];
+      arr.push(i);
+      index.set(pair, arr);
+    });
+  });
 
   const handleUpdate = (
     symbol: string,

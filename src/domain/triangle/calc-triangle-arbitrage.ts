@@ -25,14 +25,14 @@ export const calcTriangleArbitrage = (params: Params): Result => {
     return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1, detail };
   }
 
-  const btc = (USDT_IN / baseAsk) * (1 - takerFee);
-  const doge = (btc / midAsk) * (1 - takerFee);
-  const usdtOut = doge * outBid * (1 - takerFee);
+  const base = (USDT_IN / baseAsk) * (1 - takerFee);
+  const mid = (base / midAsk) * (1 - takerFee);
+  const out = mid * outBid * (1 - takerFee);
 
-  const multiplier = usdtOut / USDT_IN;
+  const multiplier = out / USDT_IN;
   const roi = multiplier - 1;
 
   const ok = multiplier > 1 + EPSILON;
 
-  return { ok, usdtIn: USDT_IN, usdtOut, roi, detail };
+  return { ok, usdtIn: USDT_IN, usdtOut: out, roi, detail };
 };

@@ -33,13 +33,17 @@ export const PriceService = (params: PriceServiceParams) => {
     if (!hasChanged) return;
 
     const tIndexes = index.get(symbol) ?? [];
-    console.log('handleUpdate', { symbol, tIndexes, index });
-    const response = arbitrageService.checkTriangleArbitrage({
-      triangle: PAIRS,
-    });
-    if (response.ok) {
-      const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;
-      postMessage(message);
+
+    for (const i of tIndexes) {
+      const triangle = TRIANGLES[i];
+      const response = arbitrageService.checkTriangleArbitrage({
+        triangle: [triangle.base, triangle.mid, triangle.out],
+      });
+
+      if (response.ok) {
+        const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;
+        postMessage(message);
+      }
     }
   };
 

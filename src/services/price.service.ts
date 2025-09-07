@@ -2,7 +2,7 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
 import { postMessage } from '../clients';
-import { TRIANGLES } from '../domain/triangle/constant';
+import { ALL_PAIRS, TRIANGLES } from '../domain/triangle/constant';
 
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
@@ -57,9 +57,7 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
-  const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
-
-  const start = async ({ pairs = PAIRS }: { pairs?: string[] }) => {
+  const start = async ({ pairs = ALL_PAIRS }: { pairs?: string[] }) => {
     const promises = pairs.map((pair) => {
       return connectKucoin({
         pair,

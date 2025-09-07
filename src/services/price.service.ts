@@ -32,6 +32,8 @@ export const PriceService = (params: PriceServiceParams) => {
 
     if (!hasChanged) return;
 
+    const tIndexes = index.get(symbol) ?? [];
+    console.log('handleUpdate', { symbol, tIndexes, index });
     const response = arbitrageService.checkTriangleArbitrage({
       triangle: PAIRS,
     });

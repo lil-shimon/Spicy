@@ -1,37 +1,4 @@
-type Params = {
-  // BTC/USDTなどを想定
-  buyBtcPair: {
-    bid: number;
-    ask: number;
-  };
-  // DOGE/BTCなどを想定
-  buyTokenPair: {
-    bid: number;
-    ask: number;
-  };
-  // DOGE/USDTなどを想定
-  buyStablePair: {
-    bid: number;
-    ask: number;
-  };
-  takerFee: number;
-};
-
-type Detail = {
-  p1ask: number;
-  p2ask: number;
-  p3bid: number;
-  takerFee: number;
-  epsilon: number;
-};
-
-export type Result = {
-  ok: boolean;
-  usdtIn: number;
-  usdtOut: number;
-  roi: number;
-  detail: Detail;
-};
+import type { Params, Result, Detail } from './types';
 
 export const calcTriangleArbitrage = (params: Params): Result => {
   const { buyBtcPair, buyStablePair, buyTokenPair, takerFee } = params;
@@ -42,30 +9,30 @@ export const calcTriangleArbitrage = (params: Params): Result => {
   // -----------------------------------
 
   // --- ガード ---
-  const { ask: p1 } = buyBtcPair;
-  const { ask: p2 } = buyTokenPair;
-  const { bid: p3 } = buyStablePair;
+  const { ask: baseAsk } = buyBtcPair;
+  const { ask: midAsk } = buyTokenPair;
+  const { bid: outBid } = buyStablePair;
 
   const detail: Detail = {
-    p1ask: p1,
-    p2ask: p2,
-    p3bid: p3,
+    baseAsk: baseAsk,
+    midAsk: midAsk,
+    outBid: outBid,
     takerFee,
     epsilon: EPSILON,
   };
 
-  if (p1 <= 0 || p2 <= 0 || p3 <= 0) {
+  if (baseAsk <= 0 || midAsk <= 0 || outBid <= 0) {
     return { ok: false, usdtIn: USDT_IN, usdtOut: 0, roi: -1, detail };
   }
 
-  const btc = (USDT_IN / p1) * (1 - takerFee);
-  const doge = (btc / p2) * (1 - takerFee);
-  const usdtOut = doge * p3 * (1 - takerFee);
+  const base = (USDT_IN / baseAsk) * (1 - takerFee);
+  const mid = (base / midAsk) * (1 - takerFee);
+  const out = mid * outBid * (1 - takerFee);
 
-  const multiplier = usdtOut / USDT_IN;
+  const multiplier = out / USDT_IN;
   const roi = multiplier - 1;
 
   const ok = multiplier > 1 + EPSILON;
 
-  return { ok, usdtIn: USDT_IN, usdtOut, roi, detail };
+  return { ok, usdtIn: USDT_IN, usdtOut: out, roi, detail };
 };

@@ -9,7 +9,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const { priceRepository } = params;
 
   type Params = {
-    pairs: string[];
+    triangle: string[];
   };
 
   type Return = {
@@ -18,31 +18,31 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     usdtOut?: number;
     roi?: number;
     detail?: {
-      p1ask: number;
-      p2ask: number;
-      p3bid: number;
+      baseAsk: number;
+      midAsk: number;
+      outBid: number;
     };
   };
 
   const checkTriangleArbitrage = (params: Params): Return => {
-    const { pairs } = params;
+    const { triangle } = params;
 
-    if (pairs.length !== 3) {
-      console.log('設定してる取引ペアの数が3ではありません', pairs);
+    if (triangle.length !== 3) {
+      console.log('設定してる取引ペアの数が3ではありません', triangle);
       return { ok: false };
     }
 
-    const prices = pairs.map((pair) =>
+    const prices = triangle.map((pair) =>
       priceRepository.getPrice(pair, 'kucoin')
     );
 
-    const [p1, p2, p3] = prices;
+    const [base, mid, out] = prices;
 
-    if (!p1 || !p2 || !p3) {
+    if (!base || !mid || !out) {
       console.log('価格情報が不足しています', {
-        p1,
-        p2,
-        p3,
+        p1: base,
+        p2: mid,
+        p3: out,
       });
       return { ok: false };
     }
@@ -51,9 +51,9 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
     const takerFee = 0.001;
 
     const result = calcTriangleArbitrage({
-      buyBtcPair: p1,
-      buyTokenPair: p2,
-      buyStablePair: p3,
+      buyBtcPair: base,
+      buyTokenPair: mid,
+      buyStablePair: out,
       takerFee,
     });
 

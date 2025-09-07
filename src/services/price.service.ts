@@ -2,6 +2,7 @@ import { connectKucoin } from '../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
 import { postMessage } from '../clients';
+import { ALL_PAIRS, TRIANGLES } from '../domain/triangle/constant';
 
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
@@ -11,6 +12,16 @@ type PriceServiceParams = {
 export const PriceService = (params: PriceServiceParams) => {
   const { priceRepository, arbitrageService } = params;
 
+  // pair -> 影響を受ける triangle index の逆引き
+  const index = new Map<string, number[]>();
+  TRIANGLES.forEach((t, i) => {
+    [t.base, t.mid, t.out].forEach((pair) => {
+      const arr = index.get(pair) ?? [];
+      arr.push(i);
+      index.set(pair, arr);
+    });
+  });
+
   const handleUpdate = (
     symbol: string,
     exchange: string,
@@ -19,10 +30,16 @@ export const PriceService = (params: PriceServiceParams) => {
   ) => {
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
-    if (hasChanged) {
+    if (!hasChanged) return;
+
+    const tIndexes = index.get(symbol) ?? [];
+
+    for (const i of tIndexes) {
+      const triangle = TRIANGLES[i];
       const response = arbitrageService.checkTriangleArbitrage({
-        pairs: PAIRS,
+        triangle: [triangle.base, triangle.mid, triangle.out],
       });
+
       if (response.ok) {
         const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;
         postMessage(message);
@@ -40,9 +57,7 @@ export const PriceService = (params: PriceServiceParams) => {
     postMessage(message);
   };
 
-  const PAIRS = ['BTC-USDT', 'DOGE-BTC', 'DOGE-USDT'];
-
-  const start = async ({ pairs = PAIRS }: { pairs?: string[] }) => {
+  const start = async ({ pairs = ALL_PAIRS }: { pairs?: string[] }) => {
     const promises = pairs.map((pair) => {
       return connectKucoin({
         pair,

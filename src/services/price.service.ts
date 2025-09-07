@@ -32,7 +32,7 @@ export const PriceService = (params: PriceServiceParams) => {
 
     if (hasChanged) {
       const response = arbitrageService.checkTriangleArbitrage({
-        pairs: PAIRS,
+        triangle: PAIRS,
       });
       if (response.ok) {
         const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;

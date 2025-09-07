@@ -9,7 +9,7 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   const { priceRepository } = params;
 
   type Params = {
-    pairs: string[];
+    triangle: string[];
   };
 
   type Return = {
@@ -25,14 +25,14 @@ export const ArbitrageService = (params: ArbitrageServiceParams) => {
   };
 
   const checkTriangleArbitrage = (params: Params): Return => {
-    const { pairs } = params;
+    const { triangle } = params;
 
-    if (pairs.length !== 3) {
-      console.log('設定してる取引ペアの数が3ではありません', pairs);
+    if (triangle.length !== 3) {
+      console.log('設定してる取引ペアの数が3ではありません', triangle);
       return { ok: false };
     }
 
-    const prices = pairs.map((pair) =>
+    const prices = triangle.map((pair) =>
       priceRepository.getPrice(pair, 'kucoin')
     );
 

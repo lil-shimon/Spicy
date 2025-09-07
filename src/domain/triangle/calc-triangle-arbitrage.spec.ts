@@ -22,9 +22,9 @@ describe('calcTriangleArbitrage', () => {
       usdtOut: 0,
       usdtIn: 1,
       detail: {
-        p1ask: 1,
-        p2ask: 1,
-        p3bid: 1,
+        baseAsk: 1,
+        midAsk: 1,
+        outBid: 1,
         epsilon: 0.001,
         takerFee: 0.001,
       },
@@ -39,7 +39,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p1ask: 0 },
+          detail: { ...falseExpect.detail, baseAsk: 0 },
         });
       });
 
@@ -51,7 +51,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p2ask: 0 },
+          detail: { ...falseExpect.detail, midAsk: 0 },
         });
       });
 
@@ -63,7 +63,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p3bid: 0 },
+          detail: { ...falseExpect.detail, outBid: 0 },
         });
       });
     });
@@ -78,7 +78,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p1ask: -1 },
+          detail: { ...falseExpect.detail, baseAsk: -1 },
         });
       });
 
@@ -91,7 +91,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p2ask: -1 },
+          detail: { ...falseExpect.detail, midAsk: -1 },
         });
       });
 
@@ -104,7 +104,7 @@ describe('calcTriangleArbitrage', () => {
         const result = calcTriangleArbitrage(params);
         expect(result).toEqual({
           ...falseExpect,
-          detail: { ...falseExpect.detail, p3bid: -1 },
+          detail: { ...falseExpect.detail, outBid: -1 },
         });
       });
     });

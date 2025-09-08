@@ -41,7 +41,7 @@ export const PriceService = (params: PriceServiceParams) => {
       });
 
       if (response.ok) {
-        const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)}`;
+        const message = `三角アビトラのチャンスがありました: ${JSON.stringify(response)} ${JSON.stringify(triangle)}`;
         postMessage(message);
       }
     }

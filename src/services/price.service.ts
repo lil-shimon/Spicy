@@ -22,15 +22,18 @@ export const PriceService = (params: PriceServiceParams) => {
     });
   });
 
-  const handleUpdate = (
-    symbol: string,
-    exchange: string,
-    ask: number,
-    bid: number
-  ) => {
+  type HandleUpdateParams = {
+    symbol: string;
+    exchange: string;
+    ask: number;
+    bid: number;
+  };
+
+  const _handleUpdate = (params: HandleUpdateParams) => {
+    const { symbol, exchange, ask, bid } = params;
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
-    if (!hasChanged) return;
+    if (!hasChanged) return false;
 
     const tIndexes = index.get(symbol) ?? [];
 
@@ -45,14 +48,15 @@ export const PriceService = (params: PriceServiceParams) => {
         postMessage(message);
       }
     }
+    return true;
   };
 
-  const handleClose = (message: string) => {
+  const _handleClose = (message: string) => {
     console.log('WebSocketの接続が閉じられました:', message);
     postMessage(message);
   };
 
-  const handleError = (message: string) => {
+  const _handleError = (message: string) => {
     console.error('WebSocketエラー:', message);
     postMessage(message);
   };
@@ -62,13 +66,13 @@ export const PriceService = (params: PriceServiceParams) => {
       return connectKucoin({
         pair,
         onUpdate: (bid, ask) => {
-          handleUpdate(pair, 'kucoin', ask, bid);
+          _handleUpdate({ symbol: pair, exchange: 'kucoin', bid, ask });
         },
         onError: (error) => {
-          handleError(error.message);
+          _handleError(error.message);
         },
         onClose: (message) => {
-          handleClose(message);
+          _handleClose(message);
         },
       });
     });
@@ -76,5 +80,5 @@ export const PriceService = (params: PriceServiceParams) => {
     await Promise.all(promises);
   };
 
-  return { start } as const;
+  return { start, _handleUpdate, _handleClose, _handleError } as const;
 };

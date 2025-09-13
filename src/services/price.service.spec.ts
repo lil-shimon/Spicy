@@ -88,4 +88,17 @@ describe('PriceService', () => {
 
     it.todo('should postMessage on WebSocket close');
   });
+
+  describe('handleError', () => {
+    it('should log error and postMessage on WebSocket error', () => {
+      const consoleSpy = vi.spyOn(console, 'error');
+
+      const message = 'WebSocket error occurred';
+      mockPriceService._handleError(message);
+
+      expect(consoleSpy).toHaveBeenCalledWith('WebSocketエラー:', message);
+    });
+
+    it.todo('should postMessage on WebSocket error');
+  });
 });

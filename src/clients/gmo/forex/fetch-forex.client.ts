@@ -5,7 +5,11 @@ export const fetchForex = async () => {
   try {
     const url = `${endPoint}${path}`;
     const response = await fetch(url);
-    return response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    console.log('GMOのFX価格データ:', data);
   } catch (error) {
     console.error('GMOのFX価格取得に失敗しました', error);
     return null;

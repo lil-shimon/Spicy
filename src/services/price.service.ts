@@ -33,7 +33,7 @@ export const PriceService = (params: PriceServiceParams) => {
     const { symbol, exchange, ask, bid } = params;
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
-    if (!hasChanged) return;
+    if (!hasChanged) return false;
 
     const tIndexes = index.get(symbol) ?? [];
 
@@ -48,6 +48,7 @@ export const PriceService = (params: PriceServiceParams) => {
         postMessage(message);
       }
     }
+    return true;
   };
 
   const handleClose = (message: string) => {

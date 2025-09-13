@@ -1,5 +1,5 @@
 import { PriceRepository } from '../repositories/price.repository';
-import { describe, vi } from 'vitest';
+import { describe, vi, it } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
 import { beforeEach } from 'node:test';
 
@@ -9,5 +9,16 @@ describe('PriceService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mockPriceRepository = {
+      getPrice: vi.fn(),
+      updatePrice: vi.fn(),
+    };
+  });
+
+  describe('handleUpdate', () => {
+    it('should call priceRepository  updatePrice', () => {
+      vi.mocked(mockPriceRepository.updatePrice).mockReturnValue(false);
+    });
   });
 });

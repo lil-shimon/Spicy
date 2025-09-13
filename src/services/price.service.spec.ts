@@ -3,6 +3,10 @@ import { describe, vi, it, expect, beforeEach } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
 import { PriceService } from './price.service';
 
+vi.mock('../clients', async () => ({
+  postMessage: vi.fn(),
+}));
+
 describe('PriceService', () => {
   let mockPriceRepository: ReturnType<typeof PriceRepository>;
   let mockArbitrageService: ReturnType<typeof ArbitrageService>;
@@ -67,5 +71,21 @@ describe('PriceService', () => {
     );
 
     it.todo('should return true if priceRepository updatePrice returns true');
+  });
+
+  describe('handleClose', () => {
+    it('should log and postMessage on WebSocket close', () => {
+      const consoleSpy = vi.spyOn(console, 'log');
+
+      const message = 'WebSocket closed';
+      mockPriceService._handleClose(message);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'WebSocketの接続が閉じられました:',
+        message
+      );
+    });
+
+    it.todo('should postMessage on WebSocket close');
   });
 });

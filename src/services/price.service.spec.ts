@@ -35,8 +35,6 @@ describe('PriceService', () => {
         bid: 29900,
       };
 
-      console.log(mockPriceRepository);
-
       vi.mocked(mockPriceRepository.updatePrice).mockReturnValue(false);
 
       mockPriceService._handleUpdate(

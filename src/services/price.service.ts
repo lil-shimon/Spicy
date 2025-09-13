@@ -22,12 +22,15 @@ export const PriceService = (params: PriceServiceParams) => {
     });
   });
 
-  const _handleUpdate = (
-    symbol: string,
-    exchange: string,
-    ask: number,
-    bid: number
-  ) => {
+  type HandleUpdateParams = {
+    symbol: string;
+    exchange: string;
+    ask: number;
+    bid: number;
+  };
+
+  const _handleUpdate = (params: HandleUpdateParams) => {
+    const { symbol, exchange, ask, bid } = params;
     const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
 
     if (!hasChanged) return;
@@ -62,7 +65,7 @@ export const PriceService = (params: PriceServiceParams) => {
       return connectKucoin({
         pair,
         onUpdate: (bid, ask) => {
-          _handleUpdate(pair, 'kucoin', ask, bid);
+          _handleUpdate({ symbol: pair, exchange: 'kucoin', bid, ask });
         },
         onError: (error) => {
           handleError(error.message);

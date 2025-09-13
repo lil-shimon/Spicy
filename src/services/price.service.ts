@@ -22,7 +22,7 @@ export const PriceService = (params: PriceServiceParams) => {
     });
   });
 
-  const handleUpdate = (
+  const _handleUpdate = (
     symbol: string,
     exchange: string,
     ask: number,
@@ -62,7 +62,7 @@ export const PriceService = (params: PriceServiceParams) => {
       return connectKucoin({
         pair,
         onUpdate: (bid, ask) => {
-          handleUpdate(pair, 'kucoin', ask, bid);
+          _handleUpdate(pair, 'kucoin', ask, bid);
         },
         onError: (error) => {
           handleError(error.message);
@@ -76,5 +76,5 @@ export const PriceService = (params: PriceServiceParams) => {
     await Promise.all(promises);
   };
 
-  return { start } as const;
+  return { start, _handleUpdate } as const;
 };

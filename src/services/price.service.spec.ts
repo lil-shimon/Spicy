@@ -1,7 +1,6 @@
 import { PriceRepository } from '../repositories/price.repository';
-import { describe, vi, it } from 'vitest';
+import { describe, vi, it, expect, beforeEach } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
-import { beforeEach } from 'node:test';
 import { PriceService } from './price.service';
 
 describe('PriceService', () => {
@@ -28,8 +27,31 @@ describe('PriceService', () => {
   });
 
   describe('handleUpdate', () => {
-    it('should call priceRepository  updatePrice', () => {
+    it('should call priceRepository updatePrice', () => {
+      const params = {
+        symbol: 'BTC-USDT',
+        exchange: 'kucoin',
+        ask: 30000,
+        bid: 29900,
+      };
+
+      console.log(mockPriceRepository);
+
       vi.mocked(mockPriceRepository.updatePrice).mockReturnValue(false);
+
+      mockPriceService._handleUpdate(
+        params.symbol,
+        params.exchange,
+        params.ask,
+        params.bid
+      );
+
+      expect(mockPriceRepository.updatePrice).toHaveBeenCalledWith(
+        params.symbol,
+        params.exchange,
+        params.bid,
+        params.ask
+      );
     });
   });
 });

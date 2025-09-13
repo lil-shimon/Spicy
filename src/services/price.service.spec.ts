@@ -37,12 +37,7 @@ describe('PriceService', () => {
 
       vi.mocked(mockPriceRepository.updatePrice).mockReturnValue(false);
 
-      mockPriceService._handleUpdate(
-        params.symbol,
-        params.exchange,
-        params.ask,
-        params.bid
-      );
+      mockPriceService._handleUpdate(params);
 
       expect(mockPriceRepository.updatePrice).toHaveBeenCalledWith(
         params.symbol,

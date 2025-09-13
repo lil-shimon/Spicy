@@ -10,6 +10,7 @@ export const TRIANGLES: Triangle[] = [
   { name: 'KCS', base: 'BTC-USDT', mid: 'KCS-BTC', out: 'KCS-USDT' },
   { name: 'DOT', base: 'BTC-USDT', mid: 'DOT-BTC', out: 'DOT-USDT' },
   { name: 'XRP', base: 'ETH-USDT', mid: 'XRP-ETH', out: 'XRP-USDT' },
+  { name: 'LTC', base: 'ETH-USDT', mid: 'LTC-ETH', out: 'LTC-USDT' },
   { name: 'SOL', base: 'KCS-USDT', mid: 'SOL-KCS', out: 'SOL-USDT' },
   { name: 'XRP', base: 'KCS-USDT', mid: 'XRP-KCS', out: 'XRP-USDT' },
   { name: 'SUI', base: 'KCS-USDT', mid: 'SUI-KCS', out: 'SUI-USDT' },
@@ -17,6 +18,7 @@ export const TRIANGLES: Triangle[] = [
   { name: 'HYPE', base: 'KCS-USDT', mid: 'HYPE-KCS', out: 'HYPE-USDT' },
   { name: 'DOGE', base: 'KCS-USDT', mid: 'DOGE-KCS', out: 'DOGE-USDT' },
   { name: 'PEPE', base: 'KCS-USDT', mid: 'PEPE-KCS', out: 'PEPE-USDT' },
+  { name: 'LTC', base: 'KCS-USDT', mid: 'LTC-KCS', out: 'LTC-USDT' },
 ];
 
 export const ALL_PAIRS = Array.from(

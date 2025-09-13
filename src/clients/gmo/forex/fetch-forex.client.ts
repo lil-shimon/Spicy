@@ -9,12 +9,17 @@ type PriceInfo = {
   status: string;
 };
 
-export const fetchForex = async (): Promise<PriceInfo | null> => {
-  const symbol = 'USD_JPY';
+type Params = {
+  symbol?: string;
+};
+
+export const fetchForex = async (params: Params): Promise<PriceInfo | null> => {
+  const { symbol = 'USD_JPY' } = params;
 
   try {
     const url = `${endPoint}${path}`;
     const response = await fetch(url);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

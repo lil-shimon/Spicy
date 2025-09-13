@@ -46,5 +46,20 @@ describe('PriceService', () => {
         params.ask
       );
     });
+
+    it('should return false if priceRepository updatePrice returns false', () => {
+      const params = {
+        symbol: 'BTC-USDT',
+        exchange: 'kucoin',
+        ask: 30000,
+        bid: 29900,
+      };
+
+      vi.mocked(mockPriceRepository.updatePrice).mockReturnValue(false);
+
+      const result = mockPriceService._handleUpdate(params);
+
+      expect(result).toBe(false);
+    });
   });
 });

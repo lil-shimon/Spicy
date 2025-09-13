@@ -61,5 +61,11 @@ describe('PriceService', () => {
 
       expect(result).toBe(false);
     });
+
+    it.todo(
+      'should call arbitrageService checkTriangleArbitrage if price updated'
+    );
+
+    it.todo('should return true if priceRepository updatePrice returns true');
   });
 });

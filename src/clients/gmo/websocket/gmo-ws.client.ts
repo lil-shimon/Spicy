@@ -76,5 +76,3 @@ export const connectGmo = (params: Params) => {
 
   return ws;
 };
-
-connectGmo({ symbol: 'BTC' });

@@ -50,7 +50,7 @@ export const connectGmo = (params: Params) => {
 
   ws.on('error', (error) => {
     console.error('GMO WebSocket error:', error);
-    onError(error);
+    onError(error, 'GMO');
   });
 
   ws.on('close', (code, reason) => {

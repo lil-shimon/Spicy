@@ -68,7 +68,7 @@ export const connectGmo = (params: Params) => {
     pingInterval = undefined;
 
     if (interval) {
-      clearInterval(pingInterval);
+      clearInterval(interval);
     }
 
     onClose?.(message);

@@ -4,7 +4,7 @@ const END_POINT = 'wss://api.coin.z.com/ws/public/v1';
 const PING_MS = 1000 * 60;
 
 type Params = {
-  symbol: string;
+  symbol?: string;
   onUpdate?: (ask: number, bid: number) => void;
   onError?: (error: Error) => void;
   onClose?: (message: string) => void;

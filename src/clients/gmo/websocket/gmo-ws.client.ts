@@ -1,6 +1,7 @@
 import { WebSocket } from 'ws';
 
 const endpoint = 'wss://api.coin.z.com/ws/public/v1';
+const PING_MS = 1000 * 60;
 
 type Params = {
   symbol: string;
@@ -25,14 +26,12 @@ export const connectGmo = (params: Params) => {
     console.log('GMO WebSocket connected');
     ws.send(JSON.stringify(subscribeMessage));
 
-    const pingSecond = 1000 * 60;
-
     pingInterval = setInterval(() => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.ping();
         console.log('GMO WebSocket ping sent');
       }
-    }, pingSecond);
+    }, PING_MS);
   });
 
   ws.on('message', (data) => {

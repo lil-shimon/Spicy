@@ -6,10 +6,11 @@ type Params = {
   symbol: string;
   onUpdate?: (ask: number, bid: number) => void;
   onError?: (error: Error) => void;
+  onClose?: (message: string) => void;
 };
 
 export const connectGmo = (params: Params) => {
-  const { symbol = 'BTC', onUpdate, onError } = params;
+  const { symbol = 'BTC', onUpdate, onError, onClose } = params;
   const ws = new WebSocket(endpoint);
 
   ws.on('open', () => {
@@ -41,6 +42,12 @@ export const connectGmo = (params: Params) => {
   ws.on('error', (error) => {
     console.error('GMO WebSocket error:', error);
     onError?.(error);
+  });
+
+  ws.on('close', (code, reason) => {
+    const message = `GMO WebSocket closed: ${code} - ${reason.toString()}`;
+    console.error(message);
+    onClose?.(message);
   });
 
   return ws;

@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 
-const endpoint = 'wss://api.coin.z.com/ws/public/v1';
+const END_POINT = 'wss://api.coin.z.com/ws/public/v1';
 const PING_MS = 1000 * 60;
 
 type Params = {
@@ -12,7 +12,7 @@ type Params = {
 
 export const connectGmo = (params: Params) => {
   const { symbol = 'BTC', onUpdate, onError, onClose } = params;
-  const ws = new WebSocket(endpoint);
+  const ws = new WebSocket(END_POINT);
 
   let pingInterval: string | number | NodeJS.Timeout | undefined;
 

@@ -6,7 +6,7 @@ const PING_MS = 1000 * 60;
 type Params = {
   symbol?: string;
   onUpdate: (ask: number, bid: number) => void;
-  onError: (error: Error) => void;
+  onError: (error: Error, exchange?: string) => void;
   onClose: (message: string) => void;
 };
 
@@ -41,7 +41,7 @@ export const connectGmo = (params: Params) => {
         const { ask, bid } = message;
         console.log(`GMO ${symbol} - Ask: ${ask}, Bid: ${bid}`);
 
-        onUpdate?.(ask, bid);
+        onUpdate(ask, bid);
       }
     } catch (error) {
       console.error('Error parsing GMO WebSocket message:', error);
@@ -50,7 +50,7 @@ export const connectGmo = (params: Params) => {
 
   ws.on('error', (error) => {
     console.error('GMO WebSocket error:', error);
-    onError?.(error);
+    onError(error);
   });
 
   ws.on('close', (code, reason) => {
@@ -71,7 +71,7 @@ export const connectGmo = (params: Params) => {
       clearInterval(interval);
     }
 
-    onClose?.(message);
+    onClose(message);
   });
 
   return ws;

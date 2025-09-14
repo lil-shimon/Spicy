@@ -29,7 +29,6 @@ export const connectGmo = (params: Params) => {
     pingInterval = setInterval(() => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.ping();
-        console.log('GMO WebSocket ping sent');
       }
     }, PING_MS);
   });
@@ -58,9 +57,12 @@ export const connectGmo = (params: Params) => {
     const message = `GMO WebSocket closed: ${code} - ${reason.toString()}`;
     console.error(message);
 
-    if (pingInterval) {
+    // 先に無効化して二重 clear を防ぐ
+    const interval = pingInterval;
+    pingInterval = undefined;
+
+    if (interval) {
       clearInterval(pingInterval);
-      pingInterval = undefined;
     }
 
     onClose?.(message);

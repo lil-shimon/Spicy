@@ -24,22 +24,21 @@ export const connectGmo = (params: Params) => {
 
     console.log('GMO WebSocket connected');
     ws.send(JSON.stringify(subscribeMessage));
+
+    const pingSecond = 1000 * 60;
+
+    pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping();
+        console.log('GMO WebSocket ping sent');
+      }
+    }, pingSecond);
   });
 
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
       console.log('message', message);
-
-      const pingSecond = 1000 * 60;
-
-      pingInterval = setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.ping();
-          console.log('GMO WebSocket ping sent');
-        }
-      }, pingSecond);
-
       if (message.channel === 'ticker' && message.ask && message.bid) {
         const { ask, bid } = message;
         console.log(`GMO ${symbol} - Ask: ${ask}, Bid: ${bid}`);

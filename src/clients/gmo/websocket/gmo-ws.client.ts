@@ -57,7 +57,12 @@ export const connectGmo = (params: Params) => {
   ws.on('close', (code, reason) => {
     const message = `GMO WebSocket closed: ${code} - ${reason.toString()}`;
     console.error(message);
-    if (pingInterval) clearInterval(pingInterval);
+
+    if (pingInterval) {
+      clearInterval(pingInterval);
+      pingInterval = undefined;
+    }
+
     onClose?.(message);
   });
 

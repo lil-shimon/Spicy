@@ -4,10 +4,11 @@ const endpoint = 'wss://api.coin.z.com/ws/public/v1';
 
 type Params = {
   symbol: string;
+  onUpdate?: (ask: number, bid: number) => void;
 };
 
 export const connectGmo = (params: Params) => {
-  const { symbol = 'BTC' } = params;
+  const { symbol = 'BTC', onUpdate } = params;
   const ws = new WebSocket(endpoint);
 
   ws.on('open', () => {
@@ -29,7 +30,7 @@ export const connectGmo = (params: Params) => {
         const { ask, bid } = message;
         console.log(`GMO ${symbol} - Ask: ${ask}, Bid: ${bid}`);
 
-        return { ask, bid };
+        onUpdate?.(ask, bid);
       }
     } catch (error) {
       console.error('Error parsing GMO WebSocket message:', error);

@@ -54,7 +54,13 @@ export const connectGmo = (params: Params) => {
   });
 
   ws.on('close', (code, reason) => {
-    const message = `GMO WebSocket closed: ${code} - ${reason.toString()}`;
+    const reasonText =
+      typeof reason === 'string'
+        ? reason
+        : Buffer.isBuffer(reason)
+          ? reason.toString()
+          : '';
+    const message = `GMO WebSocket closed: ${code} - ${reasonText}`;
     console.error(message);
 
     // 先に無効化して二重 clear を防ぐ

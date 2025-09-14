@@ -5,9 +5,9 @@ const PING_MS = 1000 * 60;
 
 type Params = {
   symbol?: string;
-  onUpdate?: (ask: number, bid: number) => void;
-  onError?: (error: Error) => void;
-  onClose?: (message: string) => void;
+  onUpdate: (ask: number, bid: number) => void;
+  onError: (error: Error) => void;
+  onClose: (message: string) => void;
 };
 
 export const connectGmo = (params: Params) => {

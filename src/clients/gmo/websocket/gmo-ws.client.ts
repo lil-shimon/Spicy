@@ -13,6 +13,8 @@ export const connectGmo = (params: Params) => {
   const { symbol = 'BTC', onUpdate, onError, onClose } = params;
   const ws = new WebSocket(endpoint);
 
+  let pingInterval: string | number | NodeJS.Timeout | undefined;
+
   ws.on('open', () => {
     const subscribeMessage = {
       command: 'subscribe',
@@ -27,6 +29,16 @@ export const connectGmo = (params: Params) => {
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
+      console.log('message', message);
+
+      const pingSecond = 1000 * 60;
+
+      pingInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.ping();
+          console.log('GMO WebSocket ping sent');
+        }
+      }, pingSecond);
 
       if (message.channel === 'ticker' && message.ask && message.bid) {
         const { ask, bid } = message;
@@ -47,6 +59,7 @@ export const connectGmo = (params: Params) => {
   ws.on('close', (code, reason) => {
     const message = `GMO WebSocket closed: ${code} - ${reason.toString()}`;
     console.error(message);
+    if (pingInterval) clearInterval(pingInterval);
     onClose?.(message);
   });
 

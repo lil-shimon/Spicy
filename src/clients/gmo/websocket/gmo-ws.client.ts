@@ -24,9 +24,8 @@ export const connectGmo = (params: Params) => {
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
-      console.log('data', message);
-      if (message.channel === 'ticker' && message.data) {
-        const { ask, bid } = message.data;
+      if (message.channel === 'ticker' && message.ask && message.bid) {
+        const { ask, bid } = message;
         console.log(`GMO ${symbol} - Ask: ${ask}, Bid: ${bid}`);
       }
     } catch (error) {

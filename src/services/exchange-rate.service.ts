@@ -1,6 +1,13 @@
 import { fetchExchangeRate } from '../clients/gmo';
+import { PriceRepository } from './../repositories/price.repository';
 
-export const ExchangeRateService = () => {
+type ExchangeRateServiceParams = {
+  priceRepository: ReturnType<typeof PriceRepository>;
+};
+
+export const ExchangeRateService = ({
+  priceRepository,
+}: ExchangeRateServiceParams) => {
   const _update = async () => {
     // 為替レートを取得して内部状態を更新するロジックをここに実装
     try {

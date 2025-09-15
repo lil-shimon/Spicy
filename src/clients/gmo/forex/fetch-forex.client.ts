@@ -13,7 +13,9 @@ type Params = {
   symbol?: string;
 };
 
-export const fetchForex = async (params: Params): Promise<PriceInfo | null> => {
+export const fetchExchangeRate = async (
+  params: Params
+): Promise<PriceInfo | null> => {
   const { symbol = 'USD_JPY' } = params;
 
   try {

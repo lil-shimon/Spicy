@@ -13,7 +13,15 @@ export const ExchangeRateService = (params: ExchangeRateServiceParams) => {
     try {
       const symbol = 'USD_JPY';
       const response = await fetchExchangeRate({ symbol });
-      console.log('為替レート:', response);
+
+      if (response?.ask !== undefined && response?.bid !== undefined) {
+        priceRepository.updatePrice(
+          symbol,
+          'gmo',
+          Number(response?.bid),
+          Number(response?.ask)
+        );
+      }
     } catch (error) {
       console.error('為替レートの更新中にエラーが発生しました:', error);
     }

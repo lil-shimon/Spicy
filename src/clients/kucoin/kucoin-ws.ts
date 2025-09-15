@@ -129,7 +129,12 @@ export const connectKucoin = async ({
   });
 
   ws.on('close', (code, reason) => {
-    const reasonText = reason ? reason.toString() : 'No reason provided';
+    const reasonText =
+      typeof reason === 'string'
+        ? reason
+        : Buffer.isBuffer(reason)
+          ? reason.toString()
+          : '';
     const message = `Kucoin WebSocket closed: ${code} ${reasonText}`;
     onClose(message);
   });

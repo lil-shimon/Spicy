@@ -9,7 +9,7 @@ const arbitrageService = ArbitrageService({
   priceRepository,
 });
 const priceService = PriceService({ priceRepository, arbitrageService });
-const exchangeRateService = ExchangeRateService();
+const exchangeRateService = ExchangeRateService({ priceRepository });
 
 export const ArbitrageController = () => {
   const start = ({ pairs }: { pairs?: string[] }) => {

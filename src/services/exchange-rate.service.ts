@@ -5,9 +5,9 @@ type ExchangeRateServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
 };
 
-export const ExchangeRateService = ({
-  priceRepository,
-}: ExchangeRateServiceParams) => {
+export const ExchangeRateService = (params: ExchangeRateServiceParams) => {
+  const { priceRepository } = params;
+
   const _update = async () => {
     // 為替レートを取得して内部状態を更新するロジックをここに実装
     try {

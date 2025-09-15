@@ -4,6 +4,7 @@ import { ArbitrageService } from './arbitrage.service';
 import { postMessage } from '../clients';
 import { ALL_PAIRS, TRIANGLES } from '../domain/triangle/constant';
 
+import { connectGmo } from '../clients/gmo/websocket/gmo-ws.client';
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
   arbitrageService: ReturnType<typeof ArbitrageService>;
@@ -80,5 +81,75 @@ export const PriceService = (params: PriceServiceParams) => {
     await Promise.all(promises);
   };
 
-  return { start, _handleUpdate, _handleClose, _handleError } as const;
+  /**
+   * 為替アービトラージのための価格監視を開始します
+   * KuCoinとGMOの両方のWebSocketを接続して、BTC価格を監視します
+   *
+   * @param params.kucoinSymbol - KuCoinで監視するシンボル (デフォルト: 'BTC-USDT')
+   * @param params.gmoSymbol - GMOで監視するシンボル (デフォルト: 'BTC')
+   */
+  const exchangeRateArbitrageStart = async ({
+    kucoinSymbol = 'BTC-USDT',
+    gmoSymbol = 'BTC',
+  }: {
+    kucoinSymbol?: string;
+    gmoSymbol?: string;
+  } = {}) => {
+    const promises = [];
+
+    // KuCoin WebSocket接続
+    promises.push(
+      connectKucoin({
+        pair: kucoinSymbol,
+        onUpdate: (bid, ask) => {
+          _handleUpdate({
+            symbol: kucoinSymbol,
+            exchange: 'kucoin',
+            bid,
+            ask,
+          });
+        },
+        onError: (error) => {
+          _handleError(`KuCoin: ${error.message}`);
+        },
+        onClose: (message) => {
+          _handleClose(`KuCoin: ${message}`);
+        },
+      })
+    );
+
+    // GMO WebSocket接続
+    promises.push(
+      new Promise<void>((resolve) => {
+        connectGmo({
+          symbol: gmoSymbol,
+          onUpdate: (ask, bid) => {
+            _handleUpdate({
+              symbol: `${gmoSymbol}_JPY`,
+              exchange: 'gmo',
+              bid,
+              ask,
+            });
+          },
+          onError: (error) => {
+            _handleError(`GMO: ${error.message}`);
+          },
+          onClose: (message) => {
+            _handleClose(`GMO: ${message}`);
+            resolve();
+          },
+        });
+      })
+    );
+
+    await Promise.all(promises);
+  };
+
+  return {
+    start,
+    exchangeRateArbitrageStart,
+    _handleUpdate,
+    _handleClose,
+    _handleError,
+  } as const;
 };

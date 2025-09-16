@@ -103,6 +103,7 @@ export const PriceService = (params: PriceServiceParams) => {
         pair: kucoinSymbol,
         onUpdate: (bid, ask) => {
           // TODO: 今はトライアングルアービトラージのロジックを流用しているが、専用のロジックを作成する
+          // そのためにtIndex以下のロジックを分離する
           _handleUpdate({
             symbol: kucoinSymbol,
             exchange: 'kucoin',

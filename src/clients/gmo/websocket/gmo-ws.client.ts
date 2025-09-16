@@ -10,7 +10,7 @@ type Params = {
   onClose: (message: string) => void;
 };
 
-export const connectGmo = (params: Params) => {
+export const connectGmo = async (params: Params): Promise<WebSocket> => {
   const { symbol = 'BTC', onUpdate, onError, onClose } = params;
   const ws = new WebSocket(END_POINT);
 

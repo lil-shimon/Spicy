@@ -18,6 +18,7 @@ export const ArbitrageController = () => {
 
   const exchangeRateArbitrageStart = () => {
     exchangeRateService.start();
+    priceService.exchangeRateArbitrageStart({});
   };
 
   return { start, exchangeRateArbitrageStart } as const;

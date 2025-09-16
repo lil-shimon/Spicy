@@ -102,6 +102,7 @@ export const PriceService = (params: PriceServiceParams) => {
       connectKucoin({
         pair: kucoinSymbol,
         onUpdate: (bid, ask) => {
+          // TODO: 今はトライアングルアービトラージのロジックを流用しているが、専用のロジックを作成する
           _handleUpdate({
             symbol: kucoinSymbol,
             exchange: 'kucoin',

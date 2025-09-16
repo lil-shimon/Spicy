@@ -29,6 +29,19 @@ export const ExchangeRateArbitrageService = (
     console.log('為替アービトラージチェック - 追加実装予定');
   };
 
+  const checkExchangeRateArbitrage = (params: {
+    symbol: string;
+    exchange: string;
+  }): { ok: boolean } => {
+    // TODO: 為替アービトラージのチェックロジックを実装
+    // 現在はプレースホルダーとして常にfalseを返す
+    console.log(
+      `為替アービトラージチェック: ${params.symbol} on ${params.exchange}`
+    );
+
+    return { ok: false };
+  };
+
   const start = () => {
     // TODO: 為替アービトラージ監視の開始処理を実装
     // 注: 為替レートの更新はexchange-rate.serviceの_updateをcontrollerから呼び出す
@@ -39,5 +52,6 @@ export const ExchangeRateArbitrageService = (
   return {
     start,
     checkArbitrage,
+    checkExchangeRateArbitrage,
   } as const;
 };

@@ -120,25 +120,22 @@ export const PriceService = (params: PriceServiceParams) => {
 
     // GMO WebSocket接続
     promises.push(
-      new Promise<void>((resolve) => {
-        connectGmo({
-          symbol: gmoSymbol,
-          onUpdate: (ask, bid) => {
-            _handleUpdate({
-              symbol: `${gmoSymbol}_JPY`,
-              exchange: 'gmo',
-              bid,
-              ask,
-            });
-          },
-          onError: (error) => {
-            _handleError(`GMO: ${error.message}`);
-          },
-          onClose: (message) => {
-            _handleClose(`GMO: ${message}`);
-            resolve();
-          },
-        });
+      connectGmo({
+        symbol: gmoSymbol,
+        onUpdate: (ask, bid) => {
+          _handleUpdate({
+            symbol: `${gmoSymbol}_JPY`,
+            exchange: 'gmo',
+            bid,
+            ask,
+          });
+        },
+        onError: (error) => {
+          _handleError(`GMO: ${error.message}`);
+        },
+        onClose: (message) => {
+          _handleClose(`GMO: ${message}`);
+        },
       })
     );
 

@@ -5,13 +5,17 @@ import { postMessage } from '../clients';
 import { ALL_PAIRS, TRIANGLES } from '../domain/triangle/constant';
 
 import { connectGmo } from '../clients/gmo/websocket/gmo-ws.client';
+import { ExchangeRateArbitrageService } from './exchange-rate-arbitrage.service';
+
 type PriceServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
   arbitrageService: ReturnType<typeof ArbitrageService>;
+  exchangeRateArbitrageService: ReturnType<typeof ExchangeRateArbitrageService>;
 };
 
 export const PriceService = (params: PriceServiceParams) => {
-  const { priceRepository, arbitrageService } = params;
+  const { priceRepository, arbitrageService, exchangeRateArbitrageService } =
+    params;
 
   // pair -> 影響を受ける triangle index の逆引き
   const index = new Map<string, number[]>();
@@ -49,6 +53,32 @@ export const PriceService = (params: PriceServiceParams) => {
         postMessage(message);
       }
     }
+    return true;
+  };
+
+  /**
+   * 為替アービトラージ用の価格更新処理
+   * 価格更新とアービトラージ機会のチェックを行います
+   */
+  const _handleExchangeRateArbitrageUpdate = (params: HandleUpdateParams) => {
+    const { symbol, exchange, ask, bid } = params;
+
+    // 価格を更新
+    const hasChanged = priceRepository.updatePrice(symbol, exchange, bid, ask);
+
+    if (!hasChanged) return false;
+
+    // 為替アービトラージのチェック
+    const response = exchangeRateArbitrageService.checkExchangeRateArbitrage({
+      symbol,
+      exchange,
+    });
+
+    if (response.ok) {
+      const message = `為替アービトラージのチャンスがありました: ${JSON.stringify(response)} ${symbol} on ${exchange}`;
+      postMessage(message);
+    }
+
     return true;
   };
 
@@ -102,9 +132,7 @@ export const PriceService = (params: PriceServiceParams) => {
       connectKucoin({
         pair: kucoinSymbol,
         onUpdate: (bid, ask) => {
-          // TODO: 今はトライアングルアービトラージのロジックを流用しているが、専用のロジックを作成する
-          // そのためにtIndex以下のロジックを分離する
-          _handleUpdate({
+          _handleExchangeRateArbitrageUpdate({
             symbol: kucoinSymbol,
             exchange: 'kucoin',
             bid,
@@ -125,7 +153,7 @@ export const PriceService = (params: PriceServiceParams) => {
       connectGmo({
         symbol: gmoSymbol,
         onUpdate: (ask, bid) => {
-          _handleUpdate({
+          _handleExchangeRateArbitrageUpdate({
             symbol: `${gmoSymbol}_JPY`,
             exchange: 'gmo',
             bid,

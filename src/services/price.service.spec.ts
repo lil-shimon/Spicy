@@ -1,6 +1,7 @@
 import { PriceRepository } from '../repositories/price.repository';
 import { describe, vi, it, expect, beforeEach } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
+import { ExchangeRateArbitrageService } from './exchange-rate-arbitrage.service';
 import { PriceService } from './price.service';
 
 vi.mock('../clients', async () => ({
@@ -10,6 +11,9 @@ vi.mock('../clients', async () => ({
 describe('PriceService', () => {
   let mockPriceRepository: ReturnType<typeof PriceRepository>;
   let mockArbitrageService: ReturnType<typeof ArbitrageService>;
+  let mockExchangeRateArbitrageService: ReturnType<
+    typeof ExchangeRateArbitrageService
+  >;
   let mockPriceService: ReturnType<typeof PriceService>;
 
   beforeEach(() => {
@@ -24,9 +28,16 @@ describe('PriceService', () => {
       checkTriangleArbitrage: vi.fn(),
     };
 
+    mockExchangeRateArbitrageService = {
+      start: vi.fn(),
+      checkArbitrage: vi.fn(),
+      checkExchangeRateArbitrage: vi.fn(),
+    };
+
     mockPriceService = PriceService({
       priceRepository: mockPriceRepository,
       arbitrageService: mockArbitrageService,
+      exchangeRateArbitrageService: mockExchangeRateArbitrageService,
     });
   });
 

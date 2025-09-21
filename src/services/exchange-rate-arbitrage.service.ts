@@ -5,6 +5,8 @@ type ExchangeRateArbitrageServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;
 };
 
+const USD_JPY = 'USD_JPY';
+
 export const ExchangeRateArbitrageService = (
   params: ExchangeRateArbitrageServiceParams
 ) => {
@@ -13,7 +15,7 @@ export const ExchangeRateArbitrageService = (
   const checkArbitrage = async () => {
     try {
       // 1. priceRepositoryから為替レート（USD/JPY）を取得
-      const exchangeRate = priceRepository.getPrice('USD_JPY', 'gmo');
+      const exchangeRate = priceRepository.getPrice(USD_JPY, 'gmo');
 
       if (!exchangeRate) {
         const errorMsg = 'USD_JPY為替レートが取得できません';

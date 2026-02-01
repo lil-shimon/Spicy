@@ -154,8 +154,8 @@ export const connectKucoin = async ({
  * L2は、オーダーブックの深さ（複数の価格レベル）を取得するために実装。
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
-export const connectKucoinWSL2 = async () => {
-  const topic = createL2Topic('BTC-USDT');
+export const connectKucoinWSL2 = async (pair: string) => {
+  const topic = createL2Topic(pair);
   const message = {
     type: 'subscribe',
     topic,

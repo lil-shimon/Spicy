@@ -5,11 +5,11 @@ type MMApp = {
   stop: () => Promise<void>;
 };
 
-// const PAIR = 'BTC-USDT';
+const PAIR = 'BTC-USDT';
 
 export const createMMApp = (): MMApp => {
   const start = async () => {
-    connectKucoinWSL2();
+    connectKucoinWSL2(PAIR);
   };
 
   const stop = async () => {

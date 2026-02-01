@@ -142,6 +142,9 @@ export const connectKucoin = async ({
   return ws;
 };
 
+/**
+ * Kucoinのスポット取引用トークンを取得
+ */
 const getSpotToken = async () => {
   const tokenEndpoint = 'https://api.kucoin.com/api/v1/bullet-public';
 
@@ -168,6 +171,10 @@ const getSpotToken = async () => {
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async () => {
-  const token = await getSpotToken();
-  console.log('Kucoin Spot Token:', token);
+  try {
+    const token = await getSpotToken();
+    console.log('Kucoin Spot Token:', token);
+  } catch (error) {
+    console.error('Error fetching Kucoin spot token:', error);
+  }
 };

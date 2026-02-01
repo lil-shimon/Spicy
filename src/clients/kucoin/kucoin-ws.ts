@@ -196,9 +196,10 @@ export const connectKucoinWSL2 = async (params: L2Params) => {
 
     if (!onUpdate) {
       console.warn('onUpdate callback is not provided.');
+      return;
     }
 
-    if (responseData && onUpdate) {
+    if (responseData) {
       onUpdate(responseData as OrderBookIncrement);
     }
   });

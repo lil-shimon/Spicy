@@ -62,6 +62,8 @@ export const connectKucoin = async ({
       ? 'https://api-futures.kucoin.com/api/v1/bullet-public'
       : 'https://api.kucoin.com/api/v1/bullet-public';
 
+  // TODO: トークン取得を`getSpotToken`を使うようにする。
+  // 今しない理由：このメソッドを直近で使わないので、移行した時の動作確認ができないため。
   const response = await fetch(tokenEndpoint, {
     method: 'POST',
     headers: {

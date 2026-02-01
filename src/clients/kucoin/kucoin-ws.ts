@@ -155,4 +155,26 @@ export const connectKucoin = async ({
 export const connectKucoinWSL2 = async () => {
   const token = await getSpotToken();
   console.log('Kucoin Spot Token:', token);
+
+  const topic = '/market/level2:BTC-USDT';
+
+  const message = {
+    id: token,
+    type: 'subscribe',
+    topic,
+    response: true,
+  };
+
+  const wsEndpoint = `wss://ws-api-spot.kucoin.com?token=${token}`;
+  const ws = new WebSocket(wsEndpoint);
+
+  ws.on('open', () => {
+    ws.send(JSON.stringify(message));
+    console.log('Kucoin L2 WebSocket connected and subscription message sent.');
+  });
+
+  ws.on('message', (data) => {
+    const message = JSON.parse(data.toString());
+    console.log('Kucoin L2 Message:', message);
+  });
 };

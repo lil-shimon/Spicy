@@ -1,9 +1,14 @@
-const createMMApp = () => {
+type MMApp = {
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+};
+
+const createMMApp = (): MMApp => {
   const start = async () => {
     console.log('MM Bot - Not implemented yet');
   };
 
-  const stop = () => {
+  const stop = async () => {
     console.log('MM Bot - Not implemented yet');
   };
 

@@ -1,37 +1,15 @@
-import { connectKucoin } from '../../clients/kucoin/kucoin-ws';
+import { connectKucoinWSL2 } from '../../clients/kucoin/kucoin-ws';
 
 type MMApp = {
   start: () => Promise<void>;
   stop: () => Promise<void>;
 };
 
-const PAIR = 'BTC-USDT';
-
-const connectKucoinWS = () => {
-  connectKucoin({
-    pair: PAIR,
-    marketType: 'spot',
-    onUpdate: handleUpdate,
-    onError: handleError,
-    onClose: handleClose,
-  });
-};
-
-const handleUpdate = (bestBid: number, bestAsk: number) => {
-  console.log('update', bestBid, bestAsk);
-};
-
-const handleError = (error: Error) => {
-  console.error(error);
-};
-
-const handleClose = (message: string) => {
-  console.log('close message', message);
-};
+// const PAIR = 'BTC-USDT';
 
 export const createMMApp = (): MMApp => {
   const start = async () => {
-    connectKucoinWS();
+    connectKucoinWSL2();
   };
 
   const stop = async () => {

@@ -147,8 +147,20 @@ export const connectKucoin = async ({
   return ws;
 };
 
+type L2UpdateData = {
+  changes: {
+    asks: [string, string][];
+    bids: [string, string][];
+  };
+  sequenceEnd: number;
+  sequenceStart: number;
+  symbol: string;
+  time: number;
+};
+
 type L2Params = {
   pair: string;
+  handleUpdate?: (data: L2UpdateData) => void;
 };
 
 /**

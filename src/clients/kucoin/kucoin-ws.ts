@@ -178,6 +178,19 @@ export const connectKucoinWSL2 = async (params: L2Params) => {
 
   ws.on('message', (data) => {
     const message = JSON.parse(data.toString());
+    // NOTE: 受信したL2メッセージの例
+    // Kucoin L2 Message: {
+    //   topic: '/market/level2:BTC-USDT',
+    //   type: 'message',
+    //   subject: 'trade.l2update',
+    //   data: {
+    //     changes: { asks: [], bids: [Array] },
+    //     sequenceEnd: 28536410238,
+    //     sequenceStart: 28536410238,
+    //     symbol: 'BTC-USDT',
+    //     time: 1769939550666
+    //   }
+    // }
     console.log('Kucoin L2 Message:', message);
   });
 };

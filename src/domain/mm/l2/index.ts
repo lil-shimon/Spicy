@@ -1,3 +1,4 @@
+// see https://www.kucoin.com/docs-new/3470068w0
 export type OrderBookIncrement = {
   changes: {
     asks: string[][];

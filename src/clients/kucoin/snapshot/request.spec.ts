@@ -1,7 +1,11 @@
-import { describe, it, vi, expect } from 'vitest';
+import { describe, it, vi, expect, beforeEach } from 'vitest';
 import { fetchSnapshot } from './request';
 
 describe('request', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('取得されたデータが正しいこと', async () => {
     const data = {
       code: '200000',
@@ -42,6 +46,7 @@ describe('request', () => {
       }
     );
   });
+
   it('fetchが失敗した場合、エラーがスローされること', async () => {
     vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
 

@@ -1,10 +1,10 @@
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { ArbitrageService } from './arbitrage.service';
 import { PriceRepository } from '../repositories/price.repository';
-import { calcTriangleArbitrage } from '../domain/triangle/calc-triangle-arbitrage';
-import type { Result } from '../domain/triangle/types';
+import { calcTriangleArbitrage } from '../../../domain/triangle/calc-triangle-arbitrage';
+import type { Result } from '../../../domain/triangle/types';
 
-vi.mock('../domain/triangle/calc-triangle-arbitrage', async () => ({
+vi.mock('../../../domain/triangle/calc-triangle-arbitrage', async () => ({
   calcTriangleArbitrage: vi.fn(),
 }));
 

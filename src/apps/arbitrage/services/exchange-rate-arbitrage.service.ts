@@ -1,5 +1,5 @@
 import { PriceRepository } from '../repositories/price.repository';
-import { postMessage } from '../clients';
+import { postMessage } from '../../../clients';
 
 type ExchangeRateArbitrageServiceParams = {
   priceRepository: ReturnType<typeof PriceRepository>;

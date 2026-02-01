@@ -1,4 +1,4 @@
-import { kucoinFuturesClient } from './clients/kucoin/kucoin-client';
+import { kucoinFuturesClient } from '../../clients/kucoin/kucoin-client';
 
 const startDemo = async () => {
   // await startDirtyWork('SOL/USDT', 0.001)

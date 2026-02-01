@@ -1,4 +1,4 @@
-import { fetchExchangeRate } from '../clients/gmo';
+import { fetchExchangeRate } from '../../../clients/gmo';
 import { PriceRepository } from './../repositories/price.repository';
 
 type ExchangeRateServiceParams = {

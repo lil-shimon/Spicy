@@ -1,5 +1,6 @@
 import WebSocket from 'ws';
 import { getSpotToken } from './kucoin/token';
+import { getSpotEndpoint } from './kucoin/endpoint';
 
 type Props = {
   pair: string;
@@ -153,16 +154,14 @@ export const connectKucoin = async ({
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async () => {
-  const token = await getSpotToken();
   const topic = '/market/level2:BTC-USDT';
-
   const message = {
     type: 'subscribe',
     topic,
     response: true,
   };
 
-  const wsEndpoint = `wss://ws-api-spot.kucoin.com?token=${token}`;
+  const wsEndpoint = await getSpotEndpoint();
   const ws = new WebSocket(wsEndpoint);
 
   ws.on('open', () => {

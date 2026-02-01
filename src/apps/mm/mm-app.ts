@@ -1,4 +1,5 @@
 import { connectKucoinWSL2 } from '../../clients/kucoin/kucoin-ws';
+import { fetchSnapshot } from '../../clients/kucoin/snapshot/request';
 import { handleL2Update } from '../../domain/mm/l2';
 
 type MMApp = {
@@ -10,6 +11,7 @@ const PAIR = 'BTC-USDT';
 
 export const createMMApp = (): MMApp => {
   const start = async () => {
+    await fetchSnapshot({ pair: PAIR });
     connectKucoinWSL2({ pair: PAIR, onUpdate: handleL2Update });
   };
 

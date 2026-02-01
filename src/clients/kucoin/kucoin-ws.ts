@@ -141,3 +141,14 @@ export const connectKucoin = async ({
 
   return ws;
 };
+
+/**
+ * このL2関数を作った背景
+ *
+ * 既存の`connectKucoin`関数は、ベストビッドとベストアスクの価格情報のみ
+ * L2は、オーダーブックの深さ（複数の価格レベル）を取得するために実装。
+ * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
+ */
+export const connectKucoinWSL2 = async () => {
+  console.log('Not implemented yet');
+};

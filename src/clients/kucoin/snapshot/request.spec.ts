@@ -42,4 +42,11 @@ describe('request', () => {
       }
     );
   });
+  it('fetchが失敗した場合、エラーがスローされること', async () => {
+    vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+
+    await expect(fetchSnapshot({ pair: 'BTC-USDT' })).rejects.toThrow(
+      'Failed to fetch Kucoin snapshot: Error: Network error'
+    );
+  });
 });

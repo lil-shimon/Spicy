@@ -20,4 +20,26 @@ describe('request', () => {
       })
     );
   });
+
+  it('fetchが正しいURLとオプションで呼び出されること', async () => {
+    const data = {
+      code: '200000',
+    };
+
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      json: async () => ({
+        data,
+      }),
+    } as Response);
+
+    await fetchSnapshot({ pair: 'BTC-USDT' });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT',
+      {
+        method: 'GET',
+        redirect: 'follow',
+      }
+    );
+  });
 });

@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import { getSpotToken } from './spot/token';
 import { getSpotEndpoint } from './spot/endpoint';
+import { createL2Topic } from './spot/topic';
 
 type Props = {
   pair: string;
@@ -154,7 +155,7 @@ export const connectKucoin = async ({
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async () => {
-  const topic = '/market/level2:BTC-USDT';
+  const topic = createL2Topic('BTC-USDT');
   const message = {
     type: 'subscribe',
     topic,

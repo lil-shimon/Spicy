@@ -171,10 +171,6 @@ const getSpotToken = async () => {
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async () => {
-  try {
-    const token = await getSpotToken();
-    console.log('Kucoin Spot Token:', token);
-  } catch (error) {
-    console.error('Error fetching Kucoin spot token:', error);
-  }
+  const token = await getSpotToken();
+  console.log('Kucoin Spot Token:', token);
 };

@@ -5,6 +5,7 @@
   "scripts": {
     "test": "vitest",
     "dev": "tsx src/apps/arbitrage/index.ts",
+    "dev:mm": "tsx src/apps/mm/index.ts",
     "api": "tsx src/apps/arbitrage/server.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

@@ -9,7 +9,7 @@ const PAIR = 'BTC-USDT';
 
 export const createMMApp = (): MMApp => {
   const start = async () => {
-    connectKucoinWSL2(PAIR);
+    connectKucoinWSL2({ pair: PAIR });
   };
 
   const stop = async () => {

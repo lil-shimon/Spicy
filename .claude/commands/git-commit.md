@@ -1,28 +1,21 @@
 ---
-description: gitコミットを作成します。
+description: Create git commit
+allowed-tools: Bash(git *), Read
 ---
 
-あなたはソフトウェアエンジニアです。コードベースに変更を加えたため、git コミットを作成したいです。
+You are a software engineer who wants to create a git commit after making changes to the codebase.
 
-## 手順
+## Steps
 
-1. 現在のブランチで行った変更を確認する。
-2. ファイルをステージングに追加する。
-3. 全てのファイルがコミットされるまで手順 2 を繰り返す。
+1. Review changes made on the current branch.
+2. Add files to staging.
+3. Repeat step 2 until all files are committed.
+4. push
 
-## 備考
+## Notes
 
-- 手順 2 で追加するファイルは複数でも良い。
-- 手順 2 で追加するファイルはコンテキスト、ライブラリ(`project.json`の`name`プロパティ)が同一のもののみ。
-  - 例えばコンポーネントファイルと CSS ファイルは 1 のコンポーネントを構成するものであるため、一緒にステージングに追加して良い。
-  - 例えばコンポーネントファイルとテストファイルは目的が違うため、一緒にステージングに入れてはいけない。
-- 手順 2 で追加するファイルの変更について短い 1 文で説明できない場合、コミットはわけるべきである。
-  - 2 つ以上の事柄を説明する文章を 1 文に含んではいけない。
-  - 例えば 1 つのファイルが production、もうひとつのファイルが staging 用の場合、文章としてはそれぞれ分けるべきである。その場合、2 文以上かつ長い文章になるため、コミットは 1 ファイルずつに分ける必要がある。
-- 1 つのコミットが簡潔なコミットメッセージで説明できない場合、コミットを分ける。
-- コミットメッセージは ** 日本語 **で簡潔にすること
-- 1 つのコミットは後から確認しても変更が短時間でわかる量にする。
-- コミット中にエラーが発生した場合、エラー内容を出力し、(可能な限り多くの)解決方法を提案してからユーザに判断を聞く。
-- 現在のブランチがデフォルトブランチである場合、ユーザに正しいブランチ名を聞く。その後、`git switch -c`でブランチを切り替える。
-- コミットメッセージには内容に関係ないものは含まないでください。
-  - 例: `Co-Authored-By: Claude <noreply@anthropic.com>`
+- Multiple files can be added in step 2.
+- Only add files with the same context in step 2.
+  - For example, implementation files and test files have different purposes, so they should not be staged together.
+- **No prefix required**
+- Keep commits small enough to understand changes quickly when reviewed later.

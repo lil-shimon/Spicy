@@ -1,10 +1,10 @@
-import { connectKucoin } from '../clients/kucoin/kucoin-ws';
+import { connectKucoin } from '../../../clients/kucoin/kucoin-ws';
 import { PriceRepository } from '../repositories/price.repository';
 import { ArbitrageService } from './arbitrage.service';
-import { postMessage } from '../clients';
-import { ALL_PAIRS, TRIANGLES } from '../domain/triangle/constant';
+import { postMessage } from '../../../clients';
+import { ALL_PAIRS, TRIANGLES } from '../../../domain/triangle/constant';
 
-import { connectGmo } from '../clients/gmo/websocket/gmo-ws.client';
+import { connectGmo } from '../../../clients/gmo/websocket/gmo-ws.client';
 import { ExchangeRateArbitrageService } from './exchange-rate-arbitrage.service';
 
 type PriceServiceParams = {

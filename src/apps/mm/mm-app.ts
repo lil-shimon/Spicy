@@ -19,5 +19,5 @@ export const createMMApp = (): MMApp => {
   return {
     start,
     stop,
-  };
+  } as const;
 };

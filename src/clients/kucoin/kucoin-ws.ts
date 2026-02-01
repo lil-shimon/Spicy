@@ -142,6 +142,24 @@ export const connectKucoin = async ({
   return ws;
 };
 
+const getSpotToken = async () => {
+  const tokenEndpoint = 'https://api.kucoin.com/api/v1/bullet-public';
+
+  try {
+    const response = await fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    return data.data.token;
+  } catch (error) {
+    throw new Error(`Failed to fetch Kucoin spot token: ${error}`);
+  }
+};
+
 /**
  * このL2関数を作った背景
  *
@@ -150,5 +168,6 @@ export const connectKucoin = async ({
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async () => {
-  console.log('Not implemented yet');
+  const token = await getSpotToken();
+  console.log('Kucoin Spot Token:', token);
 };

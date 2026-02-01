@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
-import { getSpotToken } from './spot/token';
 import { getSpotEndpoint } from './spot/endpoint';
 import { createL2Topic } from './spot/topic';
+import { OrderBookIncrement } from '../../domain/mm/l2';
 
 type Props = {
   pair: string;
@@ -147,20 +147,9 @@ export const connectKucoin = async ({
   return ws;
 };
 
-type L2UpdateData = {
-  changes: {
-    asks: [string, string][];
-    bids: [string, string][];
-  };
-  sequenceEnd: number;
-  sequenceStart: number;
-  symbol: string;
-  time: number;
-};
-
 type L2Params = {
   pair: string;
-  handleUpdate?: (data: L2UpdateData) => void;
+  onUpdate?: (data: OrderBookIncrement) => void;
 };
 
 /**
@@ -171,7 +160,7 @@ type L2Params = {
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async (params: L2Params) => {
-  const { pair } = params;
+  const { pair, onUpdate } = params;
 
   const topic = createL2Topic(pair);
   const message = {
@@ -204,6 +193,13 @@ export const connectKucoinWSL2 = async (params: L2Params) => {
     //   }
     // }
     const responseData = message.data;
-    console.log('Kucoin L2 Response Data:', responseData);
+
+    if (!onUpdate) {
+      console.warn('onUpdate callback is not provided.');
+    }
+
+    if (responseData && onUpdate) {
+      onUpdate(responseData as OrderBookIncrement);
+    }
   });
 };

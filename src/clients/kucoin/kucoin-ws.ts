@@ -157,7 +157,6 @@ export const connectKucoinWSL2 = async () => {
   const topic = '/market/level2:BTC-USDT';
 
   const message = {
-    id: token,
     type: 'subscribe',
     topic,
     response: true,

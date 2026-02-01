@@ -191,6 +191,7 @@ export const connectKucoinWSL2 = async (params: L2Params) => {
     //     time: 1769939550666
     //   }
     // }
-    console.log('Kucoin L2 Message:', message);
+    const responseData = message.data;
+    console.log('Kucoin L2 Response Data:', responseData);
   });
 };

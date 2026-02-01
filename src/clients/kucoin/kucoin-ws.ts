@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
-import { getSpotToken } from './kucoin/token';
-import { getSpotEndpoint } from './kucoin/endpoint';
+import { getSpotToken } from './spot/token';
+import { getSpotEndpoint } from './spot/endpoint';
 
 type Props = {
   pair: string;

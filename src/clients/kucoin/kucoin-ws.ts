@@ -154,8 +154,6 @@ export const connectKucoin = async ({
  */
 export const connectKucoinWSL2 = async () => {
   const token = await getSpotToken();
-  console.log('Kucoin Spot Token:', token);
-
   const topic = '/market/level2:BTC-USDT';
 
   const message = {

@@ -44,7 +44,7 @@ export const initFromSnapshot = async (
     bids.set(Number(price), Number(size));
   });
 
-  const lastSequence = response.data.sequence;
+  const lastSequence = Number(response.data.sequence);
 
   return {
     asks,

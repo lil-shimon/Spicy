@@ -35,9 +35,18 @@ export const initFromSnapshot = async (
   const snapshotAsks: string[][] = response.data.asks;
   const snapshotBids: string[][] = response.data.bids;
 
-  snapshotAsks.forEach(([price, size]) => {
-    // TODO: handle edge case
-    asks.set(Number(price), Number(size));
+  snapshotAsks.forEach(([priceStr, sizeStr]) => {
+    const price = Number(priceStr);
+    const size = Number(sizeStr);
+
+    if (!Number.isFinite(price) || !Number.isFinite(size)) {
+      return;
+    }
+
+    if (size <= 0 || price <= 0) {
+      return;
+    }
+    asks.set(price, size);
   });
 
   snapshotBids.forEach(([price, size]) => {

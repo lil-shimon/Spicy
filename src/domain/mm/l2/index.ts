@@ -13,8 +13,8 @@ export type OrderBookIncrement = {
 };
 
 type OrderBookState = {
-  asks: Map<string, string>;
-  bids: Map<string, string>;
+  asks: Map<number, number>;
+  bids: Map<number, number>;
   lastSequence: number;
 };
 
@@ -22,26 +22,35 @@ type Params = {
   pair: string;
 };
 
-export const initFromSnapshot = async (params: Params) => {
+export const initFromSnapshot = async (
+  params: Params
+): Promise<OrderBookState> => {
   const { pair } = params;
   const response = await fetchSnapshot({ pair });
   console.log('initFromSnapshot response:', response);
 
-  const asks = new Map<string, string>();
-  const bids = new Map<string, string>();
+  const asks = new Map<number, number>();
+  const bids = new Map<number, number>();
 
   const snapshotAsks: string[][] = response.data.asks;
   const snapshotBids: string[][] = response.data.bids;
 
   snapshotAsks.forEach(([price, size]) => {
-    asks.set(price, size);
+    // TODO: handle edge case
+    asks.set(Number(price), Number(size));
   });
 
   snapshotBids.forEach(([price, size]) => {
-    bids.set(price, size);
+    bids.set(Number(price), Number(size));
   });
 
-  console.log('Initialized Order Book State:', { asks, bids });
+  const lastSequence = response.data.sequence;
+
+  return {
+    asks,
+    bids,
+    lastSequence,
+  };
 };
 
 export const handleL2Update = (data: OrderBookIncrement) => {

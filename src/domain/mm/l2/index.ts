@@ -49,8 +49,18 @@ export const initFromSnapshot = async (
     asks.set(price, size);
   });
 
-  snapshotBids.forEach(([price, size]) => {
-    bids.set(Number(price), Number(size));
+  snapshotBids.forEach(([priceStr, sizeStr]) => {
+    const price = Number(priceStr);
+    const size = Number(sizeStr);
+
+    if (!Number.isFinite(price) || !Number.isFinite(size)) {
+      return;
+    }
+
+    if (size <= 0 || price <= 0) {
+      return;
+    }
+    bids.set(price, size);
   });
 
   const lastSequence = Number(response.data.sequence);

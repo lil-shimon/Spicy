@@ -12,7 +12,7 @@ export type OrderBookIncrement = {
   time: number;
 };
 
-type OrderBookState = {
+export type OrderBookState = {
   asks: Map<number, number>;
   bids: Map<number, number>;
   lastSequence: number;

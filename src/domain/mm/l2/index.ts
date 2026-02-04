@@ -74,9 +74,9 @@ export const initFromSnapshot = async (
 
 export const handleL2Update = (data: OrderBookIncrement) => {
   const { sequenceEnd, sequenceStart } = data;
-  console.log(
-    'handleL2Update called with sequenceStart and sequenceEnd:',
+
+  return {
     sequenceStart,
-    sequenceEnd
-  );
+    sequenceEnd,
+  } as const;
 };

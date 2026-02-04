@@ -1,9 +1,5 @@
 import { connectKucoinWSL2 } from '../../clients/kucoin/kucoin-ws';
-import {
-  handleL2Update,
-  initFromSnapshot,
-  OrderBookState,
-} from '../../domain/mm/l2';
+import { initFromSnapshot, OrderBookState } from '../../domain/mm/l2';
 
 type MMApp = {
   start: () => Promise<void>;
@@ -21,7 +17,8 @@ export const createMMApp = (): MMApp => {
     state = await initFromSnapshot({ pair: PAIR });
     console.log('Initial Order Book State:', state);
 
-    connectKucoinWSL2({ pair: PAIR, onUpdate: handleL2Update });
+    // TODO: wsインスタンスを返すようにして、こちら側でmessageのlistenなどを行うようにする.
+    connectKucoinWSL2({ pair: PAIR });
   };
 
   const stop = async () => {

@@ -1,7 +1,6 @@
 import WebSocket from 'ws';
 import { getSpotEndpoint } from './spot/endpoint';
 import { createL2Topic } from './spot/topic';
-import { OrderBookIncrement } from '../../domain/mm/l2';
 
 type Props = {
   pair: string;
@@ -149,7 +148,6 @@ export const connectKucoin = async ({
 
 type L2Params = {
   pair: string;
-  onUpdate?: (data: OrderBookIncrement) => void;
 };
 
 /**
@@ -160,7 +158,7 @@ type L2Params = {
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
 export const connectKucoinWSL2 = async (params: L2Params) => {
-  const { pair, onUpdate } = params;
+  const { pair } = params;
 
   const topic = createL2Topic(pair);
   const message = {
@@ -177,30 +175,5 @@ export const connectKucoinWSL2 = async (params: L2Params) => {
     console.log('Kucoin L2 WebSocket connected and subscription message sent.');
   });
 
-  ws.on('message', (data) => {
-    const message = JSON.parse(data.toString());
-    // NOTE: 受信したL2メッセージの例
-    // Kucoin L2 Message: {
-    //   topic: '/market/level2:BTC-USDT',
-    //   type: 'message',
-    //   subject: 'trade.l2update',
-    //   data: {
-    //     changes: { asks: [], bids: [Array] },
-    //     sequenceEnd: 28536410238,
-    //     sequenceStart: 28536410238,
-    //     symbol: 'BTC-USDT',
-    //     time: 1769939550666
-    //   }
-    // }
-    const responseData = message.data;
-
-    if (!onUpdate) {
-      console.warn('onUpdate callback is not provided.');
-      return;
-    }
-
-    if (responseData) {
-      onUpdate(responseData as OrderBookIncrement);
-    }
-  });
+  return ws;
 };

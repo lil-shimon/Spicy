@@ -157,7 +157,9 @@ type L2Params = {
  * L2は、オーダーブックの深さ（複数の価格レベル）を取得するために実装。
  * 板の厚さを考慮した取引戦略や分析に役立つ。(mmbot)
  */
-export const connectKucoinWSL2 = async (params: L2Params) => {
+export const connectKucoinWSL2 = async (
+  params: L2Params
+): Promise<WebSocket> => {
   const { pair } = params;
 
   const topic = createL2Topic(pair);

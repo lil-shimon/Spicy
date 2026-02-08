@@ -78,7 +78,7 @@ export const handleL2Update = (
 ) => {
   const { sequenceEnd, sequenceStart } = data;
 
-  console.log('data', sequenceStart, sequenceEnd, 'state', state);
+  console.log('data', data, 'state', state.lastSequence);
   return {
     sequenceStart,
     sequenceEnd,

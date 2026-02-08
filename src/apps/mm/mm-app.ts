@@ -1,6 +1,11 @@
 import type WebSocket from 'ws';
 import { connectKucoinWSL2 } from '../../clients/kucoin/kucoin-ws';
-import { initFromSnapshot, OrderBookState } from '../../domain/mm/l2';
+import {
+  handleL2Update,
+  initFromSnapshot,
+  OrderBookIncrement,
+  OrderBookState,
+} from '../../domain/mm/l2';
 
 type MMApp = {
   start: () => Promise<void>;
@@ -19,9 +24,17 @@ export const createMMApp = (): MMApp => {
     state = await initFromSnapshot({ pair: PAIR });
     console.log('Initial Order Book State:', state);
 
-    // TODO: wsインスタンスを返すようにして、こちら側でmessageのlistenなどを行うようにする.
+    // TODO: こちら側でmessageのlistenなどを行うようにする.
     ws = await connectKucoinWSL2({ pair: PAIR });
-    console.log('WebSocket connected:', ws);
+
+    ws.on('message', (data: OrderBookIncrement) => {
+      if (!state) {
+        console.warn('Order book state is not initialized yet.');
+        return;
+      }
+
+      handleL2Update(state, data);
+    });
   };
 
   const stop = async () => {

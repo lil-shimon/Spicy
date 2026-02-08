@@ -72,9 +72,13 @@ export const initFromSnapshot = async (
   };
 };
 
-export const handleL2Update = (data: OrderBookIncrement) => {
+export const handleL2Update = (
+  state: OrderBookState,
+  data: OrderBookIncrement
+) => {
   const { sequenceEnd, sequenceStart } = data;
 
+  console.log('data', sequenceStart, sequenceEnd, 'state', state);
   return {
     sequenceStart,
     sequenceEnd,

@@ -76,11 +76,13 @@ export const handleL2Update = (
   state: OrderBookState,
   data: OrderBookIncrement
 ) => {
-  const { sequenceEnd, sequenceStart } = data;
-
-  console.log('data', data, 'state', state.lastSequence);
-  return {
+  const { sequenceStart, sequenceEnd } = data;
+  console.log(
+    'sequenceStart',
     sequenceStart,
+    'sequenceEnd',
     sequenceEnd,
-  } as const;
+    'state.lastSequence',
+    state.lastSequence
+  );
 };

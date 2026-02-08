@@ -3,7 +3,6 @@ import { connectKucoinWSL2 } from '../../clients/kucoin/kucoin-ws';
 import {
   handleL2Update,
   initFromSnapshot,
-  OrderBookIncrement,
   OrderBookState,
 } from '../../domain/mm/l2';
 
@@ -34,7 +33,12 @@ export const createMMApp = (): MMApp => {
       }
 
       const message = JSON.parse(data.toString());
-      handleL2Update(state, message);
+
+      if (message.type !== 'message') {
+        return;
+      }
+
+      handleL2Update(state, message.data);
     });
   };
 

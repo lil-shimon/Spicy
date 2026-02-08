@@ -27,13 +27,14 @@ export const createMMApp = (): MMApp => {
     // TODO: こちら側でmessageのlistenなどを行うようにする.
     ws = await connectKucoinWSL2({ pair: PAIR });
 
-    ws.on('message', (data: OrderBookIncrement) => {
+    ws.on('message', (data) => {
       if (!state) {
         console.warn('Order book state is not initialized yet.');
         return;
       }
 
-      handleL2Update(state, data);
+      const message = JSON.parse(data.toString());
+      handleL2Update(state, message);
     });
   };
 

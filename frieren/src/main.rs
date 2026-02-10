@@ -19,6 +19,12 @@ async fn main() {
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
         .as_str()
         .expect("Endpoint not found");
+
+    let ping_interval = resp["data"]["instanceServers"][0]["pingInterval"]
+        .as_u64()
+        .unwrap_or(18_000);
+    println!("ping_interval: {:?}", ping_interval);
+
     let url = Url::parse(&format!("{}?token={}", endpoint, token)).unwrap();
     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
     println!("connected");

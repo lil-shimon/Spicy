@@ -19,4 +19,26 @@ async fn main() {
     let url = Url::parse(&format!("{}?token={}", endpoint, token)).unwrap();
     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
     println!("connected");
+
+    let (mut write, mut read) = ws_stream.split();
+
+    let sub = serde_json::json!({
+        "id": "probe-1",
+        "type": "subscribe",
+        "topic": "/market/ticker:BTC-USDT",
+        "response": true
+    });
+
+    write.send(tokio_tungstenite::tungstenite::Message::Text(sub.to_string())).await.expect("sub failed");
+    println!("subscribed");
+
+    while let Some(msg) = read.next().await {
+        match msg {
+            Ok(m) => println!("msg: {:?}", m),
+            Err(e) => {
+                eprintln!("error: {:?}",e);
+                break;
+            }
+        }
+    }
 }

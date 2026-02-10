@@ -15,7 +15,9 @@ async fn main() {
         .expect("Failed to parse JSON");
 
     let token = resp["data"]["token"].as_str().expect("Token not found");
-    let endpoint = resp["data"]["instanceServers"][0]["endpoint"].as_str().expect("Endpoint not found");
+    let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
+        .as_str()
+        .expect("Endpoint not found");
     let url = Url::parse(&format!("{}?token={}", endpoint, token)).unwrap();
     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
     println!("connected");
@@ -29,14 +31,19 @@ async fn main() {
         "response": true
     });
 
-    write.send(tokio_tungstenite::tungstenite::Message::Text(sub.to_string())).await.expect("sub failed");
+    write
+        .send(tokio_tungstenite::tungstenite::Message::Text(
+            sub.to_string(),
+        ))
+        .await
+        .expect("sub failed");
     println!("subscribed");
 
     while let Some(msg) = read.next().await {
         match msg {
             Ok(m) => println!("msg: {:?}", m),
             Err(e) => {
-                eprintln!("error: {:?}",e);
+                eprintln!("error: {:?}", e);
                 break;
             }
         }

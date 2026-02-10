@@ -46,16 +46,6 @@ async fn main() {
         .expect("sub failed");
     println!("subscribed");
 
-    while let Some(msg) = read.next().await {
-        match msg {
-            Ok(m) => println!("msg: {:?}", m),
-            Err(e) => {
-                eprintln!("error: {:?}", e);
-                break;
-            }
-        }
-    }
-
     tokio::spawn(async move {
         loop {
             tokio::time::sleep(std::time::Duration::from_millis(ping_interval)).await;
@@ -69,7 +59,17 @@ async fn main() {
                 break;
             }
 
-            println!("ping sent")
+            println!("________________________ping sent_______________________");
         }
     });
+
+    while let Some(msg) = read.next().await {
+        match msg {
+            Ok(m) => println!("msg: {:?}", m),
+            Err(e) => {
+                eprintln!("error: {:?}", e);
+                break;
+            }
+        }
+    }
 }

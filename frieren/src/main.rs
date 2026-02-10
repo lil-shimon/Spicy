@@ -4,9 +4,10 @@ use url::Url;
 
 #[tokio::main]
 async fn main() {
+    let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";
     let client = reqwest::Client::new();
     let resp: serde_json::Value = client
-        .post("https://api.kucoin.com/api/v1/bullet-public")
+        .post(token_endpoint)
         .send()
         .await
         .expect("Failed to send request token")

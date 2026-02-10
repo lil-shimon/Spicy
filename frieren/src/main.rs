@@ -54,7 +54,13 @@ async fn main() {
                 "type": "ping"
             });
 
-            if write.send(tokio_tungstenite::tungstenite::Message::Text(ping.to_string())).await.is_err() {
+            if write
+                .send(tokio_tungstenite::tungstenite::Message::Text(
+                    ping.to_string(),
+                ))
+                .await
+                .is_err()
+            {
                 eprintln!("ping send failed");
                 break;
             }

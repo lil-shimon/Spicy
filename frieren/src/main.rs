@@ -55,4 +55,21 @@ async fn main() {
             }
         }
     }
+
+    tokio::spawn(async move {
+        loop {
+            tokio::time::sleep(std::time::Duration::from_millis(ping_interval)).await;
+            let ping = serde_json::json!({
+                "id": "ping",
+                "type": "ping"
+            });
+
+            if write.send(tokio_tungstenite::tungstenite::Message::Text(ping.to_string())).await.is_err() {
+                eprintln!("ping send failed");
+                break;
+            }
+
+            println!("ping sent")
+        }
+    });
 }

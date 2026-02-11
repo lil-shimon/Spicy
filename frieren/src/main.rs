@@ -38,6 +38,28 @@ struct OrderBookState {
     last_sequence: String,
 }
 
+#[derive(serde::Deserialize, Debug)]
+struct L2Message {
+    data: Option<L2Data>
+}
+
+#[derive(serde::Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct L2Data {
+    changes: L2Changes,
+    sequenceStart: u64,
+    sequenceEnd: u64,
+    symbol: String,
+    time: u64,
+}
+
+#[derive(serde::Deserialize, Debug)]
+struct L2Changes {
+    // price, size, sequence
+    asks: Vec<[String; 3]>,
+    bids: Vec<[String; 3]>,
+}
+
 #[tokio::main]
 async fn main() {
     let snapshot_endpoint =
@@ -115,7 +137,7 @@ async fn main() {
     let sub = serde_json::json!({
         "id": "probe-1",
         "type": "subscribe",
-        "topic": "/market/ticker:BTC-USDT",
+        "topic": "/market/level2:BTC-USDT",
         "response": true
     });
 
@@ -161,6 +183,7 @@ async fn main() {
             match msg {
                 Ok(m) => {
                     if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
+                        println!("l2: {}", t);
                         if let Ok(msg) = serde_json::from_str::<TickerMessage>(&t) {
                             if let Some(data) = msg.data {
                                 println!("BTC-USDT: {}", data.price);

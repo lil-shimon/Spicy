@@ -97,4 +97,6 @@ async fn main() {
         _ = ping_task => println!("ping died"),
         _ = recv_task => println!("recv died"),
     }
+
+    println!("disconnected");
 }

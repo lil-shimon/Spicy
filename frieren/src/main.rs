@@ -3,6 +3,7 @@ use tokio::select;
 use tokio_tungstenite::connect_async;
 use url::Url;
 
+#[derive(serde::Deserialize, Debug)]
 struct TickerData {
     price: String,
     bast_ask: String,

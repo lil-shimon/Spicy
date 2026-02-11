@@ -179,9 +179,10 @@ async fn main() {
                         if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
                             if let Some(data) = msg.data {
                                 let sequence_start = data.sequence_start;
+                                println!("last_sequence: {:?}", last_sequence);
                                 println!("sequence_start: {:?}", sequence_start);
 
-                                if (sequence_start == last_sequence) {
+                                if sequence_start == last_sequence {
                                     println!("same");
                                 }
 
@@ -190,7 +191,7 @@ async fn main() {
                                     println!("updated: {}", last_sequence);
                                 }
 
-                                if (sequence_start < last_sequence) {
+                                if sequence_start < last_sequence {
                                     println!("older");
                                 }
                             }

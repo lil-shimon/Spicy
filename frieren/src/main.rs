@@ -47,6 +47,13 @@ struct L2Changes {
     bids: Vec<[String; 3]>,
 }
 
+// TODO: 現在の問題点
+// 1. スナップショット取得 → WS接続の順序のため、間のメッセージが抜ける
+// 2. 本来はWS接続後にメッセージをバッファしつつ、並列でスナップショットを取得すべき
+//    - tokio::spawn + mpsc チャネルで実装
+//    - バッファ内の seq > snapshot.sequence のメッセージだけ適用
+// 3. changesをHashMapに反映する処理が未実装（size=="0"でremove, それ以外はinsert）
+// 4. gap検出: last_sequence + 1 < sequence_start の場合の処理
 #[tokio::main]
 async fn main() {
     let snapshot_endpoint =
@@ -187,6 +194,10 @@ async fn main() {
                                 }
 
                                 if sequence_start > last_sequence {
+                                    // TODO: ここでchangesをasks/bids HashMapに反映する
+                                    // - data.changes.asks/bids を回して insert/remove
+                                    // - size == "0" → remove, それ以外 → insert
+                                    // TODO: last_sequence は sequence_end で更新すべき
                                     last_sequence = sequence_start;
                                     println!("updated: {}", last_sequence);
                                 }

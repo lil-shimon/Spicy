@@ -87,7 +87,15 @@ async fn main() {
     let recv_task = async {
         while let Some(msg) = read.next().await {
             match msg {
-                Ok(m) => println!("msg: {:?}", m),
+                Ok(m) => {
+                    if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
+                        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&t) {
+                            if let Some(price) = v["data"]["price"].as_str() {
+                                println!("BTC-USDT: {}", price);
+                            }
+                        }
+                    }
+                },
                 Err(e) => {
                     eprintln!("error: {:?}", e);
                     break;

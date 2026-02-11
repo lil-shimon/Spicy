@@ -3,6 +3,12 @@ use tokio::select;
 use tokio_tungstenite::connect_async;
 use url::Url;
 
+struct TickerData {
+    price: String,
+    bast_ask: String,
+    bast_bid: String
+}
+
 #[tokio::main]
 async fn main() {
     let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";

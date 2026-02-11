@@ -1,3 +1,5 @@
+use std::thread::panicking;
+
 use futures_util::{SinkExt, StreamExt};
 use tokio_tungstenite::connect_async;
 use url::Url;
@@ -24,6 +26,14 @@ async fn main() {
         .as_u64()
         .unwrap_or(18_000);
     println!("ping_interval: {:?}", ping_interval);
+
+    let ping_interval = ping_interval * 4 / 5;
+    println!("ping_interval: {:?}", ping_interval);
+
+    let ping_timeout = resp["data"]["instanceServers"][0]["pingTimeout"]
+        .as_u64()
+        .unwrap();
+    println!("ping_timeout: {:?}", ping_timeout);
 
     let url = Url::parse(&format!("{}?token={}", endpoint, token)).unwrap();
     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");

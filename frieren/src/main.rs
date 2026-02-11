@@ -102,9 +102,9 @@ async fn main() {
             match msg {
                 Ok(m) => {
                     if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
-                        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&t) {
-                            if let Some(price) = v["data"]["price"].as_str() {
-                                println!("BTC-USDT: {}", price);
+                        if let Ok(msg) = serde_json::from_str::<TickerMessage>(&t) {
+                            if let Some(data) = msg.data {
+                                println!("BTC-USDT: {}", data.price);
                             }
                         }
                     }

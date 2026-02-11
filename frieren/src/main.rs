@@ -81,17 +81,20 @@ async fn main() {
         }
     };
 
-    select! {
-        _ = ping_task => println!("ping died"),
-    }
-
-    while let Some(msg) = read.next().await {
-        match msg {
-            Ok(m) => println!("msg: {:?}", m),
-            Err(e) => {
-                eprintln!("error: {:?}", e);
-                break;
+    let recv_task = async {
+        while let Some(msg) = read.next().await {
+            match msg {
+                Ok(m) => println!("msg: {:?}", m),
+                Err(e) => {
+                    eprintln!("error: {:?}", e);
+                    break;
+                }
             }
         }
+    };
+
+    select! {
+        _ = ping_task => println!("ping died"),
+        _ = recv_task => println!("recv died"),
     }
 }

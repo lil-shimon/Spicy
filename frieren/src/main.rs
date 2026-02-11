@@ -165,6 +165,12 @@ async fn main() {
         }
     };
 
+    let last_sequence: u64 = snapshot_resp
+        .data
+        .sequence
+        .parse()
+        .expect("invalid sequence");
+
     let recv_task = async {
         while let Some(msg) = read.next().await {
             match msg {
@@ -174,12 +180,6 @@ async fn main() {
                             if let Some(data) = msg.data {
                                 let sequence_start = data.sequenceStart;
                                 println!("sequence_start: {:?}", sequence_start);
-
-                                let last_sequence: u64 = snapshot_resp
-                                    .data
-                                    .sequence
-                                    .parse()
-                                    .expect("invalid sequence");
 
                                 if (sequence_start + 1 == last_sequence) {
                                     println!("same");

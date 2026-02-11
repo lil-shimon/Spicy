@@ -4,10 +4,11 @@ use tokio_tungstenite::connect_async;
 use url::Url;
 
 #[derive(serde::Deserialize, Debug)]
+#[serde(rename_all="camelCase")]
 struct TickerData {
     price: String,
-    bast_ask: String,
-    bast_bid: String
+    best_esk: String,
+    best_bid: String
 }
 
 #[tokio::main]

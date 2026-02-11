@@ -34,8 +34,8 @@ struct L2Message {
 #[serde(rename_all = "camelCase")]
 struct L2Data {
     changes: L2Changes,
-    sequenceStart: u64,
-    sequenceEnd: u64,
+    sequence_start: u64,
+    sequence_end: u64,
     symbol: String,
     time: u64,
 }
@@ -178,18 +178,18 @@ async fn main() {
                     if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
                         if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
                             if let Some(data) = msg.data {
-                                let sequence_start = data.sequenceStart;
+                                let sequence_start = data.sequence_start;
                                 println!("sequence_start: {:?}", sequence_start);
 
-                                if (sequence_start + 1 == last_sequence) {
+                                if (sequence_start == last_sequence) {
                                     println!("same");
                                 }
 
-                                if (sequence_start + 1 >= last_sequence) {
+                                if (sequence_start > last_sequence) {
                                     println!("newer");
                                 }
 
-                                if (sequence_start + 1 <= last_sequence) {
+                                if (sequence_start < last_sequence) {
                                     println!("older");
                                 }
                             }

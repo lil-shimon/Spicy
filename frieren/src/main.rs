@@ -16,7 +16,6 @@ struct TickerMessage {
     data: Option<TickerData>
 }
 
-
 #[tokio::main]
 async fn main() {
     let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";

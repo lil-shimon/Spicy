@@ -172,7 +172,26 @@ async fn main() {
                     if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
                         if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
                             if let Some(data) = msg.data {
-                                println!("l2: {:?}", data);
+                                let sequence_start = data.sequenceStart;
+                                println!("sequence_start: {:?}", sequence_start);
+
+                                let last_sequence: u64 = snapshot_resp
+                                    .data
+                                    .sequence
+                                    .parse()
+                                    .expect("invalid sequence");
+
+                                if (sequence_start + 1 == last_sequence) {
+                                    println!("same");
+                                }
+
+                                if (sequence_start + 1 >= last_sequence) {
+                                    println!("newer");
+                                }
+
+                                if (sequence_start + 1 <= last_sequence) {
+                                    println!("older");
+                                }
                             }
                         }
                     }

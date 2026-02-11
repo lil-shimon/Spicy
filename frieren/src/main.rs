@@ -1,3 +1,5 @@
+use std::fmt::format;
+
 use futures_util::{SinkExt, StreamExt};
 use tokio::select;
 use tokio_tungstenite::connect_async;
@@ -59,10 +61,13 @@ async fn main() {
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(ping_interval));
         interval.tick().await;
 
+        let mut count = 0;
+
         loop {
             interval.tick().await;
+            count += 1;
             let ping = serde_json::json!({
-                "id": "ping",
+                "id": format!("ping-{}", count),
                 "type": "ping"
             });
 
@@ -77,7 +82,7 @@ async fn main() {
                 break;
             }
 
-            println!("________________________ping sent_______________________");
+            println!("ping sent: {:?}", count);
         }
     };
 

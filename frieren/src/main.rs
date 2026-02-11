@@ -46,7 +46,7 @@ async fn main() {
         .await
         .expect("Failed to parse JSON");
 
-    let snapshot_resp: serde_json::Value = client
+    let snapshot_resp: SnapshotResp = client
         .get(snapshot_endpoint)
         .send()
         .await
@@ -54,7 +54,7 @@ async fn main() {
         .json()
         .await
         .expect("Failed to parse JSON snapshot");
-    println!("snapshot: {:?}", snapshot_resp);
+    println!("snapshot: {:?}", snapshot_resp.data);
 
     let token = resp["data"]["token"].as_str().expect("Token not found");
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]

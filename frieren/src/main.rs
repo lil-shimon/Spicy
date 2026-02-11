@@ -16,6 +16,15 @@ struct TickerMessage {
     data: Option<TickerData>,
 }
 
+#[derive(serde::Deserialize, Debug)]
+struct SnapshotData {
+    // Vec<[price, size]> = [string, string][]
+    asks: Vec<[String; 2]>,
+    bids: Vec<[String; 2]>,
+    sequence: String,
+    time: u64,
+}
+
 #[tokio::main]
 async fn main() {
     let snapshot_endpoint =

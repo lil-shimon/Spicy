@@ -5,19 +5,6 @@ use tokio_tungstenite::connect_async;
 use url::Url;
 
 #[derive(serde::Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-struct TickerData {
-    price: String,
-    best_ask: String,
-    best_bid: String,
-}
-
-#[derive(serde::Deserialize, Debug)]
-struct TickerMessage {
-    data: Option<TickerData>,
-}
-
-#[derive(serde::Deserialize, Debug)]
 struct SnapshotResp {
     code: String,
     data: SnapshotData,
@@ -40,7 +27,7 @@ struct OrderBookState {
 
 #[derive(serde::Deserialize, Debug)]
 struct L2Message {
-    data: Option<L2Data>
+    data: Option<L2Data>,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -183,10 +170,9 @@ async fn main() {
             match msg {
                 Ok(m) => {
                     if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
-                        println!("l2: {}", t);
-                        if let Ok(msg) = serde_json::from_str::<TickerMessage>(&t) {
+                        if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
                             if let Some(data) = msg.data {
-                                println!("BTC-USDT: {}", data.price);
+                                println!("l2: {:?}", data);
                             }
                         }
                     }

@@ -1,5 +1,3 @@
-use std::thread::panicking;
-
 use futures_util::{SinkExt, StreamExt};
 use tokio_tungstenite::connect_async;
 use url::Url;

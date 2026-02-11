@@ -165,7 +165,7 @@ async fn main() {
         }
     };
 
-    let last_sequence: u64 = snapshot_resp
+    let mut last_sequence: u64 = snapshot_resp
         .data
         .sequence
         .parse()
@@ -185,8 +185,9 @@ async fn main() {
                                     println!("same");
                                 }
 
-                                if (sequence_start > last_sequence) {
-                                    println!("newer");
+                                if sequence_start > last_sequence {
+                                    last_sequence = sequence_start;
+                                    println!("updated: {}", last_sequence);
                                 }
 
                                 if (sequence_start < last_sequence) {

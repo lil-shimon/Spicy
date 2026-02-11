@@ -1,5 +1,4 @@
 use futures_util::{SinkExt, StreamExt};
-use tokio::time::interval;
 use tokio_tungstenite::connect_async;
 use url::Url;
 
@@ -56,9 +55,9 @@ async fn main() {
     println!("subscribed");
 
     tokio::spawn(async move {
-            let mut interval = tokio::time::interval(std::time::Duration::from_millis(ping_interval));
+        let mut interval = tokio::time::interval(std::time::Duration::from_millis(ping_interval));
         // 最初の一回は即発火するのでPingを送信せずにスキップ
-            interval.tick().await;
+        interval.tick().await;
         loop {
             interval.tick().await;
             let ping = serde_json::json!({

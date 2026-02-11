@@ -4,20 +4,22 @@ use tokio_tungstenite::connect_async;
 use url::Url;
 
 #[derive(serde::Deserialize, Debug)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 struct TickerData {
     price: String,
     best_ask: String,
-    best_bid: String
+    best_bid: String,
 }
 
 #[derive(serde::Deserialize, Debug)]
 struct TickerMessage {
-    data: Option<TickerData>
+    data: Option<TickerData>,
 }
 
 #[tokio::main]
 async fn main() {
+    let snapshot_endpoint =
+        "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT";
     let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";
     let client = reqwest::Client::new();
     let resp: serde_json::Value = client
@@ -28,6 +30,16 @@ async fn main() {
         .json()
         .await
         .expect("Failed to parse JSON");
+
+    let snapshot_resp: serde_json::Value = client
+        .get(snapshot_endpoint)
+        .send()
+        .await
+        .expect("Failed to send request snapshot")
+        .json()
+        .await
+        .expect("Failed to parse JSON snapshot");
+    println!("snapshot: {:?}", snapshot_resp);
 
     let token = resp["data"]["token"].as_str().expect("Token not found");
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]

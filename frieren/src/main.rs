@@ -95,7 +95,7 @@ async fn main() {
                             }
                         }
                     }
-                },
+                }
                 Err(e) => {
                     eprintln!("error: {:?}", e);
                     break;

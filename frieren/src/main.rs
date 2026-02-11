@@ -56,6 +56,18 @@ async fn main() {
         .expect("Failed to parse JSON snapshot");
     println!("snapshot: {:?}", snapshot_resp.data);
 
+    println!("=== asks (top 5) ===");
+    for ask in snapshot_resp.data.asks.iter().take(5) {
+        println!("  {} @ {}", ask[1], ask[0]);
+    }
+
+    println!("=== bids (top 5) ===");
+    for bid in snapshot_resp.data.bids.iter().take(5) {
+        println!("  {} @ {}", bid[1], bid[0]);
+    }
+
+    println!("sequence: {}", snapshot_resp.data.sequence);
+
     let token = resp["data"]["token"].as_str().expect("Token not found");
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
         .as_str()

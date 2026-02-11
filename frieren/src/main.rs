@@ -1,4 +1,5 @@
 use futures_util::{SinkExt, StreamExt};
+use std::collections::HashMap;
 use tokio::select;
 use tokio_tungstenite::connect_async;
 use url::Url;
@@ -31,6 +32,12 @@ struct SnapshotData {
     time: u64,
 }
 
+struct OrderBookState {
+    asks: HashMap<String, String>,
+    bids: HashMap<String, String>,
+    last_sequence: String,
+}
+
 #[tokio::main]
 async fn main() {
     let snapshot_endpoint =
@@ -56,14 +63,27 @@ async fn main() {
         .expect("Failed to parse JSON snapshot");
     println!("snapshot: {:?}", snapshot_resp.data);
 
+    let asks_resp = snapshot_resp.data.asks;
+    let mut asks = HashMap::new();
     println!("=== asks (top 5) ===");
-    for ask in snapshot_resp.data.asks.iter().take(5) {
+    for ask in asks_resp.iter().take(5) {
         println!("  {} @ {}", ask[1], ask[0]);
     }
 
+    for ask in &asks_resp {
+        asks.insert(ask[0].clone(), ask[1].clone());
+    }
+
     println!("=== bids (top 5) ===");
-    for bid in snapshot_resp.data.bids.iter().take(5) {
+    let bid_resp = snapshot_resp.data.bids;
+    let mut bids = HashMap::new();
+
+    for bid in bid_resp.iter().take(5) {
         println!("  {} @ {}", bid[1], bid[0]);
+    }
+
+    for bid in &bid_resp {
+        bids.insert(bid[0].clone(), bid[1].clone());
     }
 
     println!("sequence: {}", snapshot_resp.data.sequence);

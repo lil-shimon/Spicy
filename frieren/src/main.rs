@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use futures_util::{SinkExt, StreamExt};
 use tokio::select;
 use tokio_tungstenite::connect_async;

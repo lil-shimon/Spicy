@@ -17,6 +17,12 @@ struct TickerMessage {
 }
 
 #[derive(serde::Deserialize, Debug)]
+struct SnapshotResp {
+    code: String,
+    data: SnapshotData,
+}
+
+#[derive(serde::Deserialize, Debug)]
 struct SnapshotData {
     // Vec<[price, size]> = [string, string][]
     asks: Vec<[String; 2]>,

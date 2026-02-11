@@ -7,9 +7,15 @@ use url::Url;
 #[serde(rename_all="camelCase")]
 struct TickerData {
     price: String,
-    best_esk: String,
+    best_ask: String,
     best_bid: String
 }
+
+#[derive(serde::Deserialize, Debug)]
+struct TickerMessage {
+    data: Option<TickerData>
+}
+
 
 #[tokio::main]
 async fn main() {

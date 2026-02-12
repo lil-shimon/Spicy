@@ -113,6 +113,16 @@
 | `tokio::time::interval` | `setInterval`             | ドリフトしない定期実行                                |
 | `tokio::time::sleep`    | `setTimeout`              | 一回だけ待つ。ループで使うとドリフトする              |
 
+### チャネル・並行パターン
+
+| Rust                         | TS                           | 説明                                     |
+| ---------------------------- | ---------------------------- | ---------------------------------------- |
+| `mpsc::channel`              | `EventEmitter` / キュー      | 非同期メッセージパッシング               |
+| `tx.send(data).await`        | `emitter.emit('msg', data)`  | メッセージを送信                         |
+| `rx.recv().await`            | `await queue.pop()`          | メッセージを待つ（ブロック）             |
+| `rx.try_recv()`              | `queue.shift()`              | メッセージがあれば取る（ブロックしない） |
+| `.position(\|d\| condition)` | `.findIndex(d => condition)` | 条件に合う最初のインデックスを返す       |
+
 ### serde（シリアライズ）
 
 | Rust                                 | TS                   | 説明                                       |
@@ -148,6 +158,16 @@
 | 11  | sequenceの番号が飛んでいる（1ずつ増えない）     | 「1メッセージに複数変更が入る。changes配列を全部処理すれば漏れない」     |
 | 12  | changesが実際には処理されていない               | ユーザー自身が「sequence更新だけでchanges無視してる」と気づいた（鋭い）  |
 
+### Day 3
+
+| #   | つまずき/学び                                                                  | 解決した説明                                                                    |
+| --- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| 13  | `read` を `spawn` と `recv_task` の両方で使った（所有権エラー）                | spawnにmoveしたら元の場所では使えない。recv_taskを削除してチャネル経由に変更    |
+| 14  | `rx.recv().await` がブロックして再取得ループを回せない                         | `rx.try_recv()` でブロックせずに取れるだけ取る。TSの同期的なqueue.shift()に近い |
+| 15  | スナップショットとWSメッセージのsequence gap（BTCで29件、SOLで5件、PUMPで5件） | トークンの流動性で差が出る。根本解決はgap検出→スナップショット再取得            |
+| 16  | バッファクリアの是非 — 「再取得時にバッファをクリアすべき？」                  | ユーザーが「保持すべき。クリアしたらいつまでも追いつかない」と正しく指摘        |
+| 17  | `.position(\|d\| ...)` の意味                                                  | TSの `.findIndex(d => ...)` と同じ。配列内で条件に合う最初のインデックスを返す  |
+
 ---
 
 ## 4. 学習の進行パターン
@@ -166,9 +186,16 @@ Day 2: 自走
   → struct定義を自力で書く（Vec<[String; 3]> を自分で判断）
   → sequenceの抜け問題を自分で指摘
   → 「mutにして値を更新する方法はどう思う？」→ 設計判断を自ら問い始めた
+
+Day 3: 設計議論 + アーキテクチャ理解
+  → mpscチャネルの導入を理解（spawn + tx/rx）
+  → 「バッファをクリアすべきでない」と設計上の正しい判断を自分でした
+  → 複数トークン（BTC/SOL/PUMP）でgapを実験的に比較
+  → 関数切り出しリファクタリング（build_orderbook, fetch_kucoin_config）
+  → リトライループの骨組みを実装中
 ```
 
-**キーポイント**: ユーザーは写経→改造→自走のフェーズを自然に進んでいる。Day 3以降は「ガイド最小限 + 質問対応」モードでOK。
+**キーポイント**: Day 3からは設計レベルの議論ができるようになった。「なぜこうすべきか」を自分で考えて提案している。ガイドは最小限で、設計判断の壁打ち相手として機能するのがベスト。
 
 ---
 
@@ -184,28 +211,34 @@ frieren/
 └── LEARNING_JOURNAL.md  （このファイル）
 ```
 
-### main.rs の構造
+### main.rs の構造（Day 3時点）
 
 ```
+関数:
+  fetch_kucoin_config(&client) -> KucoinConfig  ... トークン・endpoint・pingInterval取得
+  build_orderbook(&snapshot) -> (HashMap, HashMap, u64)  ... スナップショットからHashMap構築
+
 structs定義:
+  KucoinConfig                   ... トークン取得レスポンス用
   SnapshotResp / SnapshotData    ... スナップショットAPI用（完成）
   OrderBookState                 ... 板状態（定義のみ、未使用）
   L2Message / L2Data / L2Changes ... WS L2メッセージ用（完成）
 
 main():
-  1. トークン取得（POST /bullet-public）  ... serde_json::Value のまま
-  2. スナップショット取得（GET /level2_20） ... SnapshotResp でパース
-  3. asks/bids を HashMap に投入
-  4. WS接続・L2 subscribe
-  5. ping_task（async block）:
+  1. fetch_kucoin_config() でトークン取得
+  2. WS接続・L2 subscribe
+  3. tokio::spawn でWS受信タスク起動（mpscチャネル tx で送信）
+  4. ping_task（async block）:
      - tokio::time::interval で定期ping
      - interval * 4/5 で余裕を持たせる
      - カウンタでping ID付与
-  6. recv_task（async block）:
-     - L2Message にパース
-     - sequence_start と last_sequence を比較
-     - newer → last_sequence を更新（※sequence_startで更新中、sequence_endが正しい）
-  7. select! で ping_task / recv_task を束ねる
+  5. resv_task（async block）:
+     - リトライループ:
+       a. スナップショット取得 → build_orderbook()
+       b. rx.try_recv() でバッファに溜める
+       c. gap判定（実装中）→ 連続してたらbreak、なければsleep後にリトライ
+     - 通常モード: rx.recv() で直接処理
+  6. select! で ping_task / resv_task を束ねる
 ```
 
 ### 依存クレート（Cargo.toml）
@@ -224,19 +257,20 @@ reqwest = { version = "0.12", features = ["json"] }
 
 ## 6. 残タスク（TODO）- 優先順位順
 
-### すぐできる（Day 3前半）
+### 実装中（Day 3）
 
-1. **changesをHashMapに反映** — `size=="0"` で `remove`、それ以外は `insert`
-2. **`last_sequence` を `sequence_end` で更新** — 現在は `sequence_start` で更新してしまっている（バグ）
-3. **gap検出** — `last_sequence + 1 < sequence_start` の場合にログ出力
+1. **gap判定ロジック** — バッファ内の `.position()` でsnapshot seq+1 から連続するメッセージを探す → 連続: break、不連続: sleep後にスナップショット再取得
+2. **バッファからchangesを適用** — gap判定でbreakした後、バッファ内の該当メッセージのchangesをHashMapに反映
 
-### 本丸（Day 3後半〜）
+### すぐできる
 
-4. **WSバッファリング + スナップショット並列取得**
-   - 現在: スナップショット取得 → WS接続 の順序（間のメッセージが抜ける）
-   - あるべき姿: WS接続 → メッセージをバッファ(Vec) → 並列でスナップショット取得 → バッファ内の seq > snapshot.sequence だけ適用
-   - `tokio::spawn` + `mpsc` チャネルが必要
-   - ユーザーは「これは難しいと思っている」と言っている。丁寧にガイドが必要
+3. **changesをHashMapに反映（通常モード）** — `size=="0"` で `remove`、それ以外は `insert`
+4. **`last_sequence` を `sequence_end` で更新** — 現在は `sequence_start` で更新してしまっている（バグ）
+
+### 完了済み
+
+- ~~WSバッファリング + スナップショット並列取得~~ → mpscチャネル + spawn で実装済み
+- ~~関数切り出し（build_orderbook, fetch_kucoin_config）~~ → 完了
 
 ### 将来（運用段階）
 

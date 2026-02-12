@@ -1,5 +1,5 @@
 use futures_util::{SinkExt, StreamExt};
-use std::collections::HashMap;
+use std::{collections::HashMap, pin};
 use tokio::select;
 use tokio_tungstenite::connect_async;
 use url::Url;
@@ -47,7 +47,9 @@ struct L2Changes {
     bids: Vec<[String; 3]>,
 }
 
-fn build_orderbook(snapshot: &SnapshotResp) -> (HashMap<String, String>, HashMap<String, String>, u64) {
+fn build_orderbook(
+    snapshot: &SnapshotResp,
+) -> (HashMap<String, String>, HashMap<String, String>, u64) {
     let mut asks = HashMap::new();
     for ask in &snapshot.data.asks {
         asks.insert(ask[0].clone(), ask[1].clone());
@@ -59,7 +61,40 @@ fn build_orderbook(snapshot: &SnapshotResp) -> (HashMap<String, String>, HashMap
     }
 
     let last_sequence: u64 = snapshot.data.sequence.parse().expect("Invalid sequence");
-    (asks,bids,last_sequence)
+    (asks, bids, last_sequence)
+}
+
+struct KucoinConfig {
+    token: String,
+    endpoint: String,
+    ping_interval: u64
+}
+
+async fn fetch_kucoin_config(client: &reqwest::Client) -> KucoinConfig {
+    let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";
+    let resp: serde_json::Value = client
+        .post(token_endpoint)
+        .send()
+        .await
+        .expect("Failed to send request token")
+        .json()
+        .await
+        .expect("Failed to parse JSON");
+
+    let token = resp["data"]["token"].as_str().expect("Token not found");
+    let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
+        .as_str()
+        .expect("Endpoint not found");
+
+    let ping_interval = resp["data"]["instanceServers"][0]["pingInterval"]
+        .as_u64()
+        .unwrap_or(18_000);
+
+    KucoinConfig {
+        token: token.to_string(),
+        endpoint: endpoint.to_string(),
+        ping_interval
+    }
 }
 
 // TODO: 現在の問題点
@@ -73,17 +108,7 @@ fn build_orderbook(snapshot: &SnapshotResp) -> (HashMap<String, String>, HashMap
 async fn main() {
     let snapshot_endpoint =
         "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT";
-    let token_endpoint = "https://api.kucoin.com/api/v1/bullet-public";
     let client = reqwest::Client::new();
-    let resp: serde_json::Value = client
-        .post(token_endpoint)
-        .send()
-        .await
-        .expect("Failed to send request token")
-        .json()
-        .await
-        .expect("Failed to parse JSON");
-
     let snapshot_resp: SnapshotResp = client
         .get(snapshot_endpoint)
         .send()
@@ -96,25 +121,13 @@ async fn main() {
 
     let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
 
-    let token = resp["data"]["token"].as_str().expect("Token not found");
-    let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
-        .as_str()
-        .expect("Endpoint not found");
+    let config = fetch_kucoin_config(&client).await;
 
-    let ping_interval = resp["data"]["instanceServers"][0]["pingInterval"]
-        .as_u64()
-        .unwrap_or(18_000);
+
+    let ping_interval = config.ping_interval * 4 / 5;
     println!("ping_interval: {:?}", ping_interval);
 
-    let ping_interval = ping_interval * 4 / 5;
-    println!("ping_interval: {:?}", ping_interval);
-
-    let ping_timeout = resp["data"]["instanceServers"][0]["pingTimeout"]
-        .as_u64()
-        .unwrap();
-    println!("ping_timeout: {:?}", ping_timeout);
-
-    let url = Url::parse(&format!("{}?token={}", endpoint, token)).unwrap();
+    let url = Url::parse(&format!("{}?token={}", config.endpoint, config.token)).unwrap();
     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
     println!("connected");
 

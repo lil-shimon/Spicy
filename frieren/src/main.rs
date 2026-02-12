@@ -196,7 +196,15 @@ async fn main() {
         println!("snapshot: {:?}", snapshot_resp.data);
 
         let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
+
+        let mut count = 0;
+
         while let Some(data) = rx.recv().await {
+            count += 1;
+
+            if count <= 5 {
+                println!("buffer[{}]: seq_start={}", count, data.sequence_start);
+            }
             println!("recv: {:?}", data.sequence_start);
         }
     };

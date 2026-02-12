@@ -67,7 +67,7 @@ fn build_orderbook(
 struct KucoinConfig {
     token: String,
     endpoint: String,
-    ping_interval: u64
+    ping_interval: u64,
 }
 
 async fn fetch_kucoin_config(client: &reqwest::Client) -> KucoinConfig {
@@ -81,19 +81,23 @@ async fn fetch_kucoin_config(client: &reqwest::Client) -> KucoinConfig {
         .await
         .expect("Failed to parse JSON");
 
-    let token = resp["data"]["token"].as_str().expect("Token not found");
+    let token = resp["data"]["token"]
+        .as_str()
+        .expect("Token not found")
+        .to_string();
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
         .as_str()
-        .expect("Endpoint not found");
+        .expect("Endpoint not found")
+        .to_string();
 
     let ping_interval = resp["data"]["instanceServers"][0]["pingInterval"]
         .as_u64()
         .unwrap_or(18_000);
 
     KucoinConfig {
-        token: token.to_string(),
-        endpoint: endpoint.to_string(),
-        ping_interval
+        token,
+        endpoint: endpoint,
+        ping_interval,
     }
 }
 
@@ -122,7 +126,6 @@ async fn main() {
     let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
 
     let config = fetch_kucoin_config(&client).await;
-
 
     let ping_interval = config.ping_interval * 4 / 5;
     println!("ping_interval: {:?}", ping_interval);

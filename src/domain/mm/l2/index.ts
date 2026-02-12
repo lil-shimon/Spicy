@@ -113,17 +113,33 @@ export const applyChanges = (
   }
 };
 
+export type L2UpdateResult = 'applied' | 'skipped' | 'gap';
+
+/**
+ * L2インクリメンタル更新をオーダーブックに適用する
+ * @request WSメッセージのsequence検証とchanges適用
+ * @context sequenceStart <= lastSequence+1 であれば連続性OK。
+ *          sequenceEnd <= lastSequence は適用済み → スキップ。
+ *          sequenceStart > lastSequence+1 はギャップ → 再スナップショット必要。
+ */
 export const handleL2Update = (
   state: OrderBookState,
   data: OrderBookIncrement
-) => {
-  const { sequenceStart, sequenceEnd } = data;
-  console.log(
-    'sequenceStart',
-    sequenceStart,
-    'sequenceEnd',
-    sequenceEnd,
-    'state.lastSequence',
-    state.lastSequence
-  );
+): L2UpdateResult => {
+  const { sequenceStart, sequenceEnd, changes } = data;
+
+  if (sequenceEnd <= state.lastSequence) {
+    return 'skipped';
+  }
+
+  if (sequenceStart > state.lastSequence + 1) {
+    console.warn(
+      `L2 sequence gap detected: expected <= ${state.lastSequence + 1}, got ${sequenceStart}`
+    );
+    return 'gap';
+  }
+
+  applyChanges(state, changes);
+  state.lastSequence = sequenceEnd;
+  return 'applied';
 };

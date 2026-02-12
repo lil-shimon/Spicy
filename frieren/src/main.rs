@@ -204,7 +204,6 @@ async fn main() {
                 buffer.push(data);
             }
 
-            // TODO: gap検出
             let first_applicable = buffer.iter().position(|data| data.sequence_start > last_sequence);
             match first_applicable {
                 Some(idx) => {

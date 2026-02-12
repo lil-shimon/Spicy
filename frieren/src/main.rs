@@ -47,6 +47,21 @@ struct L2Changes {
     bids: Vec<[String; 3]>,
 }
 
+fn build_orderbook(snapshot: &SnapshotResp) -> (HashMap<String, String>, HashMap<String, String>, u64) {
+    let mut asks = HashMap::new();
+    for ask in &snapshot.data.asks {
+        asks.insert(ask[0].clone(), ask[1].clone());
+    }
+
+    let mut bids = HashMap::new();
+    for bid in &snapshot.data.bids {
+        bids.insert(bid[0].clone(), bid[1].clone());
+    }
+
+    let last_sequence: u64 = snapshot.data.sequence.parse().expect("Invalid sequence");
+    (asks,bids,last_sequence)
+}
+
 // TODO: 現在の問題点
 // 1. スナップショット取得 → WS接続の順序のため、間のメッセージが抜ける
 // 2. 本来はWS接続後にメッセージをバッファしつつ、並列でスナップショットを取得すべき

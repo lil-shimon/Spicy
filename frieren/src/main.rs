@@ -196,9 +196,15 @@ async fn main() {
         }
     };
 
+    let resv_task = async {
+        while let Some(data) = rx.recv().await {
+            println!("recv: {:?}", data.sequence_start);
+        }
+    };
+
     select! {
         _ = ping_task => println!("ping died"),
-        _ = recv_task => println!("recv died"),
+        _ = resv_task => println!("resv_task died"),
     }
 
     println!("disconnected");

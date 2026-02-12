@@ -110,21 +110,7 @@ async fn fetch_kucoin_config(client: &reqwest::Client) -> KucoinConfig {
 // 4. gap検出: last_sequence + 1 < sequence_start の場合の処理
 #[tokio::main]
 async fn main() {
-    let snapshot_endpoint =
-        "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT";
     let client = reqwest::Client::new();
-    let snapshot_resp: SnapshotResp = client
-        .get(snapshot_endpoint)
-        .send()
-        .await
-        .expect("Failed to send request snapshot")
-        .json()
-        .await
-        .expect("Failed to parse JSON snapshot");
-    println!("snapshot: {:?}", snapshot_resp.data);
-
-    let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
-
     let config = fetch_kucoin_config(&client).await;
 
     let ping_interval = config.ping_interval * 4 / 5;
@@ -197,6 +183,19 @@ async fn main() {
     };
 
     let resv_task = async {
+        let snapshot_endpoint =
+            "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT";
+        let snapshot_resp: SnapshotResp = client
+            .get(snapshot_endpoint)
+            .send()
+            .await
+            .expect("Failed to send request snapshot")
+            .json()
+            .await
+            .expect("Failed to parse JSON snapshot");
+        println!("snapshot: {:?}", snapshot_resp.data);
+
+        let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
         while let Some(data) = rx.recv().await {
             println!("recv: {:?}", data.sequence_start);
         }

@@ -187,7 +187,7 @@ async fn main() {
             "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=PUMP-USDT";
         let mut buffer: Vec<L2Data> = Vec::new();
 
-        let (mut asks, mut bids, last_sequence) = loop {
+        let (mut asks, mut bids, mut last_sequence) = loop {
             let snapshot_resp: SnapshotResp = client
                 .get(snapshot_endpoint)
                 .send()
@@ -222,6 +222,29 @@ async fn main() {
                 }
             }
         };
+
+        for data in &buffer {
+            if data.sequence_start > last_sequence {
+                for change in &data.changes.asks {
+                    if change[1] == "0" {
+                        asks.remove(&change[0]);
+                    } else {
+                        asks.insert(change[0].clone(), change[1].clone());
+                    }
+                }
+                for change in &data.changes.bids {
+                    if change[1] == "0" {
+                        bids.remove(&change[0]);
+                    } else {
+                        bids.insert(change[0].clone(), change[1].clone());
+                    }
+                }
+
+                last_sequence = data.sequence_end;
+            }
+        }
+
+        println!("buffer applied. last_sequence: {}", last_sequence);
 
         while let Some(data) = rx.recv().await {
             println!("recv data: {:?}", data);

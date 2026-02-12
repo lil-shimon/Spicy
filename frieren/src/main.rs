@@ -94,30 +94,7 @@ async fn main() {
         .expect("Failed to parse JSON snapshot");
     println!("snapshot: {:?}", snapshot_resp.data);
 
-    let asks_resp = snapshot_resp.data.asks;
-    let mut asks = HashMap::new();
-    println!("=== asks (top 5) ===");
-    for ask in asks_resp.iter().take(5) {
-        println!("  {} @ {}", ask[1], ask[0]);
-    }
-
-    for ask in &asks_resp {
-        asks.insert(ask[0].clone(), ask[1].clone());
-    }
-
-    println!("=== bids (top 5) ===");
-    let bid_resp = snapshot_resp.data.bids;
-    let mut bids = HashMap::new();
-
-    for bid in bid_resp.iter().take(5) {
-        println!("  {} @ {}", bid[1], bid[0]);
-    }
-
-    for bid in &bid_resp {
-        bids.insert(bid[0].clone(), bid[1].clone());
-    }
-
-    println!("sequence: {}", snapshot_resp.data.sequence);
+    let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
 
     let token = resp["data"]["token"].as_str().expect("Token not found");
     let endpoint = resp["data"]["instanceServers"][0]["endpoint"]
@@ -186,12 +163,6 @@ async fn main() {
             println!("ping sent: {:?}", count);
         }
     };
-
-    let mut last_sequence: u64 = snapshot_resp
-        .data
-        .sequence
-        .parse()
-        .expect("invalid sequence");
 
     let recv_task = async {
         while let Some(msg) = read.next().await {

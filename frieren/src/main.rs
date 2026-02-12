@@ -151,6 +151,22 @@ async fn main() {
         .expect("sub failed");
     println!("subscribed");
 
+    let (tx, mut rx) = tokio::sync::mpsc::channel::<L2Data>(100);
+
+    tokio::spawn(async move {
+        while let Some(msg) = read.next().await {
+            if let Ok(m) = msg {
+                if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
+                    if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
+                        if let Some(data) = msg.data {
+                            let _ = tx.send(data).await;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
     let ping_task = async {
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(ping_interval));
         interval.tick().await;
@@ -177,45 +193,6 @@ async fn main() {
             }
 
             println!("ping sent: {:?}", count);
-        }
-    };
-
-    let recv_task = async {
-        while let Some(msg) = read.next().await {
-            match msg {
-                Ok(m) => {
-                    if let tokio_tungstenite::tungstenite::Message::Text(t) = m {
-                        if let Ok(msg) = serde_json::from_str::<L2Message>(&t) {
-                            if let Some(data) = msg.data {
-                                let sequence_start = data.sequence_start;
-                                println!("last_sequence: {:?}", last_sequence);
-                                println!("sequence_start: {:?}", sequence_start);
-
-                                if sequence_start == last_sequence {
-                                    println!("same");
-                                }
-
-                                if sequence_start > last_sequence {
-                                    // TODO: ここでchangesをasks/bids HashMapに反映する
-                                    // - data.changes.asks/bids を回して insert/remove
-                                    // - size == "0" → remove, それ以外 → insert
-                                    // TODO: last_sequence は sequence_end で更新すべき
-                                    last_sequence = sequence_start;
-                                    println!("updated: {}", last_sequence);
-                                }
-
-                                if sequence_start < last_sequence {
-                                    println!("older");
-                                }
-                            }
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("error: {:?}", e);
-                    break;
-                }
-            }
         }
     };
 

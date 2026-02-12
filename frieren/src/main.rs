@@ -205,7 +205,23 @@ async fn main() {
             }
 
             // TODO: gap検出
-            break (asks, bids, last_sequence);
+            let first_applicable = buffer.iter().position(|data| data.sequence_start > last_sequence);
+            match first_applicable {
+                Some(idx) => {
+                    if buffer[idx].sequence_start <= last_sequence + 1 {
+                        println!("buffer matched. applying from index {}", idx);
+                        break (asks, bids, last_sequence);
+                    } else {
+                        println!("gap detected in buffer, retrying snapshot");
+                        println!("gap: snapshot: {}, buffer_first: {}", last_sequence, buffer[idx].sequence_start);
+                        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                    }
+                }
+                None => {
+                    println!("no applicable data in buffer, retrying snapshot");
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                }
+            }
         };
 
         while let Some(data) = rx.recv().await {

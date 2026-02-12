@@ -125,7 +125,7 @@ async fn main() {
     let sub = serde_json::json!({
         "id": "probe-1",
         "type": "subscribe",
-        "topic": "/market/level2:BTC-USDT",
+        "topic": "/market/level2:PUMP-USDT",
         "response": true
     });
 
@@ -184,28 +184,32 @@ async fn main() {
 
     let resv_task = async {
         let snapshot_endpoint =
-            "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=BTC-USDT";
-        let snapshot_resp: SnapshotResp = client
-            .get(snapshot_endpoint)
-            .send()
-            .await
-            .expect("Failed to send request snapshot")
-            .json()
-            .await
-            .expect("Failed to parse JSON snapshot");
-        println!("snapshot: {:?}", snapshot_resp.data);
+            "https://api.kucoin.com/api/v1/market/orderbook/level2_20?symbol=PUMP-USDT";
+        let mut buffer: Vec<L2Data> = Vec::new();
 
-        let (mut asks, mut bids, mut last_sequence) = build_orderbook(&snapshot_resp);
+        let (mut asks, mut bids, last_sequence) = loop {
+            let snapshot_resp: SnapshotResp = client
+                .get(snapshot_endpoint)
+                .send()
+                .await
+                .expect("Failed to send request snapshot")
+                .json()
+                .await
+                .expect("Failed to parse JSON snapshot");
+            println!("snapshot: {:?}", snapshot_resp.data);
 
-        let mut count = 0;
+            let (asks, bids, last_sequence) = build_orderbook(&snapshot_resp);
+
+            while let Ok(data) = rx.try_recv() {
+                buffer.push(data);
+            }
+
+            // TODO: gap検出
+            break (asks, bids, last_sequence);
+        };
 
         while let Some(data) = rx.recv().await {
-            count += 1;
-
-            if count <= 5 {
-                println!("buffer[{}]: seq_start={}", count, data.sequence_start);
-            }
-            println!("recv: {:?}", data.sequence_start);
+            println!("recv data: {:?}", data);
         }
     };
 

@@ -72,6 +72,47 @@ export const initFromSnapshot = async (
   };
 };
 
+/**
+ * L2インクリメンタルchangesをオーダーブックに適用する
+ * @request バッファリング後のchanges適用ロジック追加
+ * @context KuCoinのchangesフォーマット: [price_string, size_string, sequence_string]
+ *          size=="0" → 該当価格レベルを削除、size>"0" → 更新/追加
+ */
+export const applyChanges = (
+  state: OrderBookState,
+  changes: OrderBookIncrement['changes']
+): void => {
+  for (const [priceStr, sizeStr] of changes.asks) {
+    const price = Number(priceStr);
+    const size = Number(sizeStr);
+
+    if (!Number.isFinite(price) || !Number.isFinite(size)) {
+      continue;
+    }
+
+    if (size === 0) {
+      state.asks.delete(price);
+    } else {
+      state.asks.set(price, size);
+    }
+  }
+
+  for (const [priceStr, sizeStr] of changes.bids) {
+    const price = Number(priceStr);
+    const size = Number(sizeStr);
+
+    if (!Number.isFinite(price) || !Number.isFinite(size)) {
+      continue;
+    }
+
+    if (size === 0) {
+      state.bids.delete(price);
+    } else {
+      state.bids.set(price, size);
+    }
+  }
+};
+
 export const handleL2Update = (
   state: OrderBookState,
   data: OrderBookIncrement

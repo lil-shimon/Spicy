@@ -186,3 +186,89 @@ func TestCalcBalanceDiff(t *testing.T) {
 		})
 	}
 }
+
+func TestCalcBalanceDiff_AssetRemovedFromCurrent(t *testing.T) {
+	// 前回にBTCがあるが今回にない（全売却）ケース
+	prev := &BalanceSnapshot{
+		TotalUSDT: 1000,
+		Assets: []AssetBalance{
+			{Asset: "BTC", Free: 0.01, USDTValue: 500},
+			{Asset: "ETH", Free: 1.0, USDTValue: 500},
+		},
+	}
+	curr := BalanceSnapshot{
+		TotalUSDT: 600,
+		Assets: []AssetBalance{
+			{Asset: "ETH", Free: 1.2, USDTValue: 600},
+		},
+	}
+	diff := CalcBalanceDiff(prev, curr)
+	// ETHのみAssetDiffsに出る（BTCは今回存在しないので出ない）
+	if len(diff.AssetDiffs) != 1 {
+		t.Fatalf("expected 1 asset diff, got %d", len(diff.AssetDiffs))
+	}
+	if diff.AssetDiffs[0].Asset != "ETH" {
+		t.Errorf("expected ETH, got %s", diff.AssetDiffs[0].Asset)
+	}
+	if math.Abs(diff.DiffTotal-(-400)) > 0.001 {
+		t.Errorf("expected DiffTotal=-400, got %f", diff.DiffTotal)
+	}
+}
+
+func TestCalcBalanceDiff_NewAssetInCurrent(t *testing.T) {
+	// 今回新しく取得したアセット（前回にない）
+	prev := &BalanceSnapshot{
+		TotalUSDT: 500,
+		Assets: []AssetBalance{
+			{Asset: "BTC", Free: 0.01, USDTValue: 500},
+		},
+	}
+	curr := BalanceSnapshot{
+		TotalUSDT: 800,
+		Assets: []AssetBalance{
+			{Asset: "BTC", Free: 0.01, USDTValue: 500},
+			{Asset: "SOL", Free: 2.0, USDTValue: 300},
+		},
+	}
+	diff := CalcBalanceDiff(prev, curr)
+	if len(diff.AssetDiffs) != 2 {
+		t.Fatalf("expected 2 asset diffs, got %d", len(diff.AssetDiffs))
+	}
+	// SOLのPrevUSDTは0（前回なし）
+	for _, ad := range diff.AssetDiffs {
+		if ad.Asset == "SOL" {
+			if math.Abs(ad.PrevUSDT) > 0.001 {
+				t.Errorf("SOL PrevUSDT should be 0, got %f", ad.PrevUSDT)
+			}
+			if math.Abs(ad.DiffUSDT-300) > 0.001 {
+				t.Errorf("SOL DiffUSDT should be 300, got %f", ad.DiffUSDT)
+			}
+			return
+		}
+	}
+	t.Error("SOL not found in AssetDiffs")
+}
+
+func TestCalcBalanceDiff_EmptyCurrentAssets(t *testing.T) {
+	// 今回のアセットが空（全売却）
+	prev := &BalanceSnapshot{
+		TotalUSDT: 1000,
+		Assets: []AssetBalance{
+			{Asset: "BTC", Free: 0.01, USDTValue: 1000},
+		},
+	}
+	curr := BalanceSnapshot{
+		TotalUSDT: 0,
+		Assets:    []AssetBalance{},
+	}
+	diff := CalcBalanceDiff(prev, curr)
+	if math.Abs(diff.DiffTotal-(-1000)) > 0.001 {
+		t.Errorf("expected DiffTotal=-1000, got %f", diff.DiffTotal)
+	}
+	if diff.AssetDiffs == nil {
+		t.Fatal("AssetDiffs should not be nil")
+	}
+	if len(diff.AssetDiffs) != 0 {
+		t.Errorf("expected 0 asset diffs, got %d", len(diff.AssetDiffs))
+	}
+}

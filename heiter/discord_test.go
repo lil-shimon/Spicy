@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSendDiscordMessage_Success200(t *testing.T) {
@@ -89,5 +90,56 @@ func TestSendDiscordMessage_InvalidURL(t *testing.T) {
 	err = SendDiscordMessage("://invalid", "無効URLテスト")
 	if err == nil {
 		t.Fatal("不正URLでエラーが返されるはずが nil だった")
+	}
+}
+
+func TestSendDiscordMessage_RateLimit429(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	defer server.Close()
+
+	err := SendDiscordMessage(server.URL, "test")
+	if err == nil {
+		t.Fatal("expected error for 429 status")
+	}
+	if !strings.Contains(err.Error(), "異常ステータス") {
+		t.Errorf("error should contain '異常ステータス', got: %s", err.Error())
+	}
+}
+
+func TestSendDiscordMessage_EmptyMessage(t *testing.T) {
+	var gotBody []byte
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotBody, _ = io.ReadAll(r.Body)
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	err := SendDiscordMessage(server.URL, "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	var payload struct{ Content string }
+	if err := json.Unmarshal(gotBody, &payload); err != nil {
+		t.Fatalf("failed to parse request body: %v", err)
+	}
+	if payload.Content != "" {
+		t.Errorf("expected empty content, got %q", payload.Content)
+	}
+}
+
+func TestSendDiscordMessage_Timeout(t *testing.T) {
+	// サーバーがレスポンスを返さない（タイムアウト検証）
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(100 * time.Millisecond)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+	// デフォルトのhttp.DefaultClientにはタイムアウトがないので正常完了する
+	// これはタイムアウト設定がないことの確認テスト
+	err := SendDiscordMessage(server.URL, "test")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }

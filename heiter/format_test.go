@@ -186,3 +186,46 @@ func TestFormatDiscordMessage_NegativeDiff(t *testing.T) {
 		t.Errorf("マイナス差分メッセージに \"[-\" が含まれていない\n出力:\n%s", got)
 	}
 }
+
+func Test_formatQuantity_Zero(t *testing.T) {
+	got := formatQuantity(0.0)
+	if got != "0" {
+		t.Errorf("formatQuantity(0.0) = %q, want %q", got, "0")
+	}
+}
+
+func Test_formatUSDT_Zero(t *testing.T) {
+	got := formatUSDT(0.0)
+	if got != "0.00" {
+		t.Errorf("formatUSDT(0.0) = %q, want %q", got, "0.00")
+	}
+}
+
+func Test_formatUSDT_Negative(t *testing.T) {
+	got := formatUSDT(-1234.56)
+	if got != "-1,234.56" {
+		t.Errorf("formatUSDT(-1234.56) = %q, want %q", got, "-1,234.56")
+	}
+}
+
+func TestFormatDiscordMessage_EmptyAssets(t *testing.T) {
+	snapshot := BalanceSnapshot{
+		Timestamp: "2026-02-13T09:00:00+09:00",
+		TotalUSDT: 0,
+		Assets:    []AssetBalance{},
+	}
+	diff := BalanceDiff{
+		CurrentTotal: 0,
+		AssetDiffs:   []AssetDiff{},
+	}
+	msg := FormatDiscordMessage(snapshot, diff, true)
+	if !strings.Contains(msg, "[Heiter]") {
+		t.Error("message should contain [Heiter]")
+	}
+	if !strings.Contains(msg, "0.00 USDT") {
+		t.Error("message should contain 0.00 USDT")
+	}
+	if !strings.Contains(msg, "保有資産") {
+		t.Error("message should contain 保有資産")
+	}
+}

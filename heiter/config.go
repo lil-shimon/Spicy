@@ -25,12 +25,9 @@ type Config struct {
 // @request 環境変数からMEXC/Discord設定を読み込む
 // @context 親プロジェクトの.envにMEXC_API_KEY, MEXC_SECRET, DISCORD_WEBHOOK_URLが定義済み
 func LoadConfig() (Config, error) {
-	// 親プロジェクトの.envを優先的に読み込み、なければカレントの.envを試行
-	// .envが見つからなくても環境変数が直接設定されている場合があるためfatalにしない
-	if err := godotenv.Load("../.env"); err != nil {
-		if err := godotenv.Load(); err != nil {
-			log.Println("警告: .envファイルが見つかりません。環境変数が直接設定されていることを期待します")
-		}
+	// heiter/.env から環境変数を読み込み（見つからない場合は環境変数が直接設定されていることを期待）
+	if err := godotenv.Load(); err != nil {
+		log.Println("警告: .envファイルが見つかりません。環境変数が直接設定されていることを期待します")
 	}
 
 	apiKey := os.Getenv("MEXC_API_KEY")

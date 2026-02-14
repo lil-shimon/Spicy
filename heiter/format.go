@@ -40,7 +40,7 @@ func FormatDiscordMessage(snapshot BalanceSnapshot, diff BalanceDiff, isFirstRun
 	b.WriteString("\n")
 
 	// 合計USDT
-	b.WriteString(fmt.Sprintf("📊 合計: **%s USDT**\n", formatUSDT(snapshot.TotalUSDT)))
+	fmt.Fprintf(&b, "📊 合計: **%s USDT**\n", formatUSDT(snapshot.TotalUSDT))
 
 	// 前回比（初回実行時は省略）
 	if !isFirstRun {
@@ -48,11 +48,11 @@ func FormatDiscordMessage(snapshot BalanceSnapshot, diff BalanceDiff, isFirstRun
 		if diff.DiffTotal < 0 {
 			diffIcon = "📉"
 		}
-		b.WriteString(fmt.Sprintf("%s 前回比: %s USDT (%s%%)\n",
+		fmt.Fprintf(&b, "%s 前回比: %s USDT (%s%%)\n",
 			diffIcon,
 			formatSignedUSDT(diff.DiffTotal),
 			formatSignedPercent(diff.DiffPercent),
-		))
+		)
 	}
 
 	// アセット一覧（USDT換算額の降順ソート）
@@ -93,7 +93,7 @@ func FormatDiscordMessage(snapshot BalanceSnapshot, diff BalanceDiff, isFirstRun
 
 	// タイムスタンプ（JST）
 	now := time.Now().In(jstLocation)
-	b.WriteString(fmt.Sprintf("🕐 %s\n", now.Format("2006-01-02 15:04 MST")))
+	fmt.Fprintf(&b, "🕐 %s\n", now.Format("2006-01-02 15:04 MST"))
 
 	// 初回実行メッセージ
 	if isFirstRun {

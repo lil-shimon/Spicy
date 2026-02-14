@@ -132,7 +132,7 @@ func run() error {
 func main() {
 	if err := run(); err != nil {
 		log.Printf("エラー: %v", err)
-		// ベストエフォートでDiscordにエラー通知
+		// Discord通知を試みる（失敗しても無視）
 		webhookURL := os.Getenv("DISCORD_WEBHOOK_URL")
 		if webhookURL != "" {
 			_ = SendDiscordMessage(webhookURL, fmt.Sprintf("**[Heiter] エラー**\n%v", err))

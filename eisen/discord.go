@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -32,7 +33,11 @@ func SendDiscordMessage(webhookURL string, message string) error {
 	if err != nil {
 		return fmt.Errorf("discord webhookへのリクエストに失敗: %w", err)
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("警告: レスポンスボディのクローズに失敗: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("discord webhookが異常ステータスを返却: %d", resp.StatusCode)

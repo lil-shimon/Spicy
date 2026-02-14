@@ -70,7 +70,7 @@ func FetchAccountBalances(cfg Config) ([]AccountBalance, error) {
 	if err != nil {
 		return nil, fmt.Errorf("アカウントAPIリクエスト送信に失敗: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -102,7 +102,7 @@ func FetchTickerPrices() (map[string]float64, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ティッカーAPIリクエスト送信に失敗: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

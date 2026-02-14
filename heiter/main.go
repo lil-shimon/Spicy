@@ -116,7 +116,7 @@ func run() error {
 
 	// 12. Discord送信
 	if err := SendDiscordMessage(cfg.DiscordWebhookURL, message); err != nil {
-		return fmt.Errorf("Discord送信失敗: %w", err)
+		return fmt.Errorf("discord送信失敗: %w", err)
 	}
 
 	// 13. 現在のスナップショットを保存

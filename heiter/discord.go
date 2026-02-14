@@ -31,13 +31,13 @@ func SendDiscordMessage(webhookURL string, message string) error {
 
 	resp, err := http.DefaultClient.Post(webhookURL, "application/json", bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("Discord Webhookへのリクエストに失敗: %w", err)
+		return fmt.Errorf("discord webhookへのリクエストに失敗: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Discord Webhookは成功時に200または204を返す
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("Discord Webhookが異常ステータスを返却: %d", resp.StatusCode)
+		return fmt.Errorf("discord webhookが異常ステータスを返却: %d", resp.StatusCode)
 	}
 
 	return nil

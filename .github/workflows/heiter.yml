@@ -1,0 +1,72 @@
+name: Heiter Daily Balance Check
+
+on:
+  # 毎日 9:30 AM JST (0:30 AM UTC) に実行
+  # 深夜0時UTCは混雑するため30分ずらす
+  schedule:
+    - cron: '30 0 * * *'
+
+  # 手動実行も可能
+  workflow_dispatch:
+
+jobs:
+  balance-check:
+    runs-on: ubuntu-latest
+
+    # heiterディレクトリをデフォルトの作業ディレクトリに設定
+    defaults:
+      run:
+        working-directory: heiter
+
+    steps:
+      # リポジトリをチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Go環境のセットアップ (1.25系の最新安定版を使用)
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+
+      # 前回実行時のスナップショットファイルを復元
+      # data/balance.json が存在すれば差分計算、なければ初回として保存される
+      # restore-keysプレフィックスで最新のキャッシュを自動検索
+      - name: Restore balance snapshot cache
+        uses: actions/cache/restore@v4
+        with:
+          path: heiter/data/
+          key: heiter-balance-snapshot-${{ github.run_id }}
+          restore-keys: |
+            heiter-balance-snapshot-
+
+      # 残高チェック＆Discord通知を実行
+      # godotenv.Load()の.env不在ワーニングは想定内（GitHub Secretsを使用）
+      - name: Run balance check
+        env:
+          MEXC_API_KEY: ${{ secrets.MEXC_API_KEY }}
+          MEXC_SECRET: ${{ secrets.MEXC_SECRET }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: go run .
+
+      # 今回取得したスナップショットを保存（次回実行時の比較用）
+      # run_idで一意のキーを生成し、キャッシュの上書き制約を回避
+      - name: Save balance snapshot cache
+        uses: actions/cache/save@v4
+        with:
+          path: heiter/data/
+          key: heiter-balance-snapshot-${{ github.run_id }}
+
+  # ワークフローの自動無効化を防ぐ (60日間実行なしでGitHub Actionsが停止)
+  # スケジュール実行が失敗し続けても、このジョブが定期的にコミットして維持
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Keepalive workflow
+        uses: gautamkrishnar/keepalive-workflow@v2

@@ -19,6 +19,7 @@ type Config struct {
 	MexcSecret        string
 	DiscordWebhookURL string
 	DataFilePath      string
+	MexcBaseURL       string
 }
 
 // LoadConfig は環境変数からConfigを生成する
@@ -50,10 +51,16 @@ func LoadConfig() (Config, error) {
 		dataFile = "data/balance.json"
 	}
 
+	mexcBaseURL := os.Getenv("MEXC_BASE_URL")
+	if mexcBaseURL == "" {
+		mexcBaseURL = "https://api.mexc.com"
+	}
+
 	return Config{
 		MexcAPIKey:        apiKey,
 		MexcSecret:        secret,
 		DiscordWebhookURL: webhookURL,
 		DataFilePath:      dataFile,
+		MexcBaseURL:       mexcBaseURL,
 	}, nil
 }

@@ -7,17 +7,18 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	// 全テストケースで使用する環境変数キー
-	envKeys := []string{"MEXC_API_KEY", "MEXC_SECRET", "DISCORD_WEBHOOK_URL", "HEITER_DATA_FILE"}
+	envKeys := []string{"MEXC_API_KEY", "MEXC_SECRET", "DISCORD_WEBHOOK_URL", "HEITER_DATA_FILE", "MEXC_BASE_URL"}
 
 	tests := []struct {
-		name           string
-		envVars        map[string]string
-		wantErr        bool
-		errContains    string
-		wantDataFile   string
-		wantAPIKey     string
-		wantSecret     string
-		wantWebhookURL string
+		name            string
+		envVars         map[string]string
+		wantErr         bool
+		errContains     string
+		wantDataFile    string
+		wantAPIKey      string
+		wantSecret      string
+		wantWebhookURL  string
+		wantMexcBaseURL string
 	}{
 		{
 			name: "全必須変数が設定済み",
@@ -26,11 +27,12 @@ func TestLoadConfig(t *testing.T) {
 				"MEXC_SECRET":         "test-secret",
 				"DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/test",
 			},
-			wantErr:        false,
-			wantAPIKey:     "test-api-key",
-			wantSecret:     "test-secret",
-			wantWebhookURL: "https://discord.com/api/webhooks/test",
-			wantDataFile:   "data/balance.json",
+			wantErr:         false,
+			wantAPIKey:      "test-api-key",
+			wantSecret:      "test-secret",
+			wantWebhookURL:  "https://discord.com/api/webhooks/test",
+			wantDataFile:    "data/balance.json",
+			wantMexcBaseURL: "https://api.mexc.com",
 		},
 		{
 			name: "MEXC_API_KEYが未設定",
@@ -66,8 +68,9 @@ func TestLoadConfig(t *testing.T) {
 				"MEXC_SECRET":         "test-secret",
 				"DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/test",
 			},
-			wantErr:      false,
-			wantDataFile: "data/balance.json",
+			wantErr:         false,
+			wantDataFile:    "data/balance.json",
+			wantMexcBaseURL: "https://api.mexc.com",
 		},
 		{
 			name: "DataFilePathのカスタム値",
@@ -77,8 +80,30 @@ func TestLoadConfig(t *testing.T) {
 				"DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/test",
 				"HEITER_DATA_FILE":    "/custom/path.json",
 			},
-			wantErr:      false,
-			wantDataFile: "/custom/path.json",
+			wantErr:         false,
+			wantDataFile:    "/custom/path.json",
+			wantMexcBaseURL: "https://api.mexc.com",
+		},
+		{
+			name: "MexcBaseURLのデフォルト値",
+			envVars: map[string]string{
+				"MEXC_API_KEY":        "test-api-key",
+				"MEXC_SECRET":         "test-secret",
+				"DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/test",
+			},
+			wantErr:         false,
+			wantMexcBaseURL: "https://api.mexc.com",
+		},
+		{
+			name: "MexcBaseURLのカスタム値",
+			envVars: map[string]string{
+				"MEXC_API_KEY":        "test-api-key",
+				"MEXC_SECRET":         "test-secret",
+				"DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/test",
+				"MEXC_BASE_URL":       "https://testnet-api.mexc.com",
+			},
+			wantErr:         false,
+			wantMexcBaseURL: "https://testnet-api.mexc.com",
 		},
 	}
 
@@ -121,6 +146,9 @@ func TestLoadConfig(t *testing.T) {
 			}
 			if tt.wantDataFile != "" && cfg.DataFilePath != tt.wantDataFile {
 				t.Errorf("DataFilePath = %q, want %q", cfg.DataFilePath, tt.wantDataFile)
+			}
+			if tt.wantMexcBaseURL != "" && cfg.MexcBaseURL != tt.wantMexcBaseURL {
+				t.Errorf("MexcBaseURL = %q, want %q", cfg.MexcBaseURL, tt.wantMexcBaseURL)
 			}
 		})
 	}

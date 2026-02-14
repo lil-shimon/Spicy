@@ -1,8 +1,8 @@
 /**
  * @module MEXC API テスト
  * @context signRequestは純粋関数のためユニットテスト可能。
- *          FetchAccountBalances/FetchTickerPricesはURLがハードコードされているため、
- *          httptestによるテストは不可。リファクタリングが必要。
+ *          FetchAccountBalances/FetchTickerPricesはConfig.MexcBaseURLを注入し、
+ *          httptestでモックサーバーを使用してテストする。
  */
 package main
 
@@ -10,6 +10,9 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -87,9 +90,206 @@ func TestSignRequest_Deterministic(t *testing.T) {
 	}
 }
 
-// NOTE: FetchAccountBalances と FetchTickerPrices はURLが "https://api.mexc.com" に
-// ハードコードされているため、net/http/httptest を使ったユニットテストができない。
-// テスト可能にするには以下のいずれかのリファクタリングが必要:
-//   - baseURL を引数またはConfig経由で注入可能にする
-//   - *http.Client を引数として受け取る（カスタムTransportでリダイレクト可能）
-//   - インターフェースを定義してHTTPクライアントを抽象化する
+func TestFetchAccountBalances(t *testing.T) {
+	tests := []struct {
+		name           string
+		mockStatusCode int
+		mockBody       string
+		wantLen        int
+		wantFirstAsset string
+		wantErr        string
+	}{
+		{
+			name:           "正常レスポンス: 2資産を含む",
+			mockStatusCode: 200,
+			mockBody:       `{"balances":[{"asset":"BTC","free":"0.5","locked":"0.0"},{"asset":"USDT","free":"1000.0","locked":"50.0"}]}`,
+			wantLen:        2,
+			wantFirstAsset: "BTC",
+			wantErr:        "",
+		},
+		{
+			name:           "空のbalances配列",
+			mockStatusCode: 200,
+			mockBody:       `{"balances":[]}`,
+			wantLen:        0,
+			wantFirstAsset: "",
+			wantErr:        "",
+		},
+		{
+			name:           "APIエラー: 401 Unauthorized",
+			mockStatusCode: 401,
+			mockBody:       `{"msg":"Unauthorized"}`,
+			wantLen:        0,
+			wantFirstAsset: "",
+			wantErr:        "異常ステータス",
+		},
+		{
+			name:           "APIエラー: 500",
+			mockStatusCode: 500,
+			mockBody:       `{"msg":"Internal Server Error"}`,
+			wantLen:        0,
+			wantFirstAsset: "",
+			wantErr:        "異常ステータス",
+		},
+		{
+			name:           "不正なJSON",
+			mockStatusCode: 200,
+			mockBody:       `{invalid}`,
+			wantLen:        0,
+			wantFirstAsset: "",
+			wantErr:        "JSON解析に失敗",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// リクエストヘッダーとクエリパラメータの検証
+				if r.Header.Get("X-MEXC-APIKEY") == "" {
+					t.Error("X-MEXC-APIKEY header is missing")
+				}
+				if r.URL.Query().Get("timestamp") == "" {
+					t.Error("timestamp query parameter is missing")
+				}
+				if r.URL.Query().Get("signature") == "" {
+					t.Error("signature query parameter is missing")
+				}
+
+				w.WriteHeader(tt.mockStatusCode)
+				w.Write([]byte(tt.mockBody))
+			}))
+			defer server.Close()
+
+			cfg := Config{
+				MexcAPIKey:  "test-api-key",
+				MexcSecret:  "test-secret",
+				MexcBaseURL: server.URL,
+			}
+
+			balances, err := FetchAccountBalances(cfg)
+
+			if tt.wantErr != "" {
+				if err == nil {
+					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
+				}
+				if !strings.Contains(err.Error(), tt.wantErr) {
+					t.Errorf("error = %q, want to contain %q", err.Error(), tt.wantErr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if len(balances) != tt.wantLen {
+				t.Errorf("len(balances) = %d, want %d", len(balances), tt.wantLen)
+			}
+
+			if tt.wantFirstAsset != "" && len(balances) > 0 {
+				if balances[0].Asset != tt.wantFirstAsset {
+					t.Errorf("balances[0].Asset = %q, want %q", balances[0].Asset, tt.wantFirstAsset)
+				}
+			}
+		})
+	}
+}
+
+func TestFetchTickerPrices(t *testing.T) {
+	tests := []struct {
+		name           string
+		mockStatusCode int
+		mockBody       string
+		wantLen        int
+		wantBTCPrice   float64
+		wantErr        string
+	}{
+		{
+			name:           "正常レスポンス: 複数ティッカー",
+			mockStatusCode: 200,
+			mockBody:       `[{"symbol":"BTCUSDT","price":"50000.0"},{"symbol":"ETHUSDT","price":"3000.5"}]`,
+			wantLen:        2,
+			wantBTCPrice:   50000.0,
+			wantErr:        "",
+		},
+		{
+			name:           "空の配列",
+			mockStatusCode: 200,
+			mockBody:       `[]`,
+			wantLen:        0,
+			wantBTCPrice:   0,
+			wantErr:        "",
+		},
+		{
+			name:           "一部の価格が不正",
+			mockStatusCode: 200,
+			mockBody:       `[{"symbol":"BTCUSDT","price":"50000.0"},{"symbol":"INVALID","price":"not-a-number"}]`,
+			wantLen:        1,
+			wantBTCPrice:   50000.0,
+			wantErr:        "",
+		},
+		{
+			name:           "APIエラー: 500",
+			mockStatusCode: 500,
+			mockBody:       `{"msg":"Internal Server Error"}`,
+			wantLen:        0,
+			wantBTCPrice:   0,
+			wantErr:        "異常ステータス",
+		},
+		{
+			name:           "不正なJSON",
+			mockStatusCode: 200,
+			mockBody:       `[{invalid}]`,
+			wantLen:        0,
+			wantBTCPrice:   0,
+			wantErr:        "JSON解析に失敗",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// パスの検証
+				if r.URL.Path != "/api/v3/ticker/price" {
+					t.Errorf("request path = %q, want %q", r.URL.Path, "/api/v3/ticker/price")
+				}
+
+				w.WriteHeader(tt.mockStatusCode)
+				w.Write([]byte(tt.mockBody))
+			}))
+			defer server.Close()
+
+			cfg := Config{
+				MexcBaseURL: server.URL,
+			}
+
+			prices, err := FetchTickerPrices(cfg)
+
+			if tt.wantErr != "" {
+				if err == nil {
+					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
+				}
+				if !strings.Contains(err.Error(), tt.wantErr) {
+					t.Errorf("error = %q, want to contain %q", err.Error(), tt.wantErr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if len(prices) != tt.wantLen {
+				t.Errorf("len(prices) = %d, want %d", len(prices), tt.wantLen)
+			}
+
+			if tt.wantBTCPrice > 0 {
+				if price, ok := prices["BTCUSDT"]; !ok {
+					t.Error("BTCUSDT not found in prices")
+				} else if price != tt.wantBTCPrice {
+					t.Errorf("prices[BTCUSDT] = %f, want %f", price, tt.wantBTCPrice)
+				}
+			}
+		})
+	}
+}

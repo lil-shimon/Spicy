@@ -57,7 +57,7 @@ func FetchAccountBalances(cfg Config) ([]AccountBalance, error) {
 	signature := signRequest(queryString, cfg.MexcSecret)
 	queryString = fmt.Sprintf("%s&signature=%s", queryString, signature)
 
-	url := fmt.Sprintf("https://api.mexc.com/api/v3/account?%s", queryString)
+	url := fmt.Sprintf("%s/api/v3/account?%s", cfg.MexcBaseURL, queryString)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -94,8 +94,8 @@ func FetchAccountBalances(cfg Config) ([]AccountBalance, error) {
 // @context 公開エンドポイントのため認証不要。パラメータなしで全ティッカーを一括取得し、
 //
 //	symbol -> price のマップとして返す。
-func FetchTickerPrices() (map[string]float64, error) {
-	url := "https://api.mexc.com/api/v3/ticker/price"
+func FetchTickerPrices(cfg Config) (map[string]float64, error) {
+	url := fmt.Sprintf("%s/api/v3/ticker/price", cfg.MexcBaseURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(url)

@@ -50,7 +50,7 @@ func run() error {
 	}
 
 	// 4. ティッカー価格を取得
-	prices, err := FetchTickerPrices()
+	prices, err := FetchTickerPrices(cfg)
 	if err != nil {
 		return fmt.Errorf("ティッカー価格取得失敗: %w", err)
 	}

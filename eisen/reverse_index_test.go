@@ -21,8 +21,8 @@ func TestBuildReverseIndex(t *testing.T) {
 			t.Errorf("DOGE-BTC = %v, want %v", got, wantDOGE)
 		}
 
-		// KCS-USDT は index 10-17
-		wantKCS := []int{10, 11, 12, 13, 14, 15, 16, 17}
+		// KCS-USDT は index 6(KCS三角のOut) + 10-17(KCS系Baseペア)
+		wantKCS := []int{6, 10, 11, 12, 13, 14, 15, 16, 17}
 		if got := index["KCS-USDT"]; !reflect.DeepEqual(got, wantKCS) {
 			t.Errorf("KCS-USDT = %v, want %v", got, wantKCS)
 		}

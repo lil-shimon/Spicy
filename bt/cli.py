@@ -21,7 +21,13 @@ def load_config(path: str) -> dict:
 
 def cmd_fetch(args: argparse.Namespace) -> None:
     cfg = load_config(args.config)
-    rows = fetch_ohlcv(args.symbol, cfg['timeframe'], args.since_ms, args.until_ms)
+    rows = fetch_ohlcv(
+        args.symbol,
+        cfg['timeframe'],
+        args.since_ms,
+        args.until_ms,
+        progress=args.progress,
+    )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open('w', newline='') as f:
@@ -110,6 +116,7 @@ def main() -> None:
     p_fetch.add_argument('--since-ms', type=int, required=True)
     p_fetch.add_argument('--until-ms', type=int, required=True)
     p_fetch.add_argument('--out', default='bt/data/raw/kucoin_ohlcv.csv')
+    p_fetch.add_argument('--progress', action='store_true')
     p_fetch.set_defaults(func=cmd_fetch)
 
     p_search = sub.add_parser('search')

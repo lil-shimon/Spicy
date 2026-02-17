@@ -1,0 +1,143 @@
+# バックテスト実行ガイド（初心者向け）
+
+このドキュメントは、`OHLCVデータ取得が終わった後` に何をすればよいかを、
+コマンド順でまとめたものです。
+
+## ゴール
+
+- trainデータで候補ロジックを探す
+- OOSデータで再評価して、過学習を避ける
+- 採用候補を `bt/results/` に残す
+
+## 事前準備
+
+リポジトリ直下で実行する。
+
+```bash
+cd /Users/shimonlil/study/spicy
+source bt/.venv/bin/activate
+```
+
+## 全体フロー
+
+1. データ整形
+2. データ分割（train/validation/OOS）
+3. trainで探索
+4. OOSで評価
+5. 結果確認と採用候補の選定
+
+---
+
+## 1. データ整形
+
+```bash
+python -m bt.data.normalize \
+  --infile bt/data/raw/kucoin_ohlcv.csv \
+  --out bt/data/processed/kucoin_ohlcv_1m.csv
+```
+
+確認ポイント:
+
+- `normalized=...` が表示される
+- `bt/data/processed/kucoin_ohlcv_1m.csv` が生成される
+
+## 2. データ分割（6:2:2）
+
+```bash
+python -m bt.data.split_dataset \
+  --infile bt/data/processed/kucoin_ohlcv_1m.csv \
+  --train 0.6 \
+  --validation 0.2 \
+  --outdir bt/data/splits
+```
+
+確認ポイント:
+
+- `train=... validation=... oos=...` が表示される
+- `bt/data/splits/train.csv`
+- `bt/data/splits/validation.csv`
+- `bt/data/splits/oos.csv`
+
+## 3. trainで探索（本数・レンジ・レバ・失敗率）
+
+```bash
+python -m bt.cli search \
+  --infile bt/data/splits/train.csv \
+  --out-csv bt/results/train_top.csv \
+  --out-md bt/results/train_top.md
+```
+
+確認ポイント:
+
+- `search_done rows=... top=...` が表示される
+- `bt/results/train_top.md` に上位候補が出る
+
+ここでは「学習期間で良さそうな候補」を見つけるだけ。
+まだ採用確定しない。
+
+## 4. OOSで再評価（最重要）
+
+```bash
+python -m bt.cli oos \
+  --candidates-csv bt/results/train_top.csv \
+  --oos-file bt/data/splits/oos.csv \
+  --out-csv bt/results/oos_eval.csv \
+  --out-md bt/results/oos_eval.md
+```
+
+確認ポイント:
+
+- `oos_done rows=... accepted=...` が表示される
+- `bt/results/oos_eval.md` に `accepted` 列が出る
+
+`accepted=True` の候補を優先する。
+
+## 5. 結果の見方（最小）
+
+### まず見る列
+
+- `oos_return_pct` : OOSリターン（プラスが望ましい）
+- `oos_max_dd_pct` : OOS最大DD（小さいほど安全）
+- `oos_pf` : Profit Factor（1.0超で損益比が有利）
+- `accepted` : 採用判定
+- `overfit` : 過学習疑い
+
+### 採用の基本ルール
+
+- `accepted=True`
+- `overfit=False`
+- 候補が複数ある場合は `oos_max_dd_pct` が小さいものを優先
+
+## うまくいかない時の対処
+
+### A. 候補が全部 `accepted=False`
+
+- 探索範囲を少し狭める/変える（本数、レンジ、注文サイズ）
+- コスト想定（手数料/スリッページ）を見直す
+- 期間を変えて再検証
+
+### B. トレード回数が極端に少ない
+
+- `range_pcts` を広げる
+- `levels_per_side` を増やす
+
+### C. DDが大きすぎる
+
+- `leverage_values` を下げる
+- `order_size_ratio_values` を下げる
+- 本数を減らして在庫偏りを軽減
+
+## 推奨の反復サイクル
+
+1. 探索
+2. OOS評価
+3. 上位3候補だけ条件を微調整
+4. 再探索
+
+この4ステップを短く回す。
+
+## 注意
+
+- train成績が良くても、OOSで崩れる候補は採用しない
+- まずは「利益最大」より「OOSで壊れない」候補を選ぶ
+- 本番実装は、OOS通過ロジックのみ進める

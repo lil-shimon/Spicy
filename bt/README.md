@@ -1,5 +1,7 @@
 # BT (KuCoin Grid)
 
+詳細な実行手順（初心者向け）は `bt/BACKTEST_WORKFLOW.md` を参照してください。
+
 ## セットアップ
 
 ```bash

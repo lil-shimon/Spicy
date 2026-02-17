@@ -19,6 +19,12 @@ python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000
 - `1735689600000` = 2025-01-01 00:00:00 UTC
 - `1767225599000` = 2025-12-31 23:59:59 UTC
 
+進捗表示したい場合:
+
+```bash
+python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000 --progress
+```
+
 2. 整形
 
 ```bash

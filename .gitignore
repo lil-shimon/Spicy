@@ -7,3 +7,5 @@ src/clients/mexc/websocket-proto
 pair-counts.json
 data
 .serena
+.venv
+__pycache__

@@ -27,6 +27,8 @@ def cmd_fetch(args: argparse.Namespace) -> None:
         args.since_ms,
         args.until_ms,
         progress=args.progress,
+        timeout_ms=args.timeout_ms,
+        max_retries=args.max_retries,
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -117,6 +119,8 @@ def main() -> None:
     p_fetch.add_argument('--until-ms', type=int, required=True)
     p_fetch.add_argument('--out', default='bt/data/raw/kucoin_ohlcv.csv')
     p_fetch.add_argument('--progress', action='store_true')
+    p_fetch.add_argument('--timeout-ms', type=int, default=30_000)
+    p_fetch.add_argument('--max-retries', type=int, default=5)
     p_fetch.set_defaults(func=cmd_fetch)
 
     p_search = sub.add_parser('search')

@@ -25,6 +25,12 @@ python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000
 python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000 --progress
 ```
 
+タイムアウトが出る場合（推奨）:
+
+```bash
+python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000 --progress --timeout-ms 60000 --max-retries 8
+```
+
 2. 整形
 
 ```bash

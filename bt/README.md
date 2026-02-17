@@ -13,8 +13,11 @@ pip install -r bt/requirements.txt
 1. OHLCV取得
 
 ```bash
-python -m bt.cli fetch --since-ms 1704067200000 --until-ms 1735689599000
+python -m bt.cli fetch --since-ms 1735689600000 --until-ms 1767225599000
 ```
+
+- `1735689600000` = 2025-01-01 00:00:00 UTC
+- `1767225599000` = 2025-12-31 23:59:59 UTC
 
 2. 整形
 

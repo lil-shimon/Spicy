@@ -48,23 +48,23 @@ python -m bt.data.split_dataset --infile bt/data/processed/kucoin_ohlcv_1m.csv -
 4. train探索
 
 ```bash
-python -m bt.cli search --infile bt/data/splits/train.csv --out-csv bt/results/train_top.csv --out-md bt/results/train_top.md
+python -m bt.cli search
 ```
 
 5. OOS評価
 
 ```bash
-python -m bt.cli oos --candidates-csv bt/results/train_top.csv --oos-file bt/data/splits/oos.csv --out-csv bt/results/oos_eval.csv --out-md bt/results/oos_eval.md
+python -m bt.cli oos
 ```
 
 ## 結果保存（履歴保持）
 
-- 各実行で `bt/results/runs/YYYYMMDD_HHMMSS/` が自動作成され、結果が保存される
+- デフォルト実行（引数なし）でも、各実行で `bt/results/runs/YYYYMMDD_HHMMSS/` が自動作成され、結果が保存される
 - 互換のため、`bt/results/train_top.csv` / `bt/results/oos_eval.csv` など固定パスも最新結果で更新される
 - 実行ログに `run_id` と `saved_run_dir` が表示される
 - 同一秒のディレクトリが既に存在する場合は衝突エラーで終了
 
-必要に応じて `--run-id` で保存先を指定可能:
+通常は `--run-id` は不要。`search` と `oos` を同じ実行IDで束ねたいときだけ指定:
 
 ```bash
 python -m bt.cli search --run-id my_run_001 ...

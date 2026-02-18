@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -17,6 +18,26 @@ from bt.search.grid_search import load_candles, run_grid_search
 def load_config(path: str) -> dict:
     with Path(path).open() as f:
         return yaml.safe_load(f)
+
+
+def resolve_run_dir(out_csv_path: str, run_id: str | None) -> tuple[str, Path]:
+    runs_base = Path(out_csv_path).parent / 'runs'
+    runs_base.mkdir(parents=True, exist_ok=True)
+
+    if run_id:
+        run_dir = runs_base / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        return run_id, run_dir
+
+    auto_run_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+    run_dir = runs_base / auto_run_id
+    if run_dir.exists():
+        raise RuntimeError(
+            f'run_id collision: {auto_run_id} already exists. '
+            'Please retry or pass --run-id explicitly.',
+        )
+    run_dir.mkdir(parents=True, exist_ok=False)
+    return auto_run_id, run_dir
 
 
 def cmd_fetch(args: argparse.Namespace) -> None:
@@ -67,9 +88,15 @@ def cmd_search(args: argparse.Namespace) -> None:
         initial_equity=cfg['initial_equity'],
     )
     ranked = rank_candidates(rows, top_n=args.top_n)
+    run_id, run_dir = resolve_run_dir(args.out_csv, args.run_id)
+    run_csv = str(run_dir / Path(args.out_csv).name)
+    run_md = str(run_dir / Path(args.out_md).name)
+
+    export_csv(ranked, run_csv)
+    export_markdown(ranked, run_md, top_n=args.top_n)
     export_csv(ranked, args.out_csv)
     export_markdown(ranked, args.out_md, top_n=args.top_n)
-    print(f'search_done rows={len(rows)} top={len(ranked)}')
+    print(f'search_done rows={len(rows)} top={len(ranked)} run_id={run_id} saved_run_dir={run_dir}')
 
 
 def cmd_oos(args: argparse.Namespace) -> None:
@@ -103,9 +130,18 @@ def cmd_oos(args: argparse.Namespace) -> None:
         max_dd=ac['max_oos_dd_pct'],
         min_pf=ac['min_pf'],
     )
+    run_id, run_dir = resolve_run_dir(args.out_csv, args.run_id)
+    run_csv = str(run_dir / Path(args.out_csv).name)
+    run_md = str(run_dir / Path(args.out_md).name)
+
+    export_csv(rows, run_csv)
+    export_markdown(rows, run_md, top_n=len(rows))
     export_csv(rows, args.out_csv)
     export_markdown(rows, args.out_md, top_n=len(rows))
-    print(f'oos_done rows={len(rows)} accepted={sum(1 for r in rows if r["accepted"]) }')
+    print(
+        f'oos_done rows={len(rows)} accepted={sum(1 for r in rows if r["accepted"]) } '
+        f'run_id={run_id} saved_run_dir={run_dir}',
+    )
 
 
 def main() -> None:
@@ -129,6 +165,7 @@ def main() -> None:
     p_search.add_argument('--top-n', type=int, default=10)
     p_search.add_argument('--out-csv', default='bt/results/train_top.csv')
     p_search.add_argument('--out-md', default='bt/results/train_top.md')
+    p_search.add_argument('--run-id', default=None)
     p_search.set_defaults(func=cmd_search)
 
     p_oos = sub.add_parser('oos')
@@ -137,6 +174,7 @@ def main() -> None:
     p_oos.add_argument('--oos-file', default='bt/data/splits/oos.csv')
     p_oos.add_argument('--out-csv', default='bt/results/oos_eval.csv')
     p_oos.add_argument('--out-md', default='bt/results/oos_eval.md')
+    p_oos.add_argument('--run-id', default=None)
     p_oos.set_defaults(func=cmd_oos)
 
     args = parser.parse_args()

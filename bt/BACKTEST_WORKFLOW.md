@@ -94,6 +94,24 @@ python -m bt.cli oos \
 
 ## 5. 結果の見方（最小）
 
+### 結果の保存先（履歴保持）
+
+- 各コマンド実行時に `bt/results/runs/YYYYMMDD_HHMMSS/` が作成される
+- `search` は `train_top.csv` / `train_top.md` を run ディレクトリへ保存
+- `oos` は `oos_eval.csv` / `oos_eval.md` を run ディレクトリへ保存
+- 互換のため固定パス (`bt/results/train_top.csv`, `bt/results/oos_eval.csv` など) も最新結果で更新
+
+補足:
+
+- 実行ログに `run_id=...` と `saved_run_dir=...` が出る
+- 同一秒の run ディレクトリが既に存在する場合は衝突エラーで終了
+- 任意で `--run-id` を指定して保存先を固定できる
+
+```bash
+python -m bt.cli search --run-id my_run_001 ...
+python -m bt.cli oos --run-id my_run_001 ...
+```
+
 ### まず見る列
 
 - `oos_return_pct` : OOSリターン（プラスが望ましい）

@@ -25,8 +25,8 @@ execution:
 grid_search:
   levels_per_side: [3, 4, 5, 6, 7]
   range_pcts: [0.01]
-  leverage_values: [1.0, 1.5, 2.0]
-  order_size_ratio_values: [0.01, 0.02, 0.03]
+  leverage_values: [1.0, 1.5]
+  order_size_ratio_values: [0.01, 0.02]
 
 acceptance:
   min_oos_return_pct: 0.0

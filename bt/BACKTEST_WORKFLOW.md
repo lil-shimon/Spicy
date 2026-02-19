@@ -92,6 +92,20 @@ python -m bt.cli oos \
 
 `accepted=True` の候補を優先する。
 
+## 並列バッチ検証（複数設定を一括）
+
+```bash
+python -m bt.cli batch --config-dir bt/config/batch
+```
+
+ポイント:
+
+- `bt/config/batch/*.yaml` を対象に、各設定で `search -> oos` を並列実行
+- デフォルト並列数は 4（必要なら `--workers` を指定）
+- 出力は `bt/results/runs/<run_id>/` のみ更新
+- 競合回避のため、batch実行中は固定ファイル（`bt/results/train_top.csv` / `bt/results/oos_eval.csv`）を更新しない
+- どれか1設定で失敗すると batch 全体を即時停止
+
 ## 5. 結果の見方（最小）
 
 ### 結果の保存先（履歴保持）

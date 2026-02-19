@@ -90,3 +90,12 @@ python -m bt.cli oos --run-id my_run_001 ...
 - 分割: `6:2:2`
 - 探索: 本数 / レンジ / レバ / 注文サイズ / 約定失敗率（0,2,5%）
 - 採用判定: OOSの `return`, `max_dd`, `pf`
+
+## ビューアー起動
+
+```bash
+source bt/.venv/bin/activate
+streamlit run bt/app.py
+```
+
+ブラウザで `http://localhost:8501` が自動的に開きます。

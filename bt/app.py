@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 @module BT Results Viewer
 @context BTシステムの結果をブラウザで確認するためのStreamlitアプリ。

@@ -88,7 +88,7 @@ def run_backtest(
                 inventory += qty
                 buy_stack.append(fill_px)
                 active_buys.discard(p)
-                active_sells.add(p + grid_spacing)
+                active_sells.add(round_price(p + grid_spacing, constraints.price_tick))
 
         for p in list(active_sells):
             px = round_price(p, constraints.price_tick)
@@ -100,7 +100,7 @@ def run_backtest(
                 inventory -= qty
                 trades += 1
                 active_sells.discard(p)
-                active_buys.add(p - grid_spacing)
+                active_buys.add(round_price(p - grid_spacing, constraints.price_tick))
                 if buy_stack:
                     buy_px = buy_stack.pop(0)
                     trade_pnl = proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))

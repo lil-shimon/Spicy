@@ -45,19 +45,23 @@ python -m bt.data.normalize --infile bt/data/raw/kucoin_ohlcv.csv --out bt/data/
 python -m bt.data.split_dataset --infile bt/data/processed/kucoin_ohlcv_1m.csv --train 0.6 --validation 0.2 --outdir bt/data/splits
 ```
 
-4. train探索
+4. train探索 → OOS評価（一括実行）
 
 ```bash
-python -m bt.cli search
+python -m bt.cli run
 ```
 
-5. OOS評価
+- `search` → `oos` を1コマンドで直列実行する
+- 結果は `bt/results/runs/YYYYMMDD_HHMMSS/` に自動保存
+
+個別に実行したい場合:
 
 ```bash
-python -m bt.cli oos
+python -m bt.cli search   # train探索のみ
+python -m bt.cli oos      # OOS評価のみ（search後に実行）
 ```
 
-6. 並列バッチ実行（複数config）
+5. 並列バッチ実行（複数config）
 
 ```bash
 python -m bt.cli batch --config-dir bt/config/batch/step2
@@ -76,11 +80,10 @@ python -m bt.cli batch --config-dir bt/config/batch/step2
 - 実行ログに `run_id` と `saved_run_dir` が表示される
 - 同一秒のディレクトリが既に存在する場合は衝突エラーで終了
 
-通常は `--run-id` は不要。`search` と `oos` を同じ実行IDで束ねたいときだけ指定:
+通常は `--run-id` は不要。同一IDで束ねたいときだけ指定:
 
 ```bash
-python -m bt.cli search --run-id my_run_001 ...
-python -m bt.cli oos --run-id my_run_001 ...
+python -m bt.cli run --run-id my_run_001 ...
 ```
 
 ## 仕様

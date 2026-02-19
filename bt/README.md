@@ -60,13 +60,14 @@ python -m bt.cli oos
 6. 並列バッチ実行（複数config）
 
 ```bash
-python -m bt.cli batch --config-dir bt/config/batch
+python -m bt.cli batch --config-dir bt/config/batch/step2
 ```
 
-- `bt/config/batch/*.yaml` を検出して `search -> oos` を並列実行
+- 指定ディレクトリ配下の `*.yaml` を検出して `search -> oos` を並列実行
 - デフォルト並列数は `4`（`--workers` で変更可能）
 - 出力は各runディレクトリ（`bt/results/runs/<run_id>/`）へ保存
 - `batch` 実行時は固定ファイル（`bt/results/train_top.csv`, `bt/results/oos_eval.csv`）は更新しない
+- 推奨: `bt/config/batch/step1`, `bt/config/batch/step2` のように実験セットごとに分割し、再実行の無駄を防ぐ
 
 ## 結果保存（履歴保持）
 

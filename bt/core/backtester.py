@@ -43,16 +43,30 @@ def run_backtest(
     losses = 0
     gross_profit = 0.0
     gross_loss = 0.0
+    buy_stack: list[float] = []   # FIFO: buy約定時のfill_pxを積む
     equity_curve = [equity]
 
     for candle in candles:
-        if should_recenter(candle, center_price, params):
-            center_price = candle.close
-            buys, sells = build_grid_levels(center_price, params)
-
         order_value = initial_equity * params.order_size_ratio * params.leverage
         raw_qty = order_value / max(candle.close, 1e-9)
         qty = round_qty(raw_qty, constraints.qty_step)
+        if should_recenter(candle, center_price, params):
+            for buy_px in buy_stack:
+                exit_px = apply_slippage(candle.close, 'sell', cost)
+                exit_fee = exit_px * qty * fee_rate(cost)
+                forced_proceeds = exit_px * qty - exit_fee
+                trade_pnl = forced_proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))
+                trades += 1
+                if trade_pnl > 0:
+                    wins += 1
+                    gross_profit += trade_pnl
+                else:
+                    losses += 1
+                    gross_loss += abs(trade_pnl)
+            buy_stack.clear()
+            center_price = candle.close
+            buys, sells = build_grid_levels(center_price, params)
+
         if not validate_order(qty, params.leverage, constraints):
             equity_curve.append(equity)
             continue
@@ -64,7 +78,7 @@ def run_backtest(
                 fee = fill_px * qty * fee_rate(cost)
                 cash -= fill_px * qty + fee
                 inventory += qty
-                trades += 1
+                buy_stack.append(fill_px)
 
         for p in sells:
             px = round_price(p, constraints.price_tick)
@@ -75,16 +89,17 @@ def run_backtest(
                 cash += proceeds
                 inventory -= qty
                 trades += 1
+                if buy_stack:
+                    buy_px = buy_stack.pop(0)
+                    trade_pnl = proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))
+                    if trade_pnl > 0:
+                        wins += 1
+                        gross_profit += trade_pnl
+                    else:
+                        losses += 1
+                        gross_loss += abs(trade_pnl)
 
         mtm = cash + inventory * candle.close
-        pnl_step = mtm - equity
-        if pnl_step > 0:
-            wins += 1
-            gross_profit += pnl_step
-        elif pnl_step < 0:
-            losses += 1
-            gross_loss += abs(pnl_step)
-
         equity = mtm
         equity_curve.append(equity)
 

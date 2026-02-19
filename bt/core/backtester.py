@@ -34,6 +34,9 @@ def run_backtest(
     rng = Random(seed)
     center_price = candles[0].close
     buys, sells = build_grid_levels(center_price, params)
+    grid_spacing = (center_price * params.range_pct) / max(params.levels_per_side, 1)
+    active_buys: set[float] = set(buys)
+    active_sells: set[float] = set(sells)
 
     equity = initial_equity
     cash = initial_equity
@@ -55,6 +58,7 @@ def run_backtest(
                 exit_px = apply_slippage(candle.close, 'sell', cost)
                 exit_fee = exit_px * qty * fee_rate(cost)
                 forced_proceeds = exit_px * qty - exit_fee
+                cash += forced_proceeds
                 trade_pnl = forced_proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))
                 trades += 1
                 if trade_pnl > 0:
@@ -64,14 +68,18 @@ def run_backtest(
                     losses += 1
                     gross_loss += abs(trade_pnl)
             buy_stack.clear()
+            inventory = 0.0
             center_price = candle.close
             buys, sells = build_grid_levels(center_price, params)
+            active_buys = set(buys)
+            active_sells = set(sells)
+            grid_spacing = (center_price * params.range_pct) / max(params.levels_per_side, 1)
 
         if not validate_order(qty, params.leverage, constraints):
             equity_curve.append(equity)
             continue
 
-        for p in buys:
+        for p in list(active_buys):
             px = round_price(p, constraints.price_tick)
             if candle.low <= px and should_fill(cost, rng):
                 fill_px = apply_slippage(px, 'buy', cost)
@@ -79,8 +87,10 @@ def run_backtest(
                 cash -= fill_px * qty + fee
                 inventory += qty
                 buy_stack.append(fill_px)
+                active_buys.discard(p)
+                active_sells.add(p + grid_spacing)
 
-        for p in sells:
+        for p in list(active_sells):
             px = round_price(p, constraints.price_tick)
             if candle.high >= px and inventory >= qty and should_fill(cost, rng):
                 fill_px = apply_slippage(px, 'sell', cost)
@@ -89,6 +99,8 @@ def run_backtest(
                 cash += proceeds
                 inventory -= qty
                 trades += 1
+                active_sells.discard(p)
+                active_buys.add(p - grid_spacing)
                 if buy_stack:
                     buy_px = buy_stack.pop(0)
                     trade_pnl = proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))

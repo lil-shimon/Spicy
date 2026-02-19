@@ -210,6 +210,32 @@ def cmd_oos(args: argparse.Namespace) -> None:
     )
 
 
+def cmd_run(args: argparse.Namespace) -> None:
+    search_res = run_search(
+        config_path=args.config,
+        infile=args.infile,
+        top_n=args.top_n,
+        out_csv=args.out_csv,
+        out_md=args.out_md,
+        run_id=args.run_id,
+        write_latest=True,
+    )
+    oos_res = run_oos(
+        config_path=args.config,
+        candidates_csv=search_res['run_csv'],
+        oos_file=args.oos_file,
+        out_csv=args.oos_out_csv,
+        out_md=args.oos_out_md,
+        run_id=search_res['run_id'],
+        write_latest=True,
+    )
+    print(
+        f'run_done search_rows={search_res["rows"]} top={search_res["top"]} '
+        f'oos_accepted={oos_res["accepted"]} run_id={search_res["run_id"]} '
+        f'run_dir={search_res["run_dir"]}',
+    )
+
+
 def _run_batch_case(
     *,
     config_path: str,
@@ -337,6 +363,18 @@ def main() -> None:
     p_oos.add_argument('--out-md', default='bt/results/oos_eval.md')
     p_oos.add_argument('--run-id', default=None)
     p_oos.set_defaults(func=cmd_oos)
+
+    p_run = sub.add_parser('run')
+    p_run.add_argument('--config', default='bt/config/defaults.yaml')
+    p_run.add_argument('--infile', default='bt/data/splits/train.csv')
+    p_run.add_argument('--oos-file', default='bt/data/splits/oos.csv')
+    p_run.add_argument('--top-n', type=int, default=10)
+    p_run.add_argument('--out-csv', default='bt/results/train_top.csv')
+    p_run.add_argument('--out-md', default='bt/results/train_top.md')
+    p_run.add_argument('--oos-out-csv', default='bt/results/oos_eval.csv')
+    p_run.add_argument('--oos-out-md', default='bt/results/oos_eval.md')
+    p_run.add_argument('--run-id', default=None)
+    p_run.set_defaults(func=cmd_run)
 
     p_batch = sub.add_parser('batch')
     p_batch.add_argument('--config-dir', required=True)

@@ -1,2 +1,4 @@
 ccxt>=4.5.0
 PyYAML>=6.0.0
+streamlit>=1.40.0
+pandas>=2.0.0

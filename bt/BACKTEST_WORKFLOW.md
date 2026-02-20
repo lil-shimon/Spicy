@@ -154,6 +154,27 @@ python -m bt.cli oos --run-id my_run_001 ...
 - `range_pcts` を広げる
 - `levels_per_side` を増やす
 
+### D. OOS の `oos_return=0.0, oos_pf=1.0` なのに `accepted=False`
+
+**これは「損益ゼロ」ではなく「OOS でトレードが1件も発生していない」状態。**
+
+原因: `order_size_ratio × initial_equity / BTC価格 < min_order_qty` になると、
+`validate_order` が全 candle で False を返し、注文処理がすべてスキップされる。
+
+```
+例: order_size_ratio=0.008, initial_equity=10000
+    → 注文額 = 80 USD
+    → qty = floor(80 / BTC_price / 0.001) * 0.001
+
+    BTC = $80,000 → qty = 0.001 ✅（ちょうど最小）
+    BTC = $80,001 → qty = 0.000 ❌（全candle スキップ）
+```
+
+この状態は「戦略が機能した」証拠ではなく「シミュレーションが空振りした」状態なので、
+`accepted=False` は正しい挙動。`> vs >=` のコード変更は不要。
+
+**対処**: `order_size_ratio` を上げるか、BTC価格帯に合わせた最小サイズを確認する。
+
 ### C. DDが大きすぎる
 
 - `leverage_values` を下げる

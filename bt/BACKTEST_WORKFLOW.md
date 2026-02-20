@@ -195,3 +195,40 @@ python -m bt.cli oos --run-id my_run_001 ...
 - train成績が良くても、OOSで崩れる候補は採用しない
 - まずは「利益最大」より「OOSで壊れない」候補を選ぶ
 - 本番実装は、OOS通過ロジックのみ進める
+
+---
+
+## 現在の探索状況（Phase A: range_pct 拡大）
+
+### 背景
+
+- `range_pct=0.01`（1%固定）では全パラメータで train PF < 1.0
+- 原因: 1%幅のグリッドがトレンド相場で在庫偏りを起こしやすい
+- `order_size_ratio=0.008` は BTC > $80,000 で `min_order_qty` を下回り、OOSトレードゼロになる（価格クリフ）
+
+### Phase A の目的
+
+固定 `range_pct` を広げて、PF > 1.0 を達成できる幅があるかを確認する。
+
+### 設定ファイル（`bt/config/batch/step3/`）
+
+| ファイル   | range_pct | 目的                     |
+| ---------- | --------- | ------------------------ |
+| lr3_a.yaml | 0.015     | 1%より少し広い基準ライン |
+| lr3_b.yaml | 0.020     | 2%幅の評価               |
+| lr3_c.yaml | 0.025     | 2.5%幅の評価             |
+
+- `order_size_ratio`: [0.012, 0.015]（価格クリフ対策: BTC $100K でも min_order_qty 通過）
+- `leverage`: 1.0 固定（リスク抑制）
+- `levels_per_side`: [2, 3, 4]
+
+### 実行コマンド
+
+```bash
+python -m bt.cli batch --config-dir bt/config/batch/step3
+```
+
+### 次フェーズ
+
+Phase A で PF > 1.0 の range_pct 帯が確認できたら、
+その帯を基準に ATR連動の動的 range_pct（Phase B）を設計する。

@@ -1,5 +1,4 @@
-// KuCoin WebSocket接続でローソク足（OHLCV）データを受信してターミナルに表示する。
-// BTC-USDT 1分足を対象とし、シンプルな構成で動作確認を目的とする。
+// KuCoin WSからローソク足を受信し、フロントのWebSocketクライアントにリアルタイム配信する。
 
 package main
 
@@ -11,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -40,6 +40,80 @@ type CandleData struct {
 	Symbol  string   `json:"symbol"`
 	Candles []string `json:"candles"`
 	Time    int64    `json:"time"`
+}
+
+// フロントに送るローソク足データ（Lightweight Charts互換フォーマット）
+type Candle struct {
+	Time   int64   `json:"time"`
+	Open   float64 `json:"open"`
+	High   float64 `json:"high"`
+	Low    float64 `json:"low"`
+	Close  float64 `json:"close"`
+	Volume float64 `json:"volume"`
+}
+
+// フロントのWebSocketクライアントを管理するHub
+type Hub struct {
+	clients   map[*websocket.Conn]bool
+	mu        sync.Mutex
+	broadcast chan []byte
+}
+
+// ローカル開発のためOriginチェックをスキップ
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+// newHub はHubを初期化して返す
+func newHub() *Hub {
+	return &Hub{
+		clients:   make(map[*websocket.Conn]bool),
+		broadcast: make(chan []byte, 256),
+	}
+}
+
+// run はbroadcastチャンネルを監視し、接続中の全フロントクライアントにデータを送信する（goroutineで呼び出す）
+func (h *Hub) run() {
+	for msg := range h.broadcast {
+		h.mu.Lock()
+		for conn := range h.clients {
+			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				log.Printf("クライアントへの送信失敗: %v", err)
+				conn.Close()
+				delete(h.clients, conn)
+			}
+		}
+		h.mu.Unlock()
+	}
+}
+
+// serveWS はHTTPリクエストをWebSocketにアップグレードし、クライアントをHubに登録する
+func (h *Hub) serveWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("WSアップグレード失敗: %v", err)
+		return
+	}
+	h.mu.Lock()
+	h.clients[conn] = true
+	h.mu.Unlock()
+	log.Printf("フロントクライアント接続: %s", conn.RemoteAddr())
+
+	// 切断検知のために読み取りループを維持する
+	go func() {
+		defer func() {
+			h.mu.Lock()
+			delete(h.clients, conn)
+			h.mu.Unlock()
+			conn.Close()
+			log.Printf("フロントクライアント切断: %s", conn.RemoteAddr())
+		}()
+		for {
+			if _, _, err := conn.ReadMessage(); err != nil {
+				break
+			}
+		}
+	}()
 }
 
 // KuCoin Public Bullet APIからWebSocket接続用のトークンとエンドポイントを取得する
@@ -89,6 +163,14 @@ func pingLoop(conn *websocket.Conn) {
 }
 
 func main() {
+	hub := newHub()
+	go hub.run()
+
+	// フロント向けWebSocketエンドポイントを登録
+	http.HandleFunc("/ws", hub.serveWS)
+	go http.ListenAndServe(":8080", nil)
+	log.Println("HTTPサーバー起動: :8080")
+
 	// トークンとエンドポイントを取得
 	token, endpoint, err := getToken()
 	if err != nil {
@@ -162,5 +244,22 @@ func main() {
 			open, high, low, close_, volume,
 			t.Format("2006-01-02 15:04:05"),
 		)
+
+		// パースしたローソク足データをJSONにしてフロントに配信
+		candle := Candle{
+			Time:   unixSec,
+			Open:   open,
+			High:   high,
+			Low:    low,
+			Close:  close_,
+			Volume: volume,
+		}
+		if candleJSON, err := json.Marshal(candle); err == nil {
+			select {
+			case hub.broadcast <- candleJSON:
+			default:
+				// バッファが詰まっている場合はスキップ
+			}
+		}
 	}
 }

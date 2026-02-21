@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from bt.core.backtester import run_backtest
+from bt.core.regime_filter import compute_regime_mask
 from bt.core.types import Candle, Constraints, CostModel, GridParams
 from bt.eval.overfit_check import accept_candidate, is_overfit
 
@@ -14,7 +15,17 @@ def evaluate_oos(
     min_return: float,
     max_dd: float,
     min_pf: float,
+    regime_cfg: dict | None = None,
 ) -> list[dict[str, float | bool]]:
+    # OOSキャンドルに対してregime_maskを計算
+    regime_mask = None
+    if regime_cfg and regime_cfg.get("enabled"):
+        regime_mask = compute_regime_mask(
+            oos_candles,
+            lookback_days=regime_cfg["lookback_days"],
+            er_threshold=regime_cfg["er_threshold"],
+        )
+
     out: list[dict[str, float | bool]] = []
     for c in train_candidates:
         params = GridParams(
@@ -30,7 +41,7 @@ def evaluate_oos(
             fill_failure_rate=float(c['fill_failure_rate']),
             use_taker=base_cost.use_taker,
         )
-        m = run_backtest(oos_candles, params, constraints, cost, initial_equity)
+        m = run_backtest(oos_candles, params, constraints, cost, initial_equity, regime_mask=regime_mask)
         overfit = is_overfit(float(c['return_pct']), m.return_pct)
         accepted = accept_candidate(m.return_pct, m.max_dd_pct, m.profit_factor, min_return, max_dd, min_pf)
         row: dict[str, float | bool] = dict(c)

@@ -32,3 +32,8 @@ acceptance:
   min_oos_return_pct: 0.0
   max_oos_dd_pct: 8.0
   min_pf: 1.05
+
+regime_filter:
+  enabled: true
+  lookback_days: 10
+  er_threshold: 0.3

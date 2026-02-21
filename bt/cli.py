@@ -76,6 +76,7 @@ def run_search(
         constraints=constraints,
         base_cost=base_cost,
         initial_equity=cfg['initial_equity'],
+        regime_cfg=cfg.get('regime_filter'),
     )
     ranked = rank_candidates(rows, top_n=top_n)
     resolved_run_id, run_dir = resolve_run_dir(out_csv, run_id)
@@ -137,6 +138,7 @@ def run_oos(
         min_return=ac['min_oos_return_pct'],
         max_dd=ac['max_oos_dd_pct'],
         min_pf=ac['min_pf'],
+        regime_cfg=cfg.get('regime_filter'),
     )
     resolved_run_id, run_dir = resolve_run_dir(out_csv, run_id)
     run_csv = str(run_dir / Path(out_csv).name)

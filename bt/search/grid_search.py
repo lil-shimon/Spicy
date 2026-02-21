@@ -5,6 +5,7 @@ import itertools
 from pathlib import Path
 
 from bt.core.backtester import run_backtest
+from bt.core.regime_filter import compute_regime_mask
 from bt.core.types import Candle, Constraints, CostModel, GridParams
 
 
@@ -34,7 +35,17 @@ def run_grid_search(
     constraints: Constraints,
     base_cost: CostModel,
     initial_equity: float,
+    regime_cfg: dict | None = None,
 ) -> list[dict[str, float]]:
+    # regime_maskをループ前に1回だけ計算（全パラメータ組み合わせで共通）
+    regime_mask = None
+    if regime_cfg and regime_cfg.get("enabled"):
+        regime_mask = compute_regime_mask(
+            candles,
+            lookback_days=regime_cfg["lookback_days"],
+            er_threshold=regime_cfg["er_threshold"],
+        )
+
     results: list[dict[str, float]] = []
     for lv, rg, lev, osz, fr in itertools.product(levels, ranges, leverages, order_sizes, failure_rates):
         params = GridParams(levels_per_side=lv, range_pct=rg, leverage=lev, order_size_ratio=osz)
@@ -45,7 +56,7 @@ def run_grid_search(
             fill_failure_rate=fr,
             use_taker=base_cost.use_taker,
         )
-        m = run_backtest(candles, params, constraints, cost, initial_equity)
+        m = run_backtest(candles, params, constraints, cost, initial_equity, regime_mask=regime_mask)
         results.append(
             {
                 'levels': lv,

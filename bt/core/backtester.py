@@ -27,6 +27,7 @@ def run_backtest(
     cost: CostModel,
     initial_equity: float,
     seed: int = 42,
+    regime_mask: list[bool] | None = None,
 ) -> Metrics:
     if not candles:
         return Metrics(0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -48,8 +49,51 @@ def run_backtest(
     gross_loss = 0.0
     buy_stack: list[float] = []   # FIFO: buy約定時のfill_pxを積む
     equity_curve = [equity]
+    # トレンド移行検知用: 前キャンドルがレンジ相場だったか
+    # regime_maskがNoneの場合は常にレンジ扱い（従来動作と同じ）
+    prev_ranging = True
 
-    for candle in candles:
+    for i, candle in enumerate(candles):
+        is_ranging = regime_mask is None or regime_mask[i]
+
+        if not is_ranging:
+            # トレンド移行の最初のキャンドル: オープンポジションを全決済する
+            # @context レンジ→トレンド移行時にMTMが更新されないバグを修正。
+            #          inventory保有のまま続くと含み損益が equity_curve に反映されないため、
+            #          移行キャンドルのcloseで強制決済してcashに確定させる。
+            if prev_ranging and inventory > 0:
+                order_value = initial_equity * params.order_size_ratio * params.leverage
+                raw_qty = order_value / max(candle.close, 1e-9)
+                qty = round_qty(raw_qty, constraints.qty_step)
+                for buy_px in buy_stack:
+                    exit_px = apply_slippage(candle.close, 'sell', cost)
+                    exit_fee = exit_px * qty * fee_rate(cost)
+                    forced_proceeds = exit_px * qty - exit_fee
+                    cash += forced_proceeds
+                    trade_pnl = forced_proceeds - (buy_px * qty + buy_px * qty * fee_rate(cost))
+                    trades += 1
+                    if trade_pnl > 0:
+                        wins += 1
+                        gross_profit += trade_pnl
+                    else:
+                        losses += 1
+                        gross_loss += abs(trade_pnl)
+                buy_stack.clear()
+                inventory = 0.0
+                center_price = candle.close
+                buys, sells = build_grid_levels(center_price, params)
+                active_buys = set(buys)
+                active_sells = set(sells)
+                grid_spacing = (center_price * params.range_pct) / max(params.levels_per_side, 1)
+
+            # トレンド中: inventory=0なのでMTMはcashのみ
+            equity = cash
+            equity_curve.append(equity)
+            prev_ranging = False
+            continue
+
+        prev_ranging = True
+
         order_value = initial_equity * params.order_size_ratio * params.leverage
         raw_qty = order_value / max(candle.close, 1e-9)
         qty = round_qty(raw_qty, constraints.qty_step)

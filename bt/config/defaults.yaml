@@ -35,5 +35,6 @@ acceptance:
 
 regime_filter:
   enabled: true
-  lookback_days: 10
-  er_threshold: 0.3
+  lookback_days: 10        # ER計算（Kaufman推奨）
+  er_threshold: 0.3        # ER閾値（文献最多引用値）
+  ma_lookback_days: 20     # MA計算（下落方向検知、20日≒1ヶ月）

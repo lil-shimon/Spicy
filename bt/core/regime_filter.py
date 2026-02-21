@@ -12,8 +12,9 @@ from bt.core.types import Candle
 
 def compute_regime_mask(
     candles: list[Candle],
-    lookback_days: int = 20,
+    lookback_days: int = 10,
     er_threshold: float = 0.3,
+    ma_lookback_days: int = 20,
 ) -> list[bool]:
     """
     各キャンドル時点のレンジ/トレンド判定マスクを返す。
@@ -23,9 +24,12 @@ def compute_regime_mask(
              1分足→日次closeに変換してER計算後、1分足タイムスタンプにマッピングする。
              - lookback_days=10 はKaufman本人の推奨値（1995年 "Smarter Trading"）。クリプト市場では7〜10が推奨される傾向。
              - er_threshold=0.3 はトレンド/ノイズの足切りとして文献引用頻度が最も高い値（TrendSpider, StrategyQuantなど）。
-             - 【設計上の限界】ERは「トレンドの強度」は測れるが「上昇か下落か」の方向性は示さない。
-               グリッド戦略（ロングのみ）では下落トレンドのみ停止したいが、現実装は上昇トレンドも停止する。
-               将来的にはEMAの傾きや価格位置（close < MA）と組み合わせて方向性フィルターを追加する余地がある。
+             - 【MA方向性フィルター追加】ERは「トレンドの強度」は測れるが「上昇か下落か」の方向性を示さない。
+               緩やかな下落トレンドではERが低いままグリッドが稼働し続ける問題があった。
+               MAフィルター（close >= MA）を追加することで方向性を判定する。
+               is_ranging = (ER < threshold) AND (close >= MA) の両方OKのときのみグリッド稼働。
+             - ma_lookback_days=20 はトレンド判定で最も広く使われる期間（約1ヶ月）。
+               MAデータ不足期間（先頭ma_lookback_days-1日）はMA条件を免除し稼働扱いとする。
     """
     if not candles:
         return []
@@ -42,7 +46,16 @@ def compute_regime_mask(
     sorted_days = sorted(daily_close.keys())
     closes = [daily_close[d] for d in sorted_days]
 
-    # 3. 各日のER値を計算
+    # 3. 各日のMA計算（ma_lookback_days日の単純移動平均）
+    #    データ不足期間（先頭ma_lookback_days-1日）はNone
+    daily_ma: dict[datetime.date, float | None] = {}
+    for idx, day in enumerate(sorted_days):
+        if idx < ma_lookback_days - 1:
+            daily_ma[day] = None
+        else:
+            daily_ma[day] = sum(closes[idx - ma_lookback_days + 1: idx + 1]) / ma_lookback_days
+
+    # 4. 各日のER値を計算し、MAフィルターと組み合わせて判定
     daily_ranging: dict[datetime.date, bool] = {}
     for idx, day in enumerate(sorted_days):
         if idx < lookback_days:
@@ -63,10 +76,14 @@ def compute_regime_mask(
         else:
             er = net_change / total_change
 
-        # ER < threshold → True（レンジ = 稼働OK）
-        daily_ranging[day] = er < er_threshold
+        # MAデータ不足時はMA条件を免除（先頭期間は方向性フィルターなし）
+        ma = daily_ma[day]
+        ma_ok = (ma is None) or (closes[idx] >= ma)
 
-    # 4. 各candle.tsの日付をキーにlist[bool]を生成
+        # ER < threshold かつ close >= MA → True（レンジ = 稼働OK）
+        daily_ranging[day] = (er < er_threshold) and ma_ok
+
+    # 5. 各candle.tsの日付をキーにlist[bool]を生成
     mask: list[bool] = []
     for candle in candles:
         day = datetime.date.fromtimestamp(candle.ts / 1000)

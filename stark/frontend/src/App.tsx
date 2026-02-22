@@ -3,18 +3,24 @@ import { CandlestickSeries, createChart } from 'lightweight-charts';
 
 function App() {
   const url = 'ws://localhost:8080/ws';
-  const ws = new WebSocket(url);
   const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!containerRef.current) return;
     const chart = createChart(containerRef.current);
     const series = chart.addSeries(CandlestickSeries);
-    return () => chart.remove();
-  }, []);
+    const ws = new WebSocket(url);
 
-  ws.onopen = () => {
-    console.log('WebSocket connection established');
-  };
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      series.update(data);
+    };
+
+    return () => {
+      chart.remove();
+      ws.close();
+    };
+  }, []);
 
   return (
     <div>

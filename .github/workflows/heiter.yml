@@ -1,12 +1,7 @@
 name: Heiter Daily Balance Check
 
 on:
-  # 毎日 9:30 AM JST (0:30 AM UTC) に実行
-  # 深夜0時UTCは混雑するため30分ずらす
-  schedule:
-    - cron: '30 0 * * *'
-
-  # 手動実行も可能
+  # 手動実行のみ（APIキー失効によりスケジュール自動実行は停止）
   workflow_dispatch:
 
 jobs:
